@@ -138,4 +138,30 @@ class UrlSanitizerTest {
             )
         )
     }
+
+    // ── cleanText (multi-URL helper, T4) ─────────────────────────────────────
+
+    @Test
+    fun `cleanText - sanitizes each whitespace-separated URL independently`() {
+        val input = "https://youtu.be/abc?si=x&t=5 https://example.com/p?fbclid=y"
+        val expected = "https://youtu.be/abc?t=5 https://example.com/p"
+        assertEquals(expected, UrlSanitizer.cleanText(input))
+    }
+
+    @Test
+    fun `cleanText - plain text tokens pass through unchanged`() {
+        // "Check" and "out" are not URLs; sanitizer returns them verbatim
+        assertEquals(
+            "Check out https://example.com/p",
+            UrlSanitizer.cleanText("Check out https://example.com/p")
+        )
+    }
+
+    @Test
+    fun `cleanText - collapses leading and trailing whitespace`() {
+        assertEquals(
+            "https://example.com/p",
+            UrlSanitizer.cleanText("  https://example.com/p?si=x  ")
+        )
+    }
 }
