@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Base app theme (used by <application>) -->
     <style name="Theme.AndroidShareSanitizer" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!--
+        Alias required by ShareActivity's android:theme attribute.
+        We define it here because com.google.android.material is not a
+        dependency; the Compose Material3 library provides no XML styles.
+        The window itself is controlled by Compose, so the XML parent only
+        needs to suppress the ActionBar — which the framework style does.
+        See DECISIONS.md §T2.
+    -->
+    <style name="Theme.Material3.DayNight.NoActionBar"
+        parent="android:Theme.Material.Light.NoActionBar" />
+
 </resources>
