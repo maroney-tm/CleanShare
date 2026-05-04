@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,6 +26,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -34,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import com.maroney.androidsharesanitizer.data.ShareRecord
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -96,16 +100,23 @@ private fun HistoryItem(record: ShareRecord) {
     val clipboardManager = LocalClipboardManager.current
     val haptic = LocalHapticFeedback.current
 
-    Column(
+    // Derive the Google favicon URL from the cleaned text's host.
+    // runCatching guards against malformed URIs (plain text shares, etc.).
+    val faviconUrl: String? = remember(record.cleanedText) {
+        runCatching { Uri.parse(record.cleanedText).host }
+            .getOrNull()
+            ?.takeIf { it.isNotBlank() }
+            ?.let { host -> "https://www.google.com/s2/favicons?sz=64&domain=$host" }
+    }
+
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            // combinedClickable must come before padding so the ripple
-            // covers the full row width, not just the padded content area.
+            // combinedClickable before padding → ripple covers full row width.
             .combinedClickable(
                 onClick = {
-                    // Tap → open the cleaned URL in the default browser/app.
-                    // Wrapped in try-catch: cleanedText might not be a URL
-                    // (e.g. plain text that had no tracking params).
+                    // Tap → open the cleaned URL in the default browser / handler.
+                    // try-catch: cleanedText may not be a valid URI (plain text share).
                     try {
                         context.startActivity(
                             Intent(Intent.ACTION_VIEW, Uri.parse(record.cleanedText))
@@ -118,44 +129,70 @@ private fun HistoryItem(record: ShareRecord) {
                 },
             )
             .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(2.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.Top,
     ) {
-        // Cleaned URL — the result is the headline
-        Text(
-            text = record.cleanedText,
-            style = MaterialTheme.typography.bodyMedium,
-            maxLines = 3,
-            overflow = TextOverflow.Ellipsis,
-        )
-
-        // Original URL — only shown when something was actually cleaned
-        if (record.originalText != record.cleanedText) {
-            Text(
-                text = record.originalText,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+        // Favicon slot — always 32 dp wide so text columns stay aligned.
+        // Invisible when the host can't be parsed; Coil handles errors silently.
+        // Lifecycle: AsyncImage uses the composition's coroutine scope;
+        // the in-flight request is cancelled when this composable leaves the screen.
+        Box(
+            modifier = Modifier
+                .size(32.dp)
+                .align(Alignment.Top),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (faviconUrl != null) {
+                AsyncImage(
+                    model = faviconUrl,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
         }
 
-        Text(
-            text = formatAge(record.sharedAt),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+        ) {
+            // Cleaned URL is the headline — what the user actually shared
+            Text(
+                text = record.cleanedText,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+            )
+
+            // Original URL shown only when tracking params were actually stripped
+            if (record.originalText != record.cleanedText) {
+                Text(
+                    text = record.originalText,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+
+            Text(
+                text = formatAge(record.sharedAt),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
 
 /**
- * Returns a human-readable relative timestamp.
+ * Human-readable relative timestamp.
  *
- * - < 60 s  → "Just now"  (DateUtils would say "0 minutes ago")
- * - < ~48 h → "2 minutes ago", "1 hour ago", etc.  (via DateUtils, locale-aware)
- * - ≥ ~2 d  → "Yesterday", "3 days ago", etc.
+ * - < 60 s   → "Just now"  (DateUtils gives "0 minutes ago" without this guard)
+ * - minutes  → "2 min. ago"
+ * - hours    → "1 hr. ago"
+ * - days     → "Yesterday", "3 days ago"
  * - ≥ ~1 wk → absolute date, e.g. "Apr 28"  (DateUtils switches automatically)
  *
- * Clock-skew guard: negative delta is treated as "Just now".
+ * Negative delta (clock skew) is treated as "Just now".
  */
 private fun formatAge(timestamp: Long): String {
     val delta = System.currentTimeMillis() - timestamp
