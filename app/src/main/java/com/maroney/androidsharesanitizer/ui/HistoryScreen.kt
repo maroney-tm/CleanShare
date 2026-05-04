@@ -1,11 +1,10 @@
 package com.maroney.androidsharesanitizer.ui
 
+import android.content.ClipData
 import android.content.Intent
-import android.net.Uri
 import android.text.format.DateUtils
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.hapticfeedback.HapticFeedbackType
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,18 +26,22 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.maroney.androidsharesanitizer.data.ShareRecord
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -97,13 +100,14 @@ private fun EmptyState(modifier: Modifier = Modifier) {
 @Composable
 private fun HistoryItem(record: ShareRecord) {
     val context = LocalContext.current
-    val clipboardManager = LocalClipboardManager.current
+    val clipboardManager = LocalClipboard.current
     val haptic = LocalHapticFeedback.current
+    val scope = rememberCoroutineScope()
 
     // Derive the Google favicon URL from the cleaned text's host.
     // runCatching guards against malformed URIs (plain text shares, etc.).
     val faviconUrl: String? = remember(record.cleanedText) {
-        runCatching { Uri.parse(record.cleanedText).host }
+        runCatching { record.cleanedText.toUri().host }
             .getOrNull()
             ?.takeIf { it.isNotBlank() }
             ?.let { host -> "https://www.google.com/s2/favicons?sz=64&domain=$host" }
@@ -119,13 +123,18 @@ private fun HistoryItem(record: ShareRecord) {
                     // try-catch: cleanedText may not be a valid URI (plain text share).
                     try {
                         context.startActivity(
-                            Intent(Intent.ACTION_VIEW, Uri.parse(record.cleanedText))
+                            Intent(Intent.ACTION_VIEW, record.cleanedText.toUri())
                         )
-                    } catch (_: Exception) { /* no handler or bad URI — ignore */ }
+                    } catch (_: Exception) { /* no handler or bad URI — ignore */
+                    }
                 },
                 onLongClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    clipboardManager.setText(AnnotatedString(record.cleanedText))
+                    scope.launch {
+                        clipboardManager.setClipEntry(
+                            ClipData.newPlainText("link", record.cleanedText).toClipEntry()
+                        )
+                    }
                 },
             )
             .padding(horizontal = 16.dp, vertical = 12.dp),
@@ -135,7 +144,7 @@ private fun HistoryItem(record: ShareRecord) {
         // Favicon slot — always 32 dp wide so text columns stay aligned.
         // Invisible when the host can't be parsed; Coil handles errors silently.
         // Lifecycle: AsyncImage uses the composition's coroutine scope;
-        // the in-flight request is cancelled when this composable leaves the screen.
+        // the in-flight request is canceled when this composable leaves the screen.
         Box(
             modifier = Modifier
                 .size(32.dp)
