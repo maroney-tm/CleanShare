@@ -1,4 +1,4 @@
-package com.maroney.androidsharesanitizer.data
+package com.maroney.cleanshare.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

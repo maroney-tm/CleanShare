@@ -1,4 +1,4 @@
-package com.maroney.androidsharesanitizer.ui.theme
+package com.maroney.cleanshare.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

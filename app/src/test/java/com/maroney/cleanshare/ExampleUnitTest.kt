@@ -1,4 +1,4 @@
-package com.maroney.androidsharesanitizer
+package com.maroney.cleanshare
 
 import org.junit.Test
 

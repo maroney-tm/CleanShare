@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Base app theme (used by <application> element) -->
-    <style name="Theme.AndroidShareSanitizer" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.CleanShare" parent="android:Theme.Material.Light.NoActionBar" />
 
     <!--
         Alias required by the legacy android:theme attribute on activities that use Compose.

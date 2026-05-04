@@ -1,6 +1,6 @@
-package com.maroney.androidsharesanitizer
+package com.maroney.cleanshare
 
-import com.maroney.androidsharesanitizer.domain.UrlSanitizer
+import com.maroney.cleanshare.domain.UrlSanitizer
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

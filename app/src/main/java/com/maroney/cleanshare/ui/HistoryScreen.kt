@@ -1,4 +1,4 @@
-package com.maroney.androidsharesanitizer.ui
+package com.maroney.cleanshare.ui
 
 import android.content.ClipData
 import android.content.Intent
@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import com.maroney.androidsharesanitizer.data.ShareRecord
+import com.maroney.cleanshare.data.ShareRecord
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.maroney.androidsharesanitizer"
+    namespace = "com.maroney.cleanshare"
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -13,7 +13,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.maroney.androidsharesanitizer"
+        applicationId = "com.maroney.cleanshare"
         minSdk = 33
         targetSdk = 36
         versionCode = 1

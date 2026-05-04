@@ -1,14 +1,14 @@
-package com.maroney.androidsharesanitizer
+package com.maroney.cleanshare
 
 import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
-import com.maroney.androidsharesanitizer.data.ShareDatabase
-import com.maroney.androidsharesanitizer.data.ShareRecord
-import com.maroney.androidsharesanitizer.data.ShareRepository
-import com.maroney.androidsharesanitizer.domain.UrlSanitizer
+import com.maroney.cleanshare.data.ShareDatabase
+import com.maroney.cleanshare.data.ShareRecord
+import com.maroney.cleanshare.data.ShareRepository
+import com.maroney.cleanshare.domain.UrlSanitizer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

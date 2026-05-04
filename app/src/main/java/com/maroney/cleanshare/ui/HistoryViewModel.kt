@@ -1,4 +1,4 @@
-package com.maroney.androidsharesanitizer.ui
+package com.maroney.cleanshare.ui
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
@@ -6,9 +6,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
-import com.maroney.androidsharesanitizer.data.ShareDatabase
-import com.maroney.androidsharesanitizer.data.ShareRecord
-import com.maroney.androidsharesanitizer.data.ShareRepository
+import com.maroney.cleanshare.data.ShareDatabase
+import com.maroney.cleanshare.data.ShareRecord
+import com.maroney.cleanshare.data.ShareRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn

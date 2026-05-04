@@ -1,4 +1,4 @@
-package com.maroney.androidsharesanitizer.domain
+package com.maroney.cleanshare.domain
 
 /**
  * Pure Kotlin URL sanitizer — no Android imports, no I/O, no logging.
