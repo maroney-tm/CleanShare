@@ -52,20 +52,17 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
-    // Image loading — AsyncImage composable + OkHttp network fetcher.
-    // Coil auto-discovers coil-network-okhttp via ServiceLoader; no manual init needed.
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
-    // Retrofit + OkHttp — shared HTTP client for Coil and future Retrofit API calls.
-    // Retrofit is wired for OG metadata fetching in a follow-up; OkHttp is declared
-    // explicitly so both Coil and Retrofit can share a single configured client.
     implementation(libs.retrofit)
     implementation(libs.okhttp)
     testImplementation(libs.junit)
+
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 }

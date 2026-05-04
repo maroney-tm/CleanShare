@@ -7,16 +7,10 @@ espressoCore = "3.7.0"
 lifecycleRuntimeKtx = "2.10.0"
 activityCompose = "1.13.0"
 kotlin = "2.3.21"
+ksp = "2.3.7"
 composeBom = "2026.04.01"
 room = "2.8.4"
-# KSP version must match the Kotlin version prefix exactly.
-# If the build fails on this, check https://github.com/google/ksp/releases
-# for the latest release whose prefix matches your kotlin version above.
-ksp = "2.3.7"
 coil = "3.4.0"
-# Retrofit is declared now; wired for OG metadata fetching in a follow-up.
-# Coil and Retrofit share the same OkHttp client — declared explicitly so
-# we can configure a shared instance when that work lands.
 retrofit = "3.0.0"
 okhttp = "5.3.2"
 
