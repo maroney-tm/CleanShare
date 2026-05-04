@@ -1,5 +1,11 @@
 package com.maroney.androidsharesanitizer.ui
 
+import android.content.Intent
+import android.net.Uri
+import android.text.format.DateUtils
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.hapticfeedback.HapticFeedbackType
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +26,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -52,12 +62,11 @@ fun HistoryScreen(viewModel: HistoryViewModel) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(0.dp),
+                contentPadding = PaddingValues(vertical = 8.dp),
             ) {
                 items(history, key = { it.id }) { record ->
                     HistoryItem(record)
-                    HorizontalDivider()
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                 }
             }
         }
@@ -80,15 +89,38 @@ private fun EmptyState(modifier: Modifier = Modifier) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun HistoryItem(record: ShareRecord) {
+    val context = LocalContext.current
+    val clipboardManager = LocalClipboardManager.current
+    val haptic = LocalHapticFeedback.current
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp),
+            // combinedClickable must come before padding so the ripple
+            // covers the full row width, not just the padded content area.
+            .combinedClickable(
+                onClick = {
+                    // Tap → open the cleaned URL in the default browser/app.
+                    // Wrapped in try-catch: cleanedText might not be a URL
+                    // (e.g. plain text that had no tracking params).
+                    try {
+                        context.startActivity(
+                            Intent(Intent.ACTION_VIEW, Uri.parse(record.cleanedText))
+                        )
+                    } catch (_: Exception) { /* no handler or bad URI — ignore */ }
+                },
+                onLongClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    clipboardManager.setText(AnnotatedString(record.cleanedText))
+                },
+            )
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        // Cleaned URL — the "result" is the headline
+        // Cleaned URL — the result is the headline
         Text(
             text = record.cleanedText,
             style = MaterialTheme.typography.bodyMedium,
@@ -115,12 +147,23 @@ private fun HistoryItem(record: ShareRecord) {
     }
 }
 
+/**
+ * Returns a human-readable relative timestamp.
+ *
+ * - < 60 s  → "Just now"  (DateUtils would say "0 minutes ago")
+ * - < ~48 h → "2 minutes ago", "1 hour ago", etc.  (via DateUtils, locale-aware)
+ * - ≥ ~2 d  → "Yesterday", "3 days ago", etc.
+ * - ≥ ~1 wk → absolute date, e.g. "Apr 28"  (DateUtils switches automatically)
+ *
+ * Clock-skew guard: negative delta is treated as "Just now".
+ */
 private fun formatAge(timestamp: Long): String {
     val delta = System.currentTimeMillis() - timestamp
-    return when {
-        delta < 60_000L -> "Just now"
-        delta < 3_600_000L -> "${delta / 60_000}m ago"
-        delta < 86_400_000L -> "${delta / 3_600_000}h ago"
-        else -> "${delta / 86_400_000}d ago"
-    }
+    if (delta < 60_000L) return "Just now"
+    return DateUtils.getRelativeTimeSpanString(
+        timestamp,
+        System.currentTimeMillis(),
+        DateUtils.MINUTE_IN_MILLIS,
+        DateUtils.FORMAT_ABBREV_RELATIVE,
+    ).toString()
 }
