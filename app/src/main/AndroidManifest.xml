@@ -10,10 +10,28 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidShareSanitizer">
+
+        <!-- Launcher entry: history of cleaned shares -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--
+            Transparent trampoline: receives ACTION_SEND, strips tracking params,
+            saves to history, re-fires to the Android Sharesheet, then finishes.
+            The user never sees this activity — Theme.Transparent keeps the
+            calling app visible in the background.
+        -->
         <activity
             android:name=".ShareActivity"
             android:exported="true"
-            android:theme="@style/Theme.Material3.DayNight.NoActionBar"
+            android:theme="@style/Theme.Transparent"
             android:excludeFromRecents="true"
             android:noHistory="true">
             <intent-filter>
@@ -22,6 +40,7 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

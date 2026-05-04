@@ -77,3 +77,38 @@ bar would feel wrong and the spec explicitly says "no scaffold app bar."
 
 **Decision:** `Intent.EXTRA_EXCLUDE_COMPONENTS` is used on all API levels
 (minSdk = 33, well above the N requirement). No API-level guard needed.
+
+---
+
+## Revamp (post-T8)
+
+### Architecture change: transparent trampoline + history launcher
+
+**Change:** User confirmed the desired flow is:
+- Share → `ShareActivity` (invisible) → strip → save → Android Sharesheet
+- Launcher → `MainActivity` → history screen
+
+`SharePreviewScreen.kt` deleted; `ShareActivity` now has no Compose UI at all.
+
+**Decision:** `ShareActivity` uses `Theme.Transparent` (defined in `themes.xml`).
+This keeps the calling app visible behind the trampoline during the brief
+coroutine execution (Room write + `startActivity` + `finish`).
+
+### Storage: Room DB (not SharedPreferences)
+
+**Decision:** User explicitly ruled out SharedPreferences and requested Room.
+`ShareDatabase` is a singleton via `companion object` in the database class —
+no custom `Application` subclass needed to avoid manifest churn.
+
+### KSP version
+
+**Decision:** KSP `2.2.10-1.0.25` chosen to match Kotlin `2.2.10`.
+If the build rejects this, update `ksp` in `libs.versions.toml` to the
+exact KSP release that ships for this Kotlin version:
+https://github.com/google/ksp/releases
+
+### Launcher activity added
+
+**Decision:** Original spec forbade a launcher activity. User has explicitly
+requested one for the history screen. `MainActivity` is now the MAIN/LAUNCHER
+entry point. The spec constraint is superseded by user intent.
