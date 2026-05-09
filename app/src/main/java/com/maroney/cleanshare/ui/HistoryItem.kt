@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -197,7 +198,7 @@ private fun LayoutC(
         verticalAlignment = Alignment.Top,
     ) {
         Box(modifier = Modifier.size(32.dp), contentAlignment = Alignment.Center) {
-            if (faviconUrl != null) AsyncImage(model = faviconUrl, contentDescription = null)
+            if (faviconUrl != null) AsyncImage(model = faviconUrl, contentDescription = null, modifier = Modifier.fillMaxSize())
         }
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             metadata.title?.let {
@@ -231,7 +232,7 @@ private fun FallbackRow(
     }
     val onRetry: () -> Unit = {
         val url = item.record.cleanedText.split("\\s+".toRegex())
-            .firstOrNull { it.startsWith("http") } ?: item.record.cleanedText
+            .firstOrNull { it.startsWith("http://") || it.startsWith("https://") } ?: item.record.cleanedText
         onRetryFetch(item.record.id, url)
     }
     Row(
@@ -240,7 +241,7 @@ private fun FallbackRow(
         verticalAlignment = Alignment.Top,
     ) {
         Box(modifier = Modifier.size(32.dp), contentAlignment = Alignment.Center) {
-            if (faviconUrl != null) AsyncImage(model = faviconUrl, contentDescription = null)
+            if (faviconUrl != null) AsyncImage(model = faviconUrl, contentDescription = null, modifier = Modifier.fillMaxSize())
         }
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             UrlLines(item)
