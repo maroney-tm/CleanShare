@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.core)
     testImplementation(platform(libs.androidx.compose.bom))
     testImplementation(libs.junit)
+    @Suppress("AvoidDuplicateDependencies")
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.okhttp.mockwebserver)
 
@@ -68,6 +69,7 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+    @Suppress("AvoidDuplicateDependencies")
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.room.testing)
 
