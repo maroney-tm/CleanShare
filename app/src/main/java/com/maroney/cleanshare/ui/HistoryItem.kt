@@ -231,9 +231,7 @@ private fun FallbackRow(
             ?.let { "https://www.google.com/s2/favicons?sz=64&domain=$it" }
     }
     val onRetry: () -> Unit = {
-        val url = item.record.cleanedText.split("\\s+".toRegex())
-            .firstOrNull { it.startsWith("http://") || it.startsWith("https://") } ?: item.record.cleanedText
-        onRetryFetch(item.record.id, url)
+        onRetryFetch(item.record.id, item.record.cleanedText)
     }
     Row(
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),

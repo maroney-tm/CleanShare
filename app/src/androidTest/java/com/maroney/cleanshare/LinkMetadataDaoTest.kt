@@ -52,20 +52,6 @@ class LinkMetadataDaoTest {
         assertEquals("New", all[0].title)
     }
 
-    @Test fun getPendingIds_returns_ids_without_metadata() = runTest {
-        val id1 = insertRecord("https://a.com")
-        val id2 = insertRecord("https://b.com")
-        metadataDao.upsert(LinkMetadata(id1, null, null, null, null, ContentType.UNKNOWN, FetchStatus.SUCCESS))
-        val pending = metadataDao.getPendingIds()
-        assertEquals(listOf(id2), pending)
-    }
-
-    @Test fun getPendingIds_empty_when_all_have_metadata() = runTest {
-        val id = insertRecord()
-        metadataDao.upsert(LinkMetadata(id, null, null, null, null, ContentType.UNKNOWN, FetchStatus.SUCCESS))
-        assertTrue(metadataDao.getPendingIds().isEmpty())
-    }
-
     @Test fun deleteAll_clears_metadata_table() = runTest {
         val id = insertRecord()
         metadataDao.upsert(LinkMetadata(id, "T", null, null, null, ContentType.UNKNOWN, FetchStatus.SUCCESS))

@@ -20,7 +20,7 @@ class MetadataFetcher(private val okHttpClient: OkHttpClient) {
                 response.close()
                 return@withContext null
             }
-            val body = response.body.use { it.string() }
+            val body = response.body.use { it.byteStream().bufferedReader().readText().take(512_000) }
             parse(body, url)
         } catch (_: Exception) {
             null
