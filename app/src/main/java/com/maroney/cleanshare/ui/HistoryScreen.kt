@@ -1,5 +1,6 @@
 package com.maroney.cleanshare.ui
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.foundation.layout.Box
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,9 +49,9 @@ fun HistoryScreen(viewModel: HistoryViewModel) {
                     .padding(innerPadding),
                 contentPadding = PaddingValues(vertical = 8.dp),
             ) {
-                items(history, key = { it.record.id }) { record ->
+                items(history, key = { it.record.id }) { item ->
                     HistoryItem(
-                        item = record,
+                        item = item,
                         onRetryFetch = { id, url -> viewModel.retryFetch(id, url) },
                     )
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
