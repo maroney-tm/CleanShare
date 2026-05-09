@@ -35,8 +35,8 @@ class LinkMetadataDaoTest {
         shareDao.insert(ShareRecord(originalText = text, cleanedText = text))
 
     @Test fun upsert_stores_and_observeAll_emits_it() = runTest {
-        insertRecord()
-        val meta = LinkMetadata(1L, "Title", null, "Desc", null, ContentType.UNKNOWN, FetchStatus.SUCCESS)
+        val id = insertRecord()
+        val meta = LinkMetadata(id, "Title", null, "Desc", null, ContentType.UNKNOWN, FetchStatus.SUCCESS)
         metadataDao.upsert(meta)
         val all = metadataDao.observeAll().first()
         assertEquals(1, all.size)
@@ -67,8 +67,8 @@ class LinkMetadataDaoTest {
     }
 
     @Test fun deleteAll_clears_metadata_table() = runTest {
-        insertRecord()
-        metadataDao.upsert(LinkMetadata(1L, "T", null, null, null, ContentType.UNKNOWN, FetchStatus.SUCCESS))
+        val id = insertRecord()
+        metadataDao.upsert(LinkMetadata(id, "T", null, null, null, ContentType.UNKNOWN, FetchStatus.SUCCESS))
         metadataDao.deleteAll()
         assertTrue(metadataDao.observeAll().first().isEmpty())
     }
