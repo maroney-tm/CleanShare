@@ -112,3 +112,18 @@ https://github.com/google/ksp/releases
 **Decision:** Original spec forbade a launcher activity. User has explicitly
 requested one for the history screen. `MainActivity` is now the MAIN/LAUNCHER
 entry point. The spec constraint is superseded by user intent.
+
+## App icon update
+
+**Decision:** Replaced the default Android green adaptive icon with a custom
+bookmark/chain-link icon (`icon.png`, 1024×1024 source).
+
+- `drawable-nodpi/ic_launcher_foreground.png` — 432×432 canvas (108dp @ 4x)
+  with the design centred in the 264×264 safe zone (84px white padding per
+  side), satisfying the adaptive icon safe-zone specification.
+- `drawable/ic_launcher_background.xml` — solid white (#FFFFFF) to match the
+  icon's own background colour.
+- `mipmap-{mdpi,hdpi,xhdpi,xxhdpi,xxxhdpi}/ic_launcher{,_round}.png` — legacy
+  rasterised icons at 48/72/96/144/192 dp replacing the old webp assets.
+- `mipmap-anydpi/ic_launcher{,_round}.xml` — monochrome layer removed (the new
+  icon has no suitable monochrome representation).
