@@ -16,8 +16,11 @@ class MetadataFetcher(private val okHttpClient: OkHttpClient) {
         try {
             val request = Request.Builder().url(url).build()
             val response = okHttpClient.newCall(request).execute()
-            if (!response.isSuccessful) return@withContext null
-            val body = response.body?.string() ?: return@withContext null
+            if (!response.isSuccessful) {
+                response.close()
+                return@withContext null
+            }
+            val body = response.body.use { it.string() }
             parse(body, url)
         } catch (_: Exception) {
             null
