@@ -13,7 +13,7 @@ interface ShareDao {
     fun getAll(): Flow<List<ShareRecord>>
 
     @Insert
-    suspend fun insert(record: ShareRecord)
+    suspend fun insert(record: ShareRecord): Long
 
     @Query("DELETE FROM share_history")
     suspend fun deleteAll()
