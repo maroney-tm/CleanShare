@@ -22,8 +22,8 @@ class FetchMetadataWorker(
 
     override suspend fun doWork(): Result {
         val shareRecordId = inputData.getLong(KEY_SHARE_RECORD_ID, -1L)
-        val url = inputData.getString(KEY_URL) ?: return Result.success()
-        if (shareRecordId == -1L) return Result.success()
+        val url = inputData.getString(KEY_URL) ?: return Result.failure()
+        if (shareRecordId == -1L) return Result.failure()
 
         val fetched = fetcher.fetch(url)
         val metadata = if (fetched != null) {

@@ -7,6 +7,7 @@ import com.maroney.cleanshare.data.metadata.AppWorkerFactory
 import com.maroney.cleanshare.data.metadata.MetadataFetcher
 import com.maroney.cleanshare.data.metadata.MetadataWorkScheduler
 import com.maroney.cleanshare.data.ShareRepository
+import androidx.work.WorkManager
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
@@ -25,7 +26,7 @@ class CleanShareApplication : Application(), Configuration.Provider {
     val metadataFetcher by lazy { MetadataFetcher(okHttpClient) }
 
     val workScheduler by lazy {
-        MetadataWorkScheduler(androidx.work.WorkManager.getInstance(this))
+        MetadataWorkScheduler(WorkManager.getInstance(this))
     }
 
     val shareRepository by lazy {
