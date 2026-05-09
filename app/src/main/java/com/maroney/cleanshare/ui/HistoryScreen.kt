@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import com.maroney.cleanshare.data.ShareRecord
+import com.maroney.cleanshare.data.ShareRecordWithMetadata
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,7 +71,7 @@ fun HistoryScreen(viewModel: HistoryViewModel) {
                     .padding(innerPadding),
                 contentPadding = PaddingValues(vertical = 8.dp),
             ) {
-                items(history, key = { it.id }) { record ->
+                items(history, key = { it.record.id }) { record ->
                     HistoryItem(record)
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                 }
@@ -98,7 +98,8 @@ private fun EmptyState(modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun HistoryItem(record: ShareRecord) {
+private fun HistoryItem(item: ShareRecordWithMetadata) {
+    val record = item.record
     val context = LocalContext.current
     val clipboardManager = LocalClipboard.current
     val haptic = LocalHapticFeedback.current
