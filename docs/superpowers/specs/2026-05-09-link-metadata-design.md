@@ -190,7 +190,40 @@ Failed rows additionally:
 | `data/metadata/MetadataWorkScheduler.kt` | New — enqueue helpers |
 | `ui/HistoryViewModel.kt` | Consume `ShareRecordWithMetadata`, init pending fetch, expose retry |
 | `ui/HistoryScreen.kt` | Adaptive row composable, shimmer, overflow menu |
-| `app/build.gradle.kts` | Add WorkManager + Jsoup dependencies |
+| `app/build.gradle.kts` | Add WorkManager + Jsoup dependencies; set `versionName = "0.2.0"`, `versionCode = 2` |
+
+---
+
+## Existing Row Migration
+
+Existing `share_history` rows have no corresponding `link_metadata` row — by definition, they are "pending" under the new state machine. No special data migration is required in the Room schema migration itself (v1→v2 only creates the new table).
+
+**On first launch after the update:**
+
+1. `HistoryViewModel.init` calls `MetadataWorkScheduler.schedulePendingFetches(records)` with the current record list.
+2. `getPendingIds()` returns all `share_history` IDs not present in `link_metadata` — i.e., every existing row.
+3. A `FetchMetadataWorker` is enqueued for each, constrained to network availability, with `ExistingWorkPolicy.KEEP`.
+4. WorkManager queues and executes them in the background. No manual batching is needed — WorkManager handles concurrency naturally.
+
+**User experience:** All existing history rows show the shimmer state on first open. They resolve progressively as workers complete. If the app is closed mid-batch, workers resume on next launch via the same `HistoryViewModel.init` path (any still-pending rows re-enqueue with `KEEP`, which is a no-op for already-queued workers).
+
+---
+
+## App Versioning
+
+CleanShare uses semantic versioning (`MAJOR.MINOR.PATCH`) with Android's `versionCode` incrementing by 1 per release.
+
+| versionCode | versionName | Release |
+|-------------|-------------|---------|
+| 1 | 0.1.0 | Initial — URL cleaning + history |
+| 2 | 0.2.0 | This feature — link metadata, shimmer, adaptive rows |
+
+**Rules:**
+- **PATCH** (`0.x.Y`) — bug fixes only, no new features
+- **MINOR** (`0.X.0`) — new user-visible features, backwards-compatible
+- **MAJOR** (`X.0.0`) — breaking changes or production-ready milestone (1.0.0)
+
+**Implementation:** `versionName = "0.1.0"` and `versionCode = 1` are set retroactively in `build.gradle.kts` as part of this spec. The metadata feature ships as `versionName = "0.2.0"`, `versionCode = 2`.
 
 ---
 
