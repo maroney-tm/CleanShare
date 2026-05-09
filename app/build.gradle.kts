@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.jsoup)
     implementation(libs.androidx.compose.material.icons.core)
+    testImplementation(platform(libs.androidx.compose.bom))
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.okhttp.mockwebserver)

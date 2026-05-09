@@ -1,0 +1,17 @@
+#!/bin/sh
+set -e
+
+echo "▶ Unit tests..."
+./gradlew test
+
+echo "▶ Checking for connected device..."
+if ! adb devices 2>/dev/null | grep -q "device$"; then
+    echo "✗ No Android device/emulator connected."
+    echo "  Connect a device or start an emulator, then retry the commit."
+    exit 1
+fi
+
+echo "▶ Instrumented tests..."
+./gradlew connectedDebugAndroidTest
+
+echo "✓ All tests passed."
