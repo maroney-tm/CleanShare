@@ -1,0 +1,106 @@
+<h2>Detail Screen Layout</h2>
+<p class="subtitle">Tap a row → navigates here. Showing the proposed layout — click to select your preferred version.</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="A" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="font-family: sans-serif; font-size: 12px; background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; max-width: 360px; margin: 0 auto; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <!-- Top App Bar -->
+        <div style="background: #fff; padding: 12px 16px; display: flex; align-items: center; border-bottom: 1px solid #eee;">
+          <span style="font-size: 18px; margin-right: 12px; color: #555;">←</span>
+          <span style="font-weight: 600; font-size: 14px; flex: 1;">Link Details</span>
+          <span style="font-size: 16px; color: #555;">⋮</span>
+        </div>
+        <!-- Thumbnail + Title header -->
+        <div style="background: #fff; padding: 16px; display: flex; gap: 12px; border-bottom: 1px solid #eee;">
+          <div style="width: 64px; height: 64px; background: #ddd; border-radius: 8px; flex-shrink: 0; display:flex; align-items:center; justify-content:center; color:#999; font-size:10px;">IMG</div>
+          <div style="flex: 1; min-width:0;">
+            <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px; color: #111;">YouTube · How to build Android apps in 2025</div>
+            <div style="font-size: 11px; color: #888; margin-bottom: 4px;">2 hours ago</div>
+          </div>
+        </div>
+        <!-- URL Section -->
+        <div style="background: #fff; padding: 16px; border-bottom: 1px solid #eee;">
+          <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 8px;">URLs</div>
+          <div style="font-size: 10px; color: #888; margin-bottom: 2px;">CLEANED</div>
+          <div style="font-family: monospace; font-size: 11px; color: #1a73e8; background: #f0f7ff; padding: 6px 8px; border-radius: 4px; margin-bottom: 8px; word-break: break-all;">https://youtu.be/dQw4w9WgXcQ</div>
+          <div style="font-size: 10px; color: #888; margin-bottom: 2px;">ORIGINAL</div>
+          <div style="font-family: monospace; font-size: 11px; color: #999; background: #f5f5f5; padding: 6px 8px; border-radius: 4px; word-break: break-all;">https://youtu.be/dQw4w9WgXcQ?si=abc123&utm_source=share&utm_medium=ios_app&feature=youtu_be</div>
+        </div>
+        <!-- Description -->
+        <div style="background: #fff; padding: 16px; border-bottom: 1px solid #eee;">
+          <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 8px;">Description</div>
+          <div style="font-size: 12px; color: #333; line-height: 1.5;">A comprehensive guide to modern Android development using Jetpack Compose, covering architecture, navigation, and best practices for 2025.</div>
+        </div>
+        <!-- Notes -->
+        <div style="background: #fff; padding: 16px; border-bottom: 1px solid #eee;">
+          <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 8px;">Notes</div>
+          <div style="border: 1px solid #ddd; border-radius: 4px; padding: 8px; font-size: 12px; color: #aaa; min-height: 48px;">Add notes…</div>
+        </div>
+        <!-- CTAs -->
+        <div style="background: #fff; padding: 12px 16px; display: flex; gap: 8px;">
+          <div style="flex: 1; background: #1a73e8; color: #fff; border-radius: 20px; padding: 8px 0; text-align: center; font-size: 11px; font-weight: 600;">Open Link</div>
+          <div style="flex: 1; border: 1px solid #1a73e8; color: #1a73e8; border-radius: 20px; padding: 8px 0; text-align: center; font-size: 11px; font-weight: 600;">Copy Link</div>
+          <div style="flex: 1; border: 1px solid #e53935; color: #e53935; border-radius: 20px; padding: 8px 0; text-align: center; font-size: 11px; font-weight: 600;">Delete</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Scrollable Sections</h3>
+      <p>Full-page scroll. Header card (thumbnail + title), then labeled sections for URLs, description, notes, and row of CTA buttons at the bottom.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="B" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="font-family: sans-serif; font-size: 12px; background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; max-width: 360px; margin: 0 auto; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <!-- Top App Bar -->
+        <div style="background: #fff; padding: 12px 16px; display: flex; align-items: center; border-bottom: 1px solid #eee;">
+          <span style="font-size: 18px; margin-right: 12px; color: #555;">←</span>
+          <span style="font-weight: 600; font-size: 14px; flex: 1;">Link Details</span>
+        </div>
+        <!-- URL comparison side by side -->
+        <div style="background: #fff; padding: 16px; border-bottom: 1px solid #eee;">
+          <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 8px;">URL Comparison</div>
+          <div style="display: flex; gap: 8px;">
+            <div style="flex:1;">
+              <div style="font-size: 9px; color: #1a73e8; font-weight:700; margin-bottom:3px;">CLEANED ✓</div>
+              <div style="font-family: monospace; font-size: 10px; color: #1a73e8; background: #f0f7ff; padding: 5px 6px; border-radius: 4px; word-break: break-all; line-height:1.4;">https://youtu.be/dQw4w9WgXcQ</div>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size: 9px; color: #888; font-weight:700; margin-bottom:3px;">ORIGINAL</div>
+              <div style="font-family: monospace; font-size: 10px; color: #999; background: #f5f5f5; padding: 5px 6px; border-radius: 4px; word-break: break-all; line-height:1.4;">https://youtu.be/dQw4w9WgXcQ?si=abc123&utm_source=share...</div>
+            </div>
+          </div>
+        </div>
+        <!-- Title + description -->
+        <div style="background: #fff; padding: 16px; border-bottom: 1px solid #eee; display:flex; gap:10px;">
+          <div style="width: 48px; height: 48px; background: #ddd; border-radius: 6px; flex-shrink: 0; display:flex; align-items:center; justify-content:center; color:#999; font-size:9px;">IMG</div>
+          <div>
+            <div style="font-weight: 600; font-size: 12px; margin-bottom: 4px;">How to build Android apps in 2025</div>
+            <div style="font-size: 11px; color: #555; line-height:1.4;">A comprehensive guide to modern Android development using Jetpack Compose...</div>
+          </div>
+        </div>
+        <!-- Notes -->
+        <div style="background: #fff; padding: 16px; border-bottom: 1px solid #eee;">
+          <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 8px;">Notes</div>
+          <div style="border: 1px solid #ddd; border-radius: 4px; padding: 8px; font-size: 12px; color: #aaa; min-height: 48px;">Add notes…</div>
+        </div>
+        <!-- FAB + action chips -->
+        <div style="background: #fff; padding: 12px 16px;">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <div style="background: #1a73e8; color: #fff; border-radius: 16px; padding: 6px 12px; font-size: 11px; font-weight: 600;">↗ Open</div>
+            <div style="border: 1px solid #ccc; border-radius: 16px; padding: 6px 12px; font-size: 11px; color: #333;">⎘ Copy</div>
+            <div style="border: 1px solid #ccc; border-radius: 16px; padding: 6px 12px; font-size: 11px; color: #e53935;">🗑 Delete</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Side-by-side URLs</h3>
+      <p>Cleaned and original URLs presented side-by-side for easy comparison. Compact chips for CTAs instead of full-width buttons.</p>
+    </div>
+  </div>
+
+</div>

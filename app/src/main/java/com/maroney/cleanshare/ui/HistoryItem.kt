@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -38,6 +39,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -84,6 +87,13 @@ fun HistoryItem(
             context.startActivity(Intent(Intent.ACTION_VIEW, cleanedUrl.toUri()))
         } catch (_: Exception) { }
     }
+    val onShare: () -> Unit = {
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, cleanedUrl)
+        }
+        context.startActivity(Intent.createChooser(intent, null))
+    }
     val onCopy: () -> Unit = {
         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
         scope.launch {
@@ -100,14 +110,15 @@ fun HistoryItem(
             item.metadata == null -> ShimmerRow()
             item.metadata.fetchStatus == FetchStatus.FAILED -> FallbackRow(
                 item,
+                onShare,
                 onCopy,
                 onOpen,
                 onDelete,
                 onRetryFetch
             )
 
-            item.metadata.thumbnailUrl != null -> LayoutA(item, onCopy, onOpen, onDelete)
-            else -> LayoutC(item, onCopy, onOpen, onDelete)
+            item.metadata.thumbnailUrl != null -> LayoutA(item, onShare, onCopy, onOpen, onDelete)
+            else -> LayoutC(item, onShare, onCopy, onOpen, onDelete)
         }
     }
 }
@@ -167,6 +178,7 @@ private fun ShimmerRow() {
 @Composable
 private fun LayoutA(
     item: ShareRecordWithMetadata,
+    onShare: () -> Unit,
     onCopy: () -> Unit,
     onOpen: () -> Unit,
     onDelete: () -> Unit,
@@ -209,6 +221,12 @@ private fun LayoutA(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+        IconButton(
+            onClick = onShare,
+            modifier = Modifier.semantics { contentDescription = "Share" },
+        ) {
+            Icon(Icons.Outlined.Share, contentDescription = null)
+        }
         OverflowMenu(onCopy = onCopy, onOpen = onOpen, onRetry = null, onDelete = onDelete)
     }
 }
@@ -218,6 +236,7 @@ private fun LayoutA(
 @Composable
 private fun LayoutC(
     item: ShareRecordWithMetadata,
+    onShare: () -> Unit,
     onCopy: () -> Unit,
     onOpen: () -> Unit,
     onDelete: () -> Unit,
@@ -266,6 +285,12 @@ private fun LayoutC(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+        IconButton(
+            onClick = onShare,
+            modifier = Modifier.semantics { contentDescription = "Share" },
+        ) {
+            Icon(Icons.Outlined.Share, contentDescription = null)
+        }
         OverflowMenu(onCopy = onCopy, onOpen = onOpen, onRetry = null, onDelete = onDelete)
     }
 }
@@ -275,6 +300,7 @@ private fun LayoutC(
 @Composable
 private fun FallbackRow(
     item: ShareRecordWithMetadata,
+    onShare: () -> Unit,
     onCopy: () -> Unit,
     onOpen: () -> Unit,
     onDelete: () -> Unit,
@@ -309,6 +335,12 @@ private fun FallbackRow(
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+        }
+        IconButton(
+            onClick = onShare,
+            modifier = Modifier.semantics { contentDescription = "Share" },
+        ) {
+            Icon(Icons.Outlined.Share, contentDescription = null)
         }
         OverflowMenu(onCopy = onCopy, onOpen = onOpen, onRetry = onRetry, onDelete = onDelete)
     }

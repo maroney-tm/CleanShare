@@ -1,0 +1,65 @@
+<h2>History Row Layout</h2>
+<p class="subtitle">Where should the thumbnail appear, and how should the row be structured?</p>
+
+<div class="cards">
+
+  <!-- Option A: Left thumbnail, text right -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="card-body">
+      <h3>Leading thumbnail</h3>
+      <p>Square thumbnail on the left, title + description stacked to the right. Link details below in muted text. Familiar (like a podcast or news app).</p>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-body" style="padding:12px;display:flex;gap:12px;align-items:flex-start">
+          <div style="width:64px;height:64px;background:#7c3aed22;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px">🖼</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:600;font-size:14px;color:#1e1e2e;margin-bottom:2px">Title of the article or video</div>
+            <div style="font-size:12px;color:#6c6c8a;margin-bottom:6px">Short description or snippet of the content here…</div>
+            <div style="font-size:11px;color:#a0a0b8;font-family:monospace">example.com/clean-url</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option B: Top banner image, text below -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="card-body">
+      <h3>Top banner (article card)</h3>
+      <p>Wide 16:9 thumbnail across the top of the card, title + description below it. Feels like a news app. Takes more vertical space.</p>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-body" style="padding:0;overflow:hidden;border-radius:8px">
+          <div style="width:100%;height:80px;background:#7c3aed22;display:flex;align-items:center;justify-content:center;font-size:28px">🖼</div>
+          <div style="padding:10px 12px">
+            <div style="font-weight:600;font-size:14px;color:#1e1e2e;margin-bottom:2px">Title of the article or video</div>
+            <div style="font-size:12px;color:#6c6c8a;margin-bottom:6px">Short description or snippet of the content here…</div>
+            <div style="font-size:11px;color:#a0a0b8;font-family:monospace">example.com/clean-url</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option C: No thumbnail in list, tap to expand -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="card-body">
+      <h3>Favicon + title only (compact)</h3>
+      <p>Keep the current compact row height. Favicon stays, add title + description as the primary text. Thumbnail only shows on tap/expand. Dense history.</p>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-body" style="padding:12px;display:flex;gap:10px;align-items:center">
+          <div style="width:32px;height:32px;background:#7c3aed22;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px">🔖</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:600;font-size:14px;color:#1e1e2e;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Title of the article or video</div>
+            <div style="font-size:12px;color:#6c6c8a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Short description or snippet…</div>
+            <div style="font-size:11px;color:#a0a0b8;font-family:monospace;margin-top:4px">example.com/clean-url</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px">Click to select — or describe what you want in the terminal.</p>

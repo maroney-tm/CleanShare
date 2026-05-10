@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.jsoup)
     implementation(libs.androidx.compose.material.icons.core)
+    implementation(libs.androidx.compose.material.icons.extended)
     testImplementation(platform(libs.androidx.compose.bom))
     testImplementation(libs.junit)
     @Suppress("AvoidDuplicateDependencies")
