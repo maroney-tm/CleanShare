@@ -11,12 +11,26 @@ if ! adb devices 2>/dev/null | grep -q "device$"; then
     exit 1
 fi
 
-# connectedDebugAndroidTest uninstalls both the test and debug apk. If this becomes problematic
-# switch to just verifying the AndroidTests compile.
-echo "▶ Instrumented tests..."
-./gradlew connectedDebugAndroidTest
+TEST_PKG="com.maroney.cleanshare.test"
 
-echo "▶ Reinstalling app..."
-./gradlew installDebug
+echo "▶ Building APKs..."
+./gradlew assembleDebugAndroidTest
+
+echo "▶ Installing APKs..."
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+adb install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+
+# Always remove the test APK when the script exits, pass or fail.
+# shellcheck disable=SC2064 # It's fine here as it's a constant.
+trap "adb uninstall $TEST_PKG 2>/dev/null || true" EXIT
+
+echo "▶ Running instrumented tests..."
+instrument_output=$(adb shell am instrument -w \
+    "$TEST_PKG/androidx.test.runner.AndroidJUnitRunner" 2>&1)
+echo "$instrument_output"
+if echo "$instrument_output" | grep -q "FAILURES!!!"; then
+    echo "✗ Instrumented tests failed."
+    exit 1
+fi
 
 echo "✓ All tests passed."
