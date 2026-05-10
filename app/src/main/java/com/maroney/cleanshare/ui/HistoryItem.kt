@@ -187,7 +187,7 @@ private fun LayoutC(item: ShareRecordWithMetadata) {
     ) {
         Box(
             modifier = Modifier
-                .size(IconSize.favicon)
+                .size(IconSize.thumbnail)
                 .clip(RoundedCornerShape(Radius.md))
                 .border(Dp.Hairline, LocalColors.current.layout.divider, RoundedCornerShape(Radius.md)),
             contentAlignment = Alignment.Center,
