@@ -45,8 +45,6 @@ fun HistoryScreen(
                     HistoryItem(
                         item = item,
                         onNavigate = { onNavigateToDetail(item.record.id) },
-                        onRetryFetch = { id, url -> viewModel.retryFetch(id, url) },
-                        onDelete = { viewModel.deleteItem(item.record.id) },
                     )
                     if (item != history.last()) {
                         HorizontalDivider(modifier = Modifier.padding(horizontal = Spacing.md))

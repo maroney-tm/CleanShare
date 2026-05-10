@@ -19,7 +19,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -112,7 +112,7 @@ fun DetailScreen(
                 },
                 actions = {
                     IconButton(onClick = onShare) {
-                        Icon(Icons.Outlined.Share, contentDescription = "Share")
+                        Icon(Icons.AutoMirrored.Outlined.Send, contentDescription = "Share")
                     }
                 },
             )

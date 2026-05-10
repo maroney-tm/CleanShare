@@ -1,7 +1,5 @@
 package com.maroney.cleanshare.ui
 
-import android.content.ClipData
-import android.content.Intent
 import android.text.format.DateUtils
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -23,33 +21,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalClipboard
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -62,7 +46,6 @@ import com.maroney.cleanshare.data.ShareRecordWithMetadata
 import com.maroney.cleanshare.ui.fakedata.HistoryItemPreviewProvider
 import com.maroney.cleanshare.ui.theme.CleanShareTheme
 import com.maroney.cleanshare.ui.theme.LocalColors
-import kotlinx.coroutines.launch
 
 // ── Public entry point ──────────────────────────────────────────────────────
 
@@ -71,54 +54,18 @@ import kotlinx.coroutines.launch
 fun HistoryItem(
     item: ShareRecordWithMetadata,
     onNavigate: () -> Unit,
-    onRetryFetch: (shareRecordId: Long, url: String) -> Unit,
-    onDelete: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-    val clipboard = LocalClipboard.current
-    val haptic = LocalHapticFeedback.current
-    val scope = rememberCoroutineScope()
-
-    val cleanedUrl = item.record.cleanedText
-
-    val onOpen: () -> Unit = {
-        try {
-            context.startActivity(Intent(Intent.ACTION_VIEW, cleanedUrl.toUri()))
-        } catch (_: Exception) { }
-    }
-    val onShare: () -> Unit = {
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, cleanedUrl)
-        }
-        context.startActivity(Intent.createChooser(intent, null))
-    }
-    val onCopy: () -> Unit = {
-        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-        scope.launch {
-            clipboard.setClipEntry(ClipData.newPlainText("link", cleanedUrl).toClipEntry())
-        }
-    }
-
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .combinedClickable(onClick = onNavigate),   // ← tap navigates; no onLongClick
+            .combinedClickable(onClick = onNavigate),
     ) {
         when {
             item.metadata == null -> ShimmerRow()
-            item.metadata.fetchStatus == FetchStatus.FAILED -> FallbackRow(
-                item,
-                onShare,
-                onCopy,
-                onOpen,
-                onDelete,
-                onRetryFetch
-            )
-
-            item.metadata.thumbnailUrl != null -> LayoutA(item, onShare, onCopy, onOpen, onDelete)
-            else -> LayoutC(item, onShare, onCopy, onOpen, onDelete)
+            item.metadata.fetchStatus == FetchStatus.FAILED -> FallbackRow(item)
+            item.metadata.thumbnailUrl != null -> LayoutA(item)
+            else -> LayoutC(item)
         }
     }
 }
@@ -176,13 +123,7 @@ private fun ShimmerRow() {
 // ── Layout A: leading 64×64 thumbnail ────────────────────────────────────────
 
 @Composable
-private fun LayoutA(
-    item: ShareRecordWithMetadata,
-    onShare: () -> Unit,
-    onCopy: () -> Unit,
-    onOpen: () -> Unit,
-    onDelete: () -> Unit,
-) {
+private fun LayoutA(item: ShareRecordWithMetadata) {
     val metadata = item.metadata!!
     Row(
         modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.md),
@@ -221,26 +162,18 @@ private fun LayoutA(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        IconButton(
-            onClick = onShare,
-            modifier = Modifier.semantics { contentDescription = "Share" },
-        ) {
-            Icon(Icons.Outlined.Share, contentDescription = null)
-        }
-        OverflowMenu(onCopy = onCopy, onOpen = onOpen, onRetry = null, onDelete = onDelete)
+        Icon(
+            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
 // ── Layout C: 32×32 favicon, no thumbnail ────────────────────────────────────
 
 @Composable
-private fun LayoutC(
-    item: ShareRecordWithMetadata,
-    onShare: () -> Unit,
-    onCopy: () -> Unit,
-    onOpen: () -> Unit,
-    onDelete: () -> Unit,
-) {
+private fun LayoutC(item: ShareRecordWithMetadata) {
     val metadata = item.metadata!!
     val faviconUrl = remember(item.record.cleanedText) {
         runCatching { item.record.cleanedText.toUri().host }
@@ -285,34 +218,22 @@ private fun LayoutC(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        IconButton(
-            onClick = onShare,
-            modifier = Modifier.semantics { contentDescription = "Share" },
-        ) {
-            Icon(Icons.Outlined.Share, contentDescription = null)
-        }
-        OverflowMenu(onCopy = onCopy, onOpen = onOpen, onRetry = null, onDelete = onDelete)
+        Icon(
+            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
 // ── Fallback: fetch failed ────────────────────────────────────────────────────
 
 @Composable
-private fun FallbackRow(
-    item: ShareRecordWithMetadata,
-    onShare: () -> Unit,
-    onCopy: () -> Unit,
-    onOpen: () -> Unit,
-    onDelete: () -> Unit,
-    onRetryFetch: (shareRecordId: Long, url: String) -> Unit,
-) {
+private fun FallbackRow(item: ShareRecordWithMetadata) {
     val faviconUrl = remember(item.record.cleanedText) {
         runCatching { item.record.cleanedText.toUri().host }
             .getOrNull()?.takeIf { it.isNotBlank() }
             ?.let { "https://www.google.com/s2/favicons?sz=64&domain=$it" }
-    }
-    val onRetry: () -> Unit = {
-        onRetryFetch(item.record.id, item.record.cleanedText)
     }
     Row(
         modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.md),
@@ -336,13 +257,11 @@ private fun FallbackRow(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        IconButton(
-            onClick = onShare,
-            modifier = Modifier.semantics { contentDescription = "Share" },
-        ) {
-            Icon(Icons.Outlined.Share, contentDescription = null)
-        }
-        OverflowMenu(onCopy = onCopy, onOpen = onOpen, onRetry = onRetry, onDelete = onDelete)
+        Icon(
+            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
@@ -358,41 +277,6 @@ private fun UrlLines(item: ShareRecordWithMetadata) {
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
     )
-}
-
-@Composable
-private fun OverflowMenu(
-    onCopy: () -> Unit,
-    onOpen: () -> Unit,
-    onDelete: () -> Unit,
-    onRetry: (() -> Unit)?,
-) {
-    var expanded by remember { mutableStateOf(false) }
-    Box {
-        IconButton(onClick = { expanded = true }) {
-            Icon(Icons.Default.MoreVert, contentDescription = "More options")
-        }
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            if (onRetry != null) {
-                DropdownMenuItem(
-                    text = { Text("Retry metadata fetch") },
-                    onClick = { onRetry(); expanded = false },
-                )
-            }
-            DropdownMenuItem(
-                text = { Text("Copy link") },
-                onClick = { onCopy(); expanded = false },
-            )
-            DropdownMenuItem(
-                text = { Text("Open link") },
-                onClick = { onOpen(); expanded = false },
-            )
-            DropdownMenuItem(
-                text = { Text("Delete") },
-                onClick = { onDelete(); expanded = false },
-            )
-        }
-    }
 }
 
 internal fun formatAge(timestamp: Long): String {
@@ -418,8 +302,6 @@ private fun HistoryItemPreview(
         HistoryItem(
             item = item,
             onNavigate = {},
-            onRetryFetch = { _, _ -> },
-            onDelete = {},
             modifier = Modifier.fillMaxWidth(),
         )
     }
