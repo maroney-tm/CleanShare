@@ -65,7 +65,7 @@ fun DetailScreen(
     id: Long,
     onNavigateBack: () -> Unit,
 ) {
-    val vm: DetailViewModel = viewModel(factory = DetailViewModel.factory(id))
+    val vm: DetailViewModel = viewModel(key = id.toString(), factory = DetailViewModel.factory(id))
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     val notes by vm.notes.collectAsStateWithLifecycle()
     val context = LocalContext.current
