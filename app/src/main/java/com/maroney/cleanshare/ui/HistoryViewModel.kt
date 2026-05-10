@@ -37,6 +37,10 @@ class HistoryViewModel(
         }
     }
 
+    fun deleteItem(id: Long) {
+        viewModelScope.launch { repository.deleteById(id) }
+    }
+
     fun clearHistory() {
         viewModelScope.launch { repository.deleteAll() }
     }

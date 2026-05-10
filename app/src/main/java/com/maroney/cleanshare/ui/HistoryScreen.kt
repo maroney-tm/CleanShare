@@ -11,7 +11,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,16 +26,7 @@ fun HistoryScreen(viewModel: HistoryViewModel) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Clean Share") },
-                actions = {
-                    if (history.isNotEmpty()) {
-                        TextButton(onClick = { viewModel.clearHistory() }) {
-                            Text("Clear all")
-                        }
-                    }
-                },
-            )
+            TopAppBar(title = { Text("Clean Share") })
         },
     ) { innerPadding ->
         if (history.isEmpty()) {
@@ -52,6 +42,7 @@ fun HistoryScreen(viewModel: HistoryViewModel) {
                     HistoryItem(
                         item = item,
                         onRetryFetch = { id, url -> viewModel.retryFetch(id, url) },
+                        onDelete = { viewModel.deleteItem(item.record.id) },
                     )
                     HorizontalDivider(modifier = Modifier.padding(horizontal = Spacing.md))
                 }

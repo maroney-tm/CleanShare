@@ -24,6 +24,11 @@ class ShareRepository(
         if (url != null) workScheduler.scheduleFetch(id, url)
     }
 
+    suspend fun deleteById(id: Long) {
+        metadataDao.deleteByShareRecordId(id)
+        shareDao.deleteById(id)
+    }
+
     suspend fun deleteAll() {
         shareDao.deleteAll()
         metadataDao.deleteAll()

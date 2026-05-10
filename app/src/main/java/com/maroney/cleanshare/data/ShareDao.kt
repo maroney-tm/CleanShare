@@ -15,6 +15,9 @@ interface ShareDao {
     @Insert
     suspend fun insert(record: ShareRecord): Long
 
+    @Query("DELETE FROM share_history WHERE id = :id")
+    suspend fun deleteById(id: Long)
+
     @Query("DELETE FROM share_history")
     suspend fun deleteAll()
 }

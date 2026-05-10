@@ -68,6 +68,7 @@ import kotlinx.coroutines.launch
 fun HistoryItem(
     item: ShareRecordWithMetadata,
     onRetryFetch: (shareRecordId: Long, url: String) -> Unit,
+    onDelete: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -101,11 +102,12 @@ fun HistoryItem(
                 item,
                 onCopy,
                 onOpen,
+                onDelete,
                 onRetryFetch
             )
 
-            item.metadata.thumbnailUrl != null -> LayoutA(item, onCopy, onOpen)
-            else -> LayoutC(item, onCopy, onOpen)
+            item.metadata.thumbnailUrl != null -> LayoutA(item, onCopy, onOpen, onDelete)
+            else -> LayoutC(item, onCopy, onOpen, onDelete)
         }
     }
 }
@@ -167,6 +169,7 @@ private fun LayoutA(
     item: ShareRecordWithMetadata,
     onCopy: () -> Unit,
     onOpen: () -> Unit,
+    onDelete: () -> Unit,
 ) {
     val metadata = item.metadata!!
     Row(
@@ -206,7 +209,7 @@ private fun LayoutA(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        OverflowMenu(onCopy = onCopy, onOpen = onOpen, onRetry = null)
+        OverflowMenu(onCopy = onCopy, onOpen = onOpen, onRetry = null, onDelete = onDelete)
     }
 }
 
@@ -217,6 +220,7 @@ private fun LayoutC(
     item: ShareRecordWithMetadata,
     onCopy: () -> Unit,
     onOpen: () -> Unit,
+    onDelete: () -> Unit,
 ) {
     val metadata = item.metadata!!
     val faviconUrl = remember(item.record.cleanedText) {
@@ -262,7 +266,7 @@ private fun LayoutC(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        OverflowMenu(onCopy = onCopy, onOpen = onOpen, onRetry = null)
+        OverflowMenu(onCopy = onCopy, onOpen = onOpen, onRetry = null, onDelete = onDelete)
     }
 }
 
@@ -273,6 +277,7 @@ private fun FallbackRow(
     item: ShareRecordWithMetadata,
     onCopy: () -> Unit,
     onOpen: () -> Unit,
+    onDelete: () -> Unit,
     onRetryFetch: (shareRecordId: Long, url: String) -> Unit,
 ) {
     val faviconUrl = remember(item.record.cleanedText) {
@@ -305,7 +310,7 @@ private fun FallbackRow(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        OverflowMenu(onCopy = onCopy, onOpen = onOpen, onRetry = onRetry)
+        OverflowMenu(onCopy = onCopy, onOpen = onOpen, onRetry = onRetry, onDelete = onDelete)
     }
 }
 
@@ -327,6 +332,7 @@ private fun UrlLines(item: ShareRecordWithMetadata) {
 private fun OverflowMenu(
     onCopy: () -> Unit,
     onOpen: () -> Unit,
+    onDelete: () -> Unit,
     onRetry: (() -> Unit)?,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -348,6 +354,10 @@ private fun OverflowMenu(
             DropdownMenuItem(
                 text = { Text("Open link") },
                 onClick = { onOpen(); expanded = false },
+            )
+            DropdownMenuItem(
+                text = { Text("Delete") },
+                onClick = { onDelete(); expanded = false },
             )
         }
     }
@@ -376,6 +386,7 @@ private fun HistoryItemPreview(
         HistoryItem(
             item = item,
             onRetryFetch = { _, _ -> },
+            onDelete = {},
             modifier = Modifier.fillMaxWidth(),
         )
     }
