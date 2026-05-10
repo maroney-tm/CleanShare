@@ -1,11 +1,13 @@
 package com.maroney.cleanshare.ui
 
+import androidx.compose.foundation.LocalOverscrollFactory
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberOverscrollEffect
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -44,7 +46,9 @@ fun HistoryScreen(viewModel: HistoryViewModel) {
                         onRetryFetch = { id, url -> viewModel.retryFetch(id, url) },
                         onDelete = { viewModel.deleteItem(item.record.id) },
                     )
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = Spacing.md))
+                    if (item != history.last()) {
+                        HorizontalDivider(modifier = Modifier.padding(horizontal = Spacing.md))
+                    }
                 }
             }
         }
