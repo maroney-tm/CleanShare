@@ -51,9 +51,13 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import coil3.compose.AsyncImage
 import com.maroney.cleanshare.data.FetchStatus
 import com.maroney.cleanshare.data.ShareRecordWithMetadata
+import com.maroney.cleanshare.ui.fakedata.HistoryItemPreviewProvider
+import com.maroney.cleanshare.ui.theme.CleanShareTheme
 import kotlinx.coroutines.launch
 
 // ── Public entry point ──────────────────────────────────────────────────────
@@ -316,4 +320,16 @@ internal fun formatAge(timestamp: Long): String {
         DateUtils.MINUTE_IN_MILLIS,
         DateUtils.FORMAT_ABBREV_RELATIVE,
     ).toString()
+}
+
+// ── Previews ─────────────────────────────────────────────────────────────────
+
+@Preview(showBackground = true, name = "HistoryItem", widthDp = 380)
+@Composable
+private fun HistoryItemPreview(
+    @PreviewParameter(HistoryItemPreviewProvider::class) item: ShareRecordWithMetadata,
+) {
+    CleanShareTheme {
+        HistoryItem(item = item, onRetryFetch = { _, _ -> })
+    }
 }
