@@ -11,12 +11,12 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -58,6 +58,7 @@ import com.maroney.cleanshare.data.FetchStatus
 import com.maroney.cleanshare.data.ShareRecordWithMetadata
 import com.maroney.cleanshare.ui.fakedata.HistoryItemPreviewProvider
 import com.maroney.cleanshare.ui.theme.CleanShareTheme
+import com.maroney.cleanshare.ui.theme.LocalColors
 import kotlinx.coroutines.launch
 
 // ── Public entry point ──────────────────────────────────────────────────────
@@ -171,15 +172,16 @@ private fun LayoutA(
     Row(
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.Top,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         AsyncImage(
             model = metadata.thumbnailUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(64.dp)
-                .clip(RoundedCornerShape(8.dp)),
+                .size(IconSize.thumbnail)
+                .clip(RoundedCornerShape(8.dp))
+                .border(1.dp, LocalColors.current.layout.divider, RoundedCornerShape(8.dp)),
         )
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             metadata.title?.let {
@@ -225,14 +227,16 @@ private fun LayoutC(
     Row(
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
-        verticalAlignment = Alignment.Top,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(modifier = Modifier.size(32.dp), contentAlignment = Alignment.Center) {
-            if (faviconUrl != null) AsyncImage(
-                model = faviconUrl,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize()
-            )
+        Box(
+            modifier = Modifier
+                .size(IconSize.favicon)
+                .clip(RoundedCornerShape(6.dp))
+                .border(1.dp, LocalColors.current.layout.divider, RoundedCornerShape(6.dp)),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (faviconUrl != null) AsyncImage(model = faviconUrl, contentDescription = null)
         }
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             metadata.title?.let {
@@ -282,14 +286,16 @@ private fun FallbackRow(
     Row(
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
-        verticalAlignment = Alignment.Top,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(modifier = Modifier.size(32.dp), contentAlignment = Alignment.Center) {
-            if (faviconUrl != null) AsyncImage(
-                model = faviconUrl,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize()
-            )
+        Box(
+            modifier = Modifier
+                .size(IconSize.favicon)
+                .clip(RoundedCornerShape(6.dp))
+                .border(1.dp, LocalColors.current.layout.divider, RoundedCornerShape(6.dp)),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (faviconUrl != null) AsyncImage(model = faviconUrl, contentDescription = null)
         }
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             UrlLines(item)
