@@ -1,13 +1,11 @@
 package com.maroney.cleanshare.ui
 
-import androidx.compose.foundation.LocalOverscrollFactory
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberOverscrollEffect
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -23,7 +21,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HistoryScreen(viewModel: HistoryViewModel) {
+fun HistoryScreen(
+    viewModel: HistoryViewModel,
+    onNavigateToDetail: (id: Long) -> Unit,
+) {
     val history by viewModel.history.collectAsStateWithLifecycle()
 
     Scaffold(
@@ -43,6 +44,7 @@ fun HistoryScreen(viewModel: HistoryViewModel) {
                 items(history, key = { it.record.id }) { item ->
                     HistoryItem(
                         item = item,
+                        onNavigate = { onNavigateToDetail(item.record.id) },
                         onRetryFetch = { id, url -> viewModel.retryFetch(id, url) },
                         onDelete = { viewModel.deleteItem(item.record.id) },
                     )

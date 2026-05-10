@@ -67,6 +67,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HistoryItem(
     item: ShareRecordWithMetadata,
+    onNavigate: () -> Unit,
     onRetryFetch: (shareRecordId: Long, url: String) -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
@@ -81,8 +82,7 @@ fun HistoryItem(
     val onOpen: () -> Unit = {
         try {
             context.startActivity(Intent(Intent.ACTION_VIEW, cleanedUrl.toUri()))
-        } catch (_: Exception) {
-        }
+        } catch (_: Exception) { }
     }
     val onCopy: () -> Unit = {
         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -94,7 +94,7 @@ fun HistoryItem(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .combinedClickable(onClick = onOpen, onLongClick = onCopy),
+            .combinedClickable(onClick = onNavigate),   // ← tap navigates; no onLongClick
     ) {
         when {
             item.metadata == null -> ShimmerRow()
@@ -385,6 +385,7 @@ private fun HistoryItemPreview(
     CleanShareTheme {
         HistoryItem(
             item = item,
+            onNavigate = {},
             onRetryFetch = { _, _ -> },
             onDelete = {},
             modifier = Modifier.fillMaxWidth(),
