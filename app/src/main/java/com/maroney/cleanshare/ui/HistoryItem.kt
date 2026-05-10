@@ -49,10 +49,10 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import coil3.compose.AsyncImage
 import com.maroney.cleanshare.data.FetchStatus
 import com.maroney.cleanshare.data.ShareRecordWithMetadata
@@ -67,6 +67,7 @@ import kotlinx.coroutines.launch
 fun HistoryItem(
     item: ShareRecordWithMetadata,
     onRetryFetch: (shareRecordId: Long, url: String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     val clipboard = LocalClipboard.current
@@ -76,8 +77,10 @@ fun HistoryItem(
     val cleanedUrl = item.record.cleanedText
 
     val onOpen: () -> Unit = {
-        try { context.startActivity(Intent(Intent.ACTION_VIEW, cleanedUrl.toUri())) }
-        catch (_: Exception) {}
+        try {
+            context.startActivity(Intent(Intent.ACTION_VIEW, cleanedUrl.toUri()))
+        } catch (_: Exception) {
+        }
     }
     val onCopy: () -> Unit = {
         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -87,13 +90,19 @@ fun HistoryItem(
     }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .combinedClickable(onClick = onOpen, onLongClick = onCopy),
     ) {
         when {
             item.metadata == null -> ShimmerRow()
-            item.metadata.fetchStatus == FetchStatus.FAILED -> FallbackRow(item, onCopy, onOpen, onRetryFetch)
+            item.metadata.fetchStatus == FetchStatus.FAILED -> FallbackRow(
+                item,
+                onCopy,
+                onOpen,
+                onRetryFetch
+            )
+
             item.metadata.thumbnailUrl != null -> LayoutA(item, onCopy, onOpen)
             else -> LayoutC(item, onCopy, onOpen)
         }
@@ -139,10 +148,13 @@ private fun ShimmerRow() {
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {
+            // @formatter:off
             Box(Modifier.fillMaxWidth(0.80f).height(14.dp).clip(RoundedCornerShape(4.dp)).background(shimmerBrush))
             Box(Modifier.fillMaxWidth(1.00f).height(11.dp).clip(RoundedCornerShape(4.dp)).background(shimmerBrush))
             Box(Modifier.fillMaxWidth(0.65f).height(11.dp).clip(RoundedCornerShape(4.dp)).background(shimmerBrush))
             Box(Modifier.fillMaxWidth(0.55f).height(10.dp).clip(RoundedCornerShape(4.dp)).background(shimmerBrush))
+            Box(Modifier.fillMaxWidth(0.20f).height(10.dp).clip(RoundedCornerShape(4.dp)).background(shimmerBrush))
+            // @formatter:on
         }
     }
 }
@@ -165,18 +177,32 @@ private fun LayoutA(
             model = metadata.thumbnailUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            modifier = Modifier.size(64.dp).clip(RoundedCornerShape(8.dp)),
+            modifier = Modifier
+                .size(64.dp)
+                .clip(RoundedCornerShape(8.dp)),
         )
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             metadata.title?.let {
-                Text(it, style = MaterialTheme.typography.titleSmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                Text(
+                    it,
+                    style = MaterialTheme.typography.titleSmall,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
             metadata.description?.let {
-                Text(it, style = MaterialTheme.typography.bodySmall,
+                Text(
+                    it, style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    maxLines = 2, overflow = TextOverflow.Ellipsis
+                )
             }
             UrlLines(item)
+            Text(
+                text = formatAge(item.record.sharedAt),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
         OverflowMenu(onCopy = onCopy, onOpen = onOpen, onRetry = null)
     }
@@ -202,19 +228,35 @@ private fun LayoutC(
         verticalAlignment = Alignment.Top,
     ) {
         Box(modifier = Modifier.size(32.dp), contentAlignment = Alignment.Center) {
-            if (faviconUrl != null) AsyncImage(model = faviconUrl, contentDescription = null, modifier = Modifier.fillMaxSize())
+            if (faviconUrl != null) AsyncImage(
+                model = faviconUrl,
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize()
+            )
         }
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             metadata.title?.let {
-                Text(it, style = MaterialTheme.typography.titleSmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                Text(
+                    it,
+                    style = MaterialTheme.typography.titleSmall,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
             val snippet = metadata.articleSnippet ?: metadata.description
             snippet?.let {
-                Text(it, style = MaterialTheme.typography.bodySmall,
+                Text(
+                    it, style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    maxLines = 2, overflow = TextOverflow.Ellipsis
+                )
             }
             UrlLines(item)
+            Text(
+                text = formatAge(item.record.sharedAt),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
         OverflowMenu(onCopy = onCopy, onOpen = onOpen, onRetry = null)
     }
@@ -243,7 +285,11 @@ private fun FallbackRow(
         verticalAlignment = Alignment.Top,
     ) {
         Box(modifier = Modifier.size(32.dp), contentAlignment = Alignment.Center) {
-            if (faviconUrl != null) AsyncImage(model = faviconUrl, contentDescription = null, modifier = Modifier.fillMaxSize())
+            if (faviconUrl != null) AsyncImage(
+                model = faviconUrl,
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize()
+            )
         }
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             UrlLines(item)
@@ -269,16 +315,6 @@ private fun UrlLines(item: ShareRecordWithMetadata) {
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
     )
-    if (item.record.originalText != item.record.cleanedText) {
-        Text(
-            text = item.record.originalText,
-            style = MaterialTheme.typography.labelSmall,
-            fontFamily = FontFamily.Monospace,
-            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-    }
 }
 
 @Composable
@@ -327,9 +363,14 @@ internal fun formatAge(timestamp: Long): String {
 @Preview(showBackground = true, name = "HistoryItem", widthDp = 380)
 @Composable
 private fun HistoryItemPreview(
-    @PreviewParameter(HistoryItemPreviewProvider::class) item: ShareRecordWithMetadata,
+    @PreviewParameter(HistoryItemPreviewProvider::class)
+    item: ShareRecordWithMetadata,
 ) {
     CleanShareTheme {
-        HistoryItem(item = item, onRetryFetch = { _, _ -> })
+        HistoryItem(
+            item = item,
+            onRetryFetch = { _, _ -> },
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
