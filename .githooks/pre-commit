@@ -11,7 +11,12 @@ if ! adb devices 2>/dev/null | grep -q "device$"; then
     exit 1
 fi
 
+# connectedDebugAndroidTest uninstalls both the test and debug apk. If this becomes problematic
+# switch to just verifying the AndroidTests compile.
 echo "▶ Instrumented tests..."
 ./gradlew connectedDebugAndroidTest
+
+echo "▶ Reinstalling app..."
+./gradlew installDebug
 
 echo "✓ All tests passed."
