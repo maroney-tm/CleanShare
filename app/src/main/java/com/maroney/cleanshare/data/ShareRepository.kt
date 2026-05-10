@@ -16,12 +16,21 @@ class ShareRepository(
             records.map { ShareRecordWithMetadata(it, byId[it.id]) }
         }
 
+    fun getById(id: Long): Flow<ShareRecordWithMetadata?> =
+        combine(shareDao.getById(id), metadataDao.getById(id)) { record, metadata ->
+            record?.let { ShareRecordWithMetadata(it, metadata) }
+        }
+
     suspend fun insert(record: ShareRecord) {
         val id = shareDao.insert(record)
         val url = record.cleanedText
             .split("\\s+".toRegex())
             .firstOrNull { it.startsWith("http://") || it.startsWith("https://") }
         if (url != null) workScheduler.scheduleFetch(id, url)
+    }
+
+    suspend fun updateNotes(id: Long, notes: String?) {
+        shareDao.updateNotes(id, notes)
     }
 
     suspend fun deleteById(id: Long) {

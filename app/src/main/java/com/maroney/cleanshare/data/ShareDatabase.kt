@@ -10,7 +10,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [ShareRecord::class, LinkMetadata::class],
-    version = 2,
+    version = 3,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)
@@ -38,6 +38,12 @@ abstract class ShareDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE share_history ADD COLUMN notes TEXT")
+            }
+        }
+
         fun getInstance(context: Context): ShareDatabase =
             instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
@@ -45,7 +51,7 @@ abstract class ShareDatabase : RoomDatabase() {
                     ShareDatabase::class.java,
                     "share_history.db",
                 )
-                    .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                     .build()
                     .also { instance = it }
             }

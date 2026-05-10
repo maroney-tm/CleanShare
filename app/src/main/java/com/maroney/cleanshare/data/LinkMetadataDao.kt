@@ -14,6 +14,9 @@ interface LinkMetadataDao {
     @Query("SELECT * FROM link_metadata ORDER BY shareRecordId DESC")
     fun observeAll(): Flow<List<LinkMetadata>>
 
+    @Query("SELECT * FROM link_metadata WHERE shareRecordId = :shareRecordId")
+    fun getById(shareRecordId: Long): Flow<LinkMetadata?>
+
     @Query("DELETE FROM link_metadata WHERE shareRecordId = :shareRecordId")
     suspend fun deleteByShareRecordId(shareRecordId: Long)
 
