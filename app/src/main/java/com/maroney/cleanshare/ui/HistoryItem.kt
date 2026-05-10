@@ -51,7 +51,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import androidx.core.net.toUri
 import coil3.compose.AsyncImage
 import com.maroney.cleanshare.data.FetchStatus
@@ -135,26 +135,26 @@ private fun ShimmerRow() {
     )
 
     Row(
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.md),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.md),
         verticalAlignment = Alignment.Top,
     ) {
         Box(
             modifier = Modifier
-                .size(64.dp)
-                .clip(RoundedCornerShape(8.dp))
+                .size(IconSize.thumbnail)
+                .clip(RoundedCornerShape(Radius.md))
                 .background(shimmerBrush),
         )
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(6.dp),
+            verticalArrangement = Arrangement.spacedBy(Spacing.sm),
         ) {
             // @formatter:off
-            Box(Modifier.fillMaxWidth(0.80f).height(14.dp).clip(RoundedCornerShape(4.dp)).background(shimmerBrush))
-            Box(Modifier.fillMaxWidth(1.00f).height(11.dp).clip(RoundedCornerShape(4.dp)).background(shimmerBrush))
-            Box(Modifier.fillMaxWidth(0.65f).height(11.dp).clip(RoundedCornerShape(4.dp)).background(shimmerBrush))
-            Box(Modifier.fillMaxWidth(0.55f).height(10.dp).clip(RoundedCornerShape(4.dp)).background(shimmerBrush))
-            Box(Modifier.fillMaxWidth(0.20f).height(10.dp).clip(RoundedCornerShape(4.dp)).background(shimmerBrush))
+            Box(Modifier.fillMaxWidth(0.80f).height(Spacing.md).clip(RoundedCornerShape(Radius.sm)).background(shimmerBrush))
+            Box(Modifier.fillMaxWidth(1.00f).height(Spacing.sm).clip(RoundedCornerShape(Radius.sm)).background(shimmerBrush))
+            Box(Modifier.fillMaxWidth(0.65f).height(Spacing.sm).clip(RoundedCornerShape(Radius.sm)).background(shimmerBrush))
+            Box(Modifier.fillMaxWidth(0.55f).height(Spacing.sm).clip(RoundedCornerShape(Radius.sm)).background(shimmerBrush))
+            Box(Modifier.fillMaxWidth(0.20f).height(Spacing.sm).clip(RoundedCornerShape(Radius.sm)).background(shimmerBrush))
             // @formatter:on
         }
     }
@@ -170,8 +170,8 @@ private fun LayoutA(
 ) {
     val metadata = item.metadata!!
     Row(
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.md),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AsyncImage(
@@ -180,10 +180,10 @@ private fun LayoutA(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(IconSize.thumbnail)
-                .clip(RoundedCornerShape(8.dp))
-                .border(1.dp, LocalColors.current.layout.divider, RoundedCornerShape(8.dp)),
+                .clip(RoundedCornerShape(Radius.md))
+                .border(Dp.Hairline, LocalColors.current.layout.divider, RoundedCornerShape(Radius.md)),
         )
-        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
             metadata.title?.let {
                 Text(
                     it,
@@ -225,20 +225,20 @@ private fun LayoutC(
             ?.let { "https://www.google.com/s2/favicons?sz=64&domain=$it" }
     }
     Row(
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.md),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
             modifier = Modifier
                 .size(IconSize.favicon)
-                .clip(RoundedCornerShape(6.dp))
-                .border(1.dp, LocalColors.current.layout.divider, RoundedCornerShape(6.dp)),
+                .clip(RoundedCornerShape(Radius.md))
+                .border(Dp.Hairline, LocalColors.current.layout.divider, RoundedCornerShape(Radius.md)),
             contentAlignment = Alignment.Center,
         ) {
             if (faviconUrl != null) AsyncImage(model = faviconUrl, contentDescription = null)
         }
-        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
             metadata.title?.let {
                 Text(
                     it,
@@ -284,20 +284,20 @@ private fun FallbackRow(
         onRetryFetch(item.record.id, item.record.cleanedText)
     }
     Row(
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.md),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
             modifier = Modifier
                 .size(IconSize.favicon)
-                .clip(RoundedCornerShape(6.dp))
-                .border(1.dp, LocalColors.current.layout.divider, RoundedCornerShape(6.dp)),
+                .clip(RoundedCornerShape(Radius.md))
+                .border(Dp.Hairline, LocalColors.current.layout.divider, RoundedCornerShape(Radius.md)),
             contentAlignment = Alignment.Center,
         ) {
             if (faviconUrl != null) AsyncImage(model = faviconUrl, contentDescription = null)
         }
-        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
             UrlLines(item)
             Text(
                 text = formatAge(item.record.sharedAt),
