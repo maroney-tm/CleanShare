@@ -39,11 +39,6 @@ Always preserved (YouTube playback context): `t` `start` `v` `list` `index`
 - Share-only app — no launcher icon or home-screen entry point.
 
 ## Potential Features
-- Ability to reshare from the CleanShare app
-- Item details
-  - See the full url vs trimmed url
-  - Description
-  - Add in notes section
 - Widget
   - Last several shared items
   - Quick access to reshare
