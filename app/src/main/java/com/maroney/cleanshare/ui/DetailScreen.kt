@@ -50,6 +50,8 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -57,10 +59,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.maroney.cleanshare.data.FetchStatus
 import com.maroney.cleanshare.data.ShareRecordWithMetadata
+import com.maroney.cleanshare.ui.fakedata.HistoryItemPreviewProvider
+import com.maroney.cleanshare.ui.theme.CleanShareTheme
 import com.maroney.cleanshare.ui.theme.LocalColors
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+// ── Stateful entry point (ViewModel-driven) ──────────────────────────────────
+
 @Composable
 fun DetailScreen(
     id: Long,
@@ -80,27 +85,51 @@ fun DetailScreen(
 
     val item = uiState ?: return
 
-    val onOpen: () -> Unit = {
-        try {
-            context.startActivity(Intent(Intent.ACTION_VIEW, item.record.cleanedText.toUri()))
-        } catch (_: Exception) { }
-    }
-    val onCopy: () -> Unit = {
-        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-        scope.launch {
-            clipboard.setClipEntry(
-                ClipData.newPlainText("link", item.record.cleanedText).toClipEntry()
-            )
-        }
-    }
-    val onShare: () -> Unit = {
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, item.record.cleanedText)
-        }
-        context.startActivity(Intent.createChooser(intent, null))
-    }
+    DetailContent(
+        item = item,
+        notes = notes,
+        onNavigateBack = onNavigateBack,
+        onShare = {
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, item.record.cleanedText)
+            }
+            context.startActivity(Intent.createChooser(intent, null))
+        },
+        onCopy = {
+            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            scope.launch {
+                clipboard.setClipEntry(ClipData.newPlainText("link", item.record.cleanedText).toClipEntry())
+            }
+        },
+        onOpen = {
+            try {
+                context.startActivity(Intent(Intent.ACTION_VIEW, item.record.cleanedText.toUri()))
+            } catch (_: Exception) { }
+        },
+        onDelete = { vm.deleteItem() },
+        onRetryFetch = { vm.retryMetadataFetch() },
+        onNotesChanged = vm::onNotesChanged,
+        onNotesFocusLost = vm::onNotesFocusLost,
+    )
+}
 
+// ── Stateless UI (previewable) ───────────────────────────────────────────────
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DetailContent(
+    item: ShareRecordWithMetadata,
+    notes: String,
+    onNavigateBack: () -> Unit,
+    onShare: () -> Unit,
+    onCopy: () -> Unit,
+    onOpen: () -> Unit,
+    onDelete: () -> Unit,
+    onRetryFetch: () -> Unit,
+    onNotesChanged: (String) -> Unit,
+    onNotesFocusLost: () -> Unit,
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -147,14 +176,14 @@ fun DetailScreen(
             SectionLabel("Notes")
             OutlinedTextField(
                 value = notes,
-                onValueChange = { vm.onNotesChanged(it) },
+                onValueChange = onNotesChanged,
                 placeholder = { Text("Add notes…") },
                 minLines = 3,
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = Spacing.md)
-                    .onFocusChanged { if (!it.isFocused) vm.onNotesFocusLost() },
+                    .onFocusChanged { if (!it.isFocused) onNotesFocusLost() },
             )
 
             Spacer(Modifier.height(Spacing.md))
@@ -171,7 +200,7 @@ fun DetailScreen(
                     Text("Copy Link")
                 }
                 OutlinedButton(
-                    onClick = { vm.deleteItem() },
+                    onClick = onDelete,
                     colors = ButtonDefaults.outlinedButtonColors(
                         contentColor = MaterialTheme.colorScheme.error,
                     ),
@@ -184,7 +213,7 @@ fun DetailScreen(
                 }
                 if (item.metadata?.fetchStatus == FetchStatus.FAILED) {
                     OutlinedButton(
-                        onClick = { vm.retryMetadataFetch() },
+                        onClick = onRetryFetch,
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text("Retry Metadata Fetch")
@@ -195,6 +224,8 @@ fun DetailScreen(
         }
     }
 }
+
+// ── Sub-composables ───────────────────────────────────────────────────────────
 
 @Composable
 private fun HeaderSection(item: ShareRecordWithMetadata) {
@@ -286,4 +317,28 @@ private fun UrlBlock(label: String, url: String, highlighted: Boolean) {
             .background(containerColor)
             .padding(Spacing.sm),
     )
+}
+
+// ── Preview ───────────────────────────────────────────────────────────────────
+
+@Preview(showBackground = true, name = "Detail Screen", widthDp = 380)
+@Composable
+private fun DetailScreenPreview(
+    @PreviewParameter(HistoryItemPreviewProvider::class)
+    item: ShareRecordWithMetadata,
+) {
+    CleanShareTheme {
+        DetailContent(
+            item = item,
+            notes = "Added this while researching Compose layouts.",
+            onNavigateBack = {},
+            onShare = {},
+            onCopy = {},
+            onOpen = {},
+            onDelete = {},
+            onRetryFetch = {},
+            onNotesChanged = {},
+            onNotesFocusLost = {},
+        )
+    }
 }
