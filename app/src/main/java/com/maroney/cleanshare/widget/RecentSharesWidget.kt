@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.maroney.cleanshare.ui.IconSize
@@ -21,7 +20,6 @@ import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
-import androidx.glance.color.ColorProvider
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.Column
@@ -48,7 +46,10 @@ class RecentSharesWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val app = context.applicationContext as CleanShareApplication
-        val items = app.shareRepository.getAll().first().take(5)
+
+        val items = runCatching {
+            app.shareRepository.getAll().first().take(5)
+        }.getOrElse { emptyList() }
 
         val bitmaps: List<Bitmap?> = coroutineScope {
             items.map { item ->
@@ -148,12 +149,7 @@ private fun RowScope.WidgetThumbnail(bitmap: Bitmap?, intent: Intent) {
             Box(
                 modifier = GlanceModifier
                     .fillMaxSize()
-                    .background(
-                        ColorProvider(
-                            day = Color(0xFFE5E5EA),
-                            night = Color(0xFF2C2C2E),
-                        )
-                    ),
+                    .background(GlanceTheme.colors.surfaceVariant),
             ) {}
         }
     }
