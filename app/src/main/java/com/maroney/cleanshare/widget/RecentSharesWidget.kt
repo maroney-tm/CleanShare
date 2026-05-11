@@ -31,6 +31,7 @@ import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.height
 import androidx.glance.layout.padding
+import androidx.glance.layout.width
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
@@ -134,24 +135,30 @@ private fun RowScope.WidgetThumbnail(bitmap: Bitmap?, intent: Intent) {
         modifier = GlanceModifier
             .defaultWeight()
             .fillMaxHeight()
-            .padding(Spacing.xs)
-            .cornerRadius(Radius.md)
             .clickable(actionStartActivity(intent)),
         contentAlignment = Alignment.Center,
     ) {
-        if (bitmap != null) {
-            Image(
-                provider = ImageProvider(bitmap),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = GlanceModifier.fillMaxSize(),
-            )
-        } else {
-            Box(
-                modifier = GlanceModifier
-                    .fillMaxSize()
-                    .background(GlanceTheme.colors.surfaceVariant),
-            ) {}
+        Box(
+            modifier = GlanceModifier
+                .width(IconSize.thumbnail)
+                .height(IconSize.thumbnail)
+                .cornerRadius(Radius.md),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (bitmap != null) {
+                Image(
+                    provider = ImageProvider(bitmap),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = GlanceModifier.fillMaxSize(),
+                )
+            } else {
+                Box(
+                    modifier = GlanceModifier
+                        .fillMaxSize()
+                        .background(GlanceTheme.colors.surfaceVariant),
+                ) {}
+            }
         }
     }
 }
