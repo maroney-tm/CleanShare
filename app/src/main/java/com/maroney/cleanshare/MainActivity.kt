@@ -16,11 +16,21 @@ import com.maroney.cleanshare.ui.HistoryViewModel
 import com.maroney.cleanshare.ui.theme.CleanShareTheme
 
 class MainActivity : ComponentActivity() {
+
+    companion object {
+        const val EXTRA_DETAIL_ID = "extra_detail_id"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val detailId = intent?.getLongExtra(EXTRA_DETAIL_ID, -1L)?.takeIf { it >= 0L }
+
         setContent {
             CleanShareTheme {
-                val backStack = remember { mutableStateListOf<Any>(HistoryRoute) }
+                val backStack = remember {
+                    mutableStateListOf(*initialBackStack(detailId).toTypedArray())
+                }
                 NavDisplay(
                     backStack = backStack,
                     onBack = { backStack.removeLastOrNull() },
@@ -48,3 +58,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+internal fun initialBackStack(detailId: Long?): List<Any> =
+    if (detailId != null) listOf(HistoryRoute, DetailRoute(detailId))
+    else listOf(HistoryRoute)
