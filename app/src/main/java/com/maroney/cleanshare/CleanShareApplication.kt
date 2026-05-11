@@ -8,6 +8,7 @@ import com.maroney.cleanshare.data.metadata.MetadataFetcher
 import com.maroney.cleanshare.data.metadata.MetadataWorkScheduler
 import com.maroney.cleanshare.data.ShareRepository
 import androidx.work.WorkManager
+import com.maroney.cleanshare.widget.WidgetBitmapLoader
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
@@ -40,6 +41,8 @@ class CleanShareApplication : Application(), Configuration.Provider {
     val shareRepository by lazy {
         ShareRepository(database.shareDao(), database.linkMetadataDao(), workScheduler)
     }
+
+    val widgetBitmapLoader by lazy { WidgetBitmapLoader(okHttpClient) }
 
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
