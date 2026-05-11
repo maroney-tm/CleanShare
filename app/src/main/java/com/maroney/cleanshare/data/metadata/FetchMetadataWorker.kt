@@ -1,12 +1,14 @@
 package com.maroney.cleanshare.data.metadata
 
 import android.content.Context
+import androidx.glance.appwidget.updateAll
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.maroney.cleanshare.data.ContentType
 import com.maroney.cleanshare.data.FetchStatus
 import com.maroney.cleanshare.data.LinkMetadata
 import com.maroney.cleanshare.data.LinkMetadataDao
+import com.maroney.cleanshare.widget.RecentSharesWidget
 
 class FetchMetadataWorker(
     context: Context,
@@ -40,6 +42,7 @@ class FetchMetadataWorker(
             )
         }
         dao.upsert(metadata)
+        RecentSharesWidget().updateAll(applicationContext)
         return Result.success()
     }
 }

@@ -4,9 +4,11 @@ import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.glance.appwidget.updateAll
 import androidx.lifecycle.lifecycleScope
 import com.maroney.cleanshare.data.ShareRecord
 import com.maroney.cleanshare.domain.UrlSanitizer
+import com.maroney.cleanshare.widget.RecentSharesWidget
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -33,6 +35,7 @@ class ShareActivity : ComponentActivity() {
                 (application as CleanShareApplication).shareRepository
                     .insert(ShareRecord(originalText = raw, cleanedText = cleaned))
             }
+            RecentSharesWidget().updateAll(this@ShareActivity)
 
             val send = Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
