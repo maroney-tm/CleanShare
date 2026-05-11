@@ -19,7 +19,7 @@ class WidgetBitmapLoader(private val httpClient: OkHttpClient) {
         return withContext(Dispatchers.IO) {
             try {
                 val response = httpClient.newCall(Request.Builder().url(url).build()).execute()
-                if (!response.isSuccessful) return@withContext null
+                if (!response.isSuccessful) { response.close(); return@withContext null }
                 val bytes = response.body?.bytes() ?: return@withContext null
                 val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                     ?: return@withContext null
