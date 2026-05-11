@@ -52,6 +52,7 @@ class WidgetBitmapLoaderTest {
         val first = loader.load(url)
         val second = loader.load(url)
         assertEquals(1, server.requestCount)
+        assertNotNull(first)
         assertSame(first, second)
     }
 }

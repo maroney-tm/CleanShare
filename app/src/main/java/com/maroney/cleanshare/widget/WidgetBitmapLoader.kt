@@ -3,6 +3,7 @@ package com.maroney.cleanshare.widget
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.LruCache
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -25,6 +26,8 @@ class WidgetBitmapLoader(private val httpClient: OkHttpClient) {
                     ?: return@withContext null
                 cache.put(url, bitmap)
                 bitmap
+            } catch (e: CancellationException) {
+                throw e
             } catch (_: Exception) {
                 null
             }
