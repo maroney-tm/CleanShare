@@ -1,0 +1,158 @@
+package com.maroney.cleanshare.widget
+
+import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
+import androidx.glance.GlanceId
+import androidx.glance.GlanceModifier
+import androidx.glance.GlanceTheme
+import androidx.glance.Image
+import androidx.glance.ImageProvider
+import androidx.glance.action.clickable
+import androidx.glance.appwidget.GlanceAppWidget
+import androidx.glance.appwidget.action.actionStartActivity
+import androidx.glance.appwidget.cornerRadius
+import androidx.glance.appwidget.provideContent
+import androidx.glance.background
+import androidx.glance.color.ColorProvider
+import androidx.glance.layout.Alignment
+import androidx.glance.layout.Box
+import androidx.glance.layout.Column
+import androidx.glance.layout.ContentScale
+import androidx.glance.layout.Row
+import androidx.glance.layout.RowScope
+import androidx.glance.layout.fillMaxHeight
+import androidx.glance.layout.fillMaxSize
+import androidx.glance.layout.fillMaxWidth
+import androidx.glance.layout.height
+import androidx.glance.layout.padding
+import androidx.glance.text.FontWeight
+import androidx.glance.text.Text
+import androidx.glance.text.TextStyle
+import com.maroney.cleanshare.CleanShareApplication
+import com.maroney.cleanshare.MainActivity
+import com.maroney.cleanshare.data.ShareRecordWithMetadata
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.first
+
+class RecentSharesWidget : GlanceAppWidget() {
+
+    override suspend fun provideGlance(context: Context, id: GlanceId) {
+        val app = context.applicationContext as CleanShareApplication
+        val items = app.shareRepository.getAll().first().take(5)
+
+        val bitmaps: List<Bitmap?> = coroutineScope {
+            items.map { item ->
+                async {
+                    val url = item.metadata?.thumbnailUrl
+                        ?: runCatching { item.record.cleanedText.toUri().host }
+                            .getOrNull()?.takeIf { it.isNotBlank() }
+                            ?.let { "https://www.google.com/s2/favicons?sz=64&domain=$it" }
+                    url?.let { app.widgetBitmapLoader.load(it) }
+                }
+            }.awaitAll()
+        }
+
+        provideContent {
+            GlanceTheme {
+                WidgetContent(context, items, bitmaps)
+            }
+        }
+    }
+}
+
+@Composable
+private fun WidgetContent(
+    context: Context,
+    items: List<ShareRecordWithMetadata>,
+    bitmaps: List<Bitmap?>,
+) {
+    Column(
+        modifier = GlanceModifier
+            .fillMaxSize()
+            .background(GlanceTheme.colors.widgetBackground)
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+    ) {
+        Row(
+            modifier = GlanceModifier
+                .fillMaxWidth()
+                .padding(bottom = 4.dp),
+            verticalAlignment = Alignment.Vertical.CenterVertically,
+        ) {
+            Text(
+                text = "CleanShare",
+                style = TextStyle(
+                    color = GlanceTheme.colors.onSurface,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Medium,
+                ),
+            )
+        }
+
+        if (items.isEmpty()) {
+            Box(
+                modifier = GlanceModifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = "Nothing shared yet - share a link to CleanShare to get started",
+                    style = TextStyle(
+                        color = GlanceTheme.colors.onSurface,
+                        fontSize = 11.sp,
+                    ),
+                )
+            }
+        } else {
+            Row(modifier = GlanceModifier.fillMaxWidth().height(64.dp)) {
+                items.forEachIndexed { index, item ->
+                    val bitmap = bitmaps.getOrNull(index)
+                    val intent = Intent(context, MainActivity::class.java).apply {
+                        putExtra(MainActivity.EXTRA_DETAIL_ID, item.record.id)
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    }
+                    WidgetThumbnail(bitmap = bitmap, intent = intent)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun RowScope.WidgetThumbnail(bitmap: Bitmap?, intent: Intent) {
+    Box(
+        modifier = GlanceModifier
+            .defaultWeight()
+            .fillMaxHeight()
+            .padding(2.dp)
+            .cornerRadius(8.dp)
+            .clickable(actionStartActivity(intent)),
+        contentAlignment = Alignment.Center,
+    ) {
+        if (bitmap != null) {
+            Image(
+                provider = ImageProvider(bitmap),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = GlanceModifier.fillMaxSize(),
+            )
+        } else {
+            Box(
+                modifier = GlanceModifier
+                    .fillMaxSize()
+                    .background(
+                        ColorProvider(
+                            day = Color(0xFFE5E5EA),
+                            night = Color(0xFF2C2C2E),
+                        )
+                    ),
+            ) {}
+        }
+    }
+}
