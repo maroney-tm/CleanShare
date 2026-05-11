@@ -5,9 +5,11 @@ import android.content.Intent
 import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
+import com.maroney.cleanshare.ui.IconSize
+import com.maroney.cleanshare.ui.Radius
+import com.maroney.cleanshare.ui.Spacing
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
@@ -78,12 +80,12 @@ private fun WidgetContent(
         modifier = GlanceModifier
             .fillMaxSize()
             .background(GlanceTheme.colors.widgetBackground)
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+            .padding(horizontal = Spacing.sm, vertical = Spacing.xs),
     ) {
         Row(
             modifier = GlanceModifier
                 .fillMaxWidth()
-                .padding(bottom = 4.dp),
+                .padding(bottom = Spacing.xs),
             verticalAlignment = Alignment.Vertical.CenterVertically,
         ) {
             Text(
@@ -110,7 +112,7 @@ private fun WidgetContent(
                 )
             }
         } else {
-            Row(modifier = GlanceModifier.fillMaxWidth().height(64.dp)) {
+            Row(modifier = GlanceModifier.fillMaxWidth().height(IconSize.thumbnail)) {
                 items.forEachIndexed { index, item ->
                     val bitmap = bitmaps.getOrNull(index)
                     val intent = Intent(context, MainActivity::class.java).apply {
@@ -130,8 +132,8 @@ private fun RowScope.WidgetThumbnail(bitmap: Bitmap?, intent: Intent) {
         modifier = GlanceModifier
             .defaultWeight()
             .fillMaxHeight()
-            .padding(2.dp)
-            .cornerRadius(8.dp)
+            .padding(Spacing.xs)
+            .cornerRadius(Radius.md)
             .clickable(actionStartActivity(intent)),
         contentAlignment = Alignment.Center,
     ) {
