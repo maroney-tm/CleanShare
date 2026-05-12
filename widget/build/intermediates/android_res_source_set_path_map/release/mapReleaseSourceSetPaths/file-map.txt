@@ -1,9 +1,0 @@
-com.maroney.cleanshare.widget-pngs-0 /Users/pat/AndroidStudioProjects/CleanShare/widget/build/generated/res/pngs/release
-com.maroney.cleanshare.widget-updated_navigation_xml-1 /Users/pat/AndroidStudioProjects/CleanShare/widget/build/generated/updated_navigation_xml/release
-com.maroney.cleanshare.widget-mergeReleaseResources-2 /Users/pat/AndroidStudioProjects/CleanShare/widget/build/intermediates/incremental/release/mergeReleaseResources/merged.dir
-com.maroney.cleanshare.widget-mergeReleaseResources-3 /Users/pat/AndroidStudioProjects/CleanShare/widget/build/intermediates/incremental/release/mergeReleaseResources/stripped.dir
-com.maroney.cleanshare.widget-release-4 /Users/pat/AndroidStudioProjects/CleanShare/widget/build/intermediates/merged_res/release/mergeReleaseResources
-com.maroney.cleanshare.widget-release-5 /Users/pat/AndroidStudioProjects/CleanShare/widget/build/intermediates/packaged_res/release/packageReleaseResources
-com.maroney.cleanshare.widget-main-6 /Users/pat/AndroidStudioProjects/CleanShare/widget/src/main/res
-com.maroney.cleanshare.widget-release-7 /Users/pat/AndroidStudioProjects/CleanShare/widget/src/release/res
-gradleHome-0 /Users/pat/.gradle
