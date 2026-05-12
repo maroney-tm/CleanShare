@@ -101,7 +101,7 @@ private fun WidgetContent(
 ) {
     Column(
         modifier = GlanceModifier.fillMaxSize().background(GlanceTheme.colors.widgetBackground)
-            .padding(horizontal = 8.dp, vertical = 2.dp),
+            .padding(horizontal = 8.dp, vertical = 8.dp),
     ) {
         if (items.isEmpty()) {
             Box(
