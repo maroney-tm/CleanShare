@@ -1,0 +1,82 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.maroney.cleanshare.widget-mergeReleaseResources-27:/values-en-rGB/values-en-rGB.xml",
+            "map": [
+                {
+                    "source": "/Users/pat/.gradle/caches/9.5.0-milestone-7/transforms/fb2aa4c6da3eeea9bb8c9c794c127791/transformed/core-1.18.0/res/values-en-rGB/values-en-rGB.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,151,253,352,451,555,658,774",
+                        "endColumns": "95,101,98,98,103,102,115,100",
+                        "endOffsets": "146,248,347,446,550,653,769,870"
+                    },
+                    "to": {
+                        "startLines": "2,3,4,5,6,7,8,12",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,151,253,352,451,555,658,1186",
+                        "endColumns": "95,101,98,98,103,102,115,100",
+                        "endOffsets": "146,248,347,446,550,653,769,1282"
+                    }
+                },
+                {
+                    "source": "/Users/pat/.gradle/caches/9.5.0-milestone-7/transforms/a3632164481c74308a7ddd79cd72240f/transformed/glance-appwidget-1.1.0/res/values-en-rGB/values-en-rGB.xml",
+                    "from": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,246,352",
+                        "endColumns": "190,105,114",
+                        "endOffsets": "241,347,462"
+                    },
+                    "to": {
+                        "startLines": "9,10,11",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "774,965,1071",
+                        "endColumns": "190,105,114",
+                        "endOffsets": "960,1066,1181"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "com.maroney.cleanshare.widget-release-29:/values-en-rGB/values-en-rGB.xml",
+            "map": [
+                {
+                    "source": "/Users/pat/.gradle/caches/9.5.0-milestone-7/transforms/fb2aa4c6da3eeea9bb8c9c794c127791/transformed/core-1.18.0/res/values-en-rGB/values-en-rGB.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,151,253,352,451,555,658,774",
+                        "endColumns": "95,101,98,98,103,102,115,100",
+                        "endOffsets": "146,248,347,446,550,653,769,870"
+                    },
+                    "to": {
+                        "startLines": "2,3,4,5,6,7,8,12",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,151,253,352,451,555,658,1186",
+                        "endColumns": "95,101,98,98,103,102,115,100",
+                        "endOffsets": "146,248,347,446,550,653,769,1282"
+                    }
+                },
+                {
+                    "source": "/Users/pat/.gradle/caches/9.5.0-milestone-7/transforms/a3632164481c74308a7ddd79cd72240f/transformed/glance-appwidget-1.1.0/res/values-en-rGB/values-en-rGB.xml",
+                    "from": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,246,352",
+                        "endColumns": "190,105,114",
+                        "endOffsets": "241,347,462"
+                    },
+                    "to": {
+                        "startLines": "9,10,11",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "774,965,1071",
+                        "endColumns": "190,105,114",
+                        "endOffsets": "960,1066,1181"
+                    }
+                }
+            ]
+        }
+    ]
+}

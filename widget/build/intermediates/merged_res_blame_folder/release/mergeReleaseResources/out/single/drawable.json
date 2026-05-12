@@ -1,0 +1,154 @@
+[
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_abc_btn_check_material_anim_enabled.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_abc_btn_check_material_anim_enabled.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_btn_radio_off_mtrl.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_btn_radio_off_mtrl.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/notification_tile_bg.xml",
+        "source": "com.maroney.cleanshare.widget-core-1.18.0-25:/drawable/notification_tile_bg.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_component_circle_button_ripple.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_component_circle_button_ripple.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_btn_radio_off_to_on_mtrl_animation.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_btn_radio_off_to_on_mtrl_animation.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_component_btn_circle.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_component_btn_circle.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_btn_checkbox_unchecked_to_checked_mtrl_animation.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_btn_checkbox_unchecked_to_checked_mtrl_animation.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/notification_bg.xml",
+        "source": "com.maroney.cleanshare.widget-core-1.18.0-25:/drawable/notification_bg.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_switch_thumb_animated.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_switch_thumb_animated.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_component_btn_square.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_component_btn_square.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_btn_checkbox_unchecked_mtrl.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_btn_checkbox_unchecked_mtrl.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_progress_horizontal.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_progress_horizontal.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_switch_thumb_on.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_switch_thumb_on.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/notification_bg_low.xml",
+        "source": "com.maroney.cleanshare.widget-core-1.18.0-25:/drawable/notification_bg_low.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_button_ripple.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_button_ripple.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_switch_thumb_off_to_on.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_switch_thumb_off_to_on.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/ic_call_decline.xml",
+        "source": "com.maroney.cleanshare.widget-core-1.18.0-25:/drawable/ic_call_decline.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/notification_icon_background.xml",
+        "source": "com.maroney.cleanshare.widget-core-1.18.0-25:/drawable/notification_icon_background.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_switch_thumb_off.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_switch_thumb_off.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/notification_action_background.xml",
+        "source": "com.maroney.cleanshare.widget-core-1.18.0-25:/drawable/notification_action_background.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/ic_call_decline_low.xml",
+        "source": "com.maroney.cleanshare.widget-core-1.18.0-25:/drawable/ic_call_decline_low.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_component_btn_outline.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_component_btn_outline.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/ic_call_answer_low.xml",
+        "source": "com.maroney.cleanshare.widget-core-1.18.0-25:/drawable/ic_call_answer_low.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_switch_track.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_switch_track.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/ic_call_answer_video_low.xml",
+        "source": "com.maroney.cleanshare.widget-core-1.18.0-25:/drawable/ic_call_answer_video_low.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_component_square_button_ripple.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_component_square_button_ripple.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_ripple.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_ripple.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_btn_radio_material_anim.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_btn_radio_material_anim.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_btn_checkbox_checked_mtrl.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_btn_checkbox_checked_mtrl.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_component_m3_button_ripple.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_component_m3_button_ripple.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_btn_radio_on_mtrl.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_btn_radio_on_mtrl.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_btn_radio_on_to_off_mtrl_animation.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_btn_radio_on_to_off_mtrl_animation.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/ic_call_answer_video.xml",
+        "source": "com.maroney.cleanshare.widget-core-1.18.0-25:/drawable/ic_call_answer_video.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_component_btn_filled.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_component_btn_filled.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_switch_thumb_on_to_off.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_switch_thumb_on_to_off.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_button_outline.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_button_outline.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/glance_btn_checkbox_checked_to_unchecked_mtrl_animation.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable/glance_btn_checkbox_checked_to_unchecked_mtrl_animation.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable/ic_call_answer.xml",
+        "source": "com.maroney.cleanshare.widget-core-1.18.0-25:/drawable/ic_call_answer.xml"
+    }
+]

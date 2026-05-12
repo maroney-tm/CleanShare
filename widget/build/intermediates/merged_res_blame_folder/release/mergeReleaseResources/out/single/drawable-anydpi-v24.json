@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable-anydpi-v24/glance_switch_thumb_off.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable-anydpi-v24/glance_switch_thumb_off.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/drawable-anydpi-v24/glance_switch_thumb_on.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/drawable-anydpi-v24/glance_switch_thumb_on.xml"
+    }
+]

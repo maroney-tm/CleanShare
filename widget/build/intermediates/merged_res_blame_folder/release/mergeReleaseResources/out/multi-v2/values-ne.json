@@ -1,0 +1,82 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.maroney.cleanshare.widget-release-29:/values-ne/values-ne.xml",
+            "map": [
+                {
+                    "source": "/Users/pat/.gradle/caches/9.5.0-milestone-7/transforms/fb2aa4c6da3eeea9bb8c9c794c127791/transformed/core-1.18.0/res/values-ne/values-ne.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,155,258,360,466,564,664,772",
+                        "endColumns": "99,102,101,105,97,99,107,100",
+                        "endOffsets": "150,253,355,461,559,659,767,868"
+                    },
+                    "to": {
+                        "startLines": "2,3,4,5,6,7,8,12",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,155,258,360,466,564,664,1199",
+                        "endColumns": "99,102,101,105,97,99,107,100",
+                        "endOffsets": "150,253,355,461,559,659,767,1295"
+                    }
+                },
+                {
+                    "source": "/Users/pat/.gradle/caches/9.5.0-milestone-7/transforms/a3632164481c74308a7ddd79cd72240f/transformed/glance-appwidget-1.1.0/res/values-ne/values-ne.xml",
+                    "from": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,251,358",
+                        "endColumns": "195,106,123",
+                        "endOffsets": "246,353,477"
+                    },
+                    "to": {
+                        "startLines": "9,10,11",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "772,968,1075",
+                        "endColumns": "195,106,123",
+                        "endOffsets": "963,1070,1194"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "com.maroney.cleanshare.widget-mergeReleaseResources-27:/values-ne/values-ne.xml",
+            "map": [
+                {
+                    "source": "/Users/pat/.gradle/caches/9.5.0-milestone-7/transforms/fb2aa4c6da3eeea9bb8c9c794c127791/transformed/core-1.18.0/res/values-ne/values-ne.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,155,258,360,466,564,664,772",
+                        "endColumns": "99,102,101,105,97,99,107,100",
+                        "endOffsets": "150,253,355,461,559,659,767,868"
+                    },
+                    "to": {
+                        "startLines": "2,3,4,5,6,7,8,12",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,155,258,360,466,564,664,1199",
+                        "endColumns": "99,102,101,105,97,99,107,100",
+                        "endOffsets": "150,253,355,461,559,659,767,1295"
+                    }
+                },
+                {
+                    "source": "/Users/pat/.gradle/caches/9.5.0-milestone-7/transforms/a3632164481c74308a7ddd79cd72240f/transformed/glance-appwidget-1.1.0/res/values-ne/values-ne.xml",
+                    "from": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,251,358",
+                        "endColumns": "195,106,123",
+                        "endOffsets": "246,353,477"
+                    },
+                    "to": {
+                        "startLines": "9,10,11",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "772,968,1075",
+                        "endColumns": "195,106,123",
+                        "endOffsets": "963,1070,1194"
+                    }
+                }
+            ]
+        }
+    ]
+}

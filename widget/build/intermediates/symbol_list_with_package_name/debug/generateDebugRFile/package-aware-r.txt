@@ -1,0 +1,3 @@
+com.maroney.cleanshare.widget
+layout widget_preview
+xml widget_info

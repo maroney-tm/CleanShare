@@ -61,10 +61,11 @@ fun HistoryItem(
             .fillMaxWidth()
             .combinedClickable(onClick = onNavigate),
     ) {
+        val metadata = item.metadata
         when {
-            item.metadata == null -> ShimmerRow()
-            item.metadata.fetchStatus == FetchStatus.FAILED -> FallbackRow(item)
-            item.metadata.thumbnailUrl != null -> LayoutA(item)
+            metadata == null -> ShimmerRow()
+            metadata.fetchStatus == FetchStatus.FAILED -> FallbackRow(item)
+            metadata.thumbnailUrl != null -> LayoutA(item)
             else -> LayoutC(item)
         }
     }

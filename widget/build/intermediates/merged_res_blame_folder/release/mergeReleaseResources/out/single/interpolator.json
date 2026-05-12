@@ -1,0 +1,26 @@
+[
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/interpolator/glance_btn_checkbox_checked_mtrl_animation_interpolator_0.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/interpolator/glance_btn_checkbox_checked_mtrl_animation_interpolator_0.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/interpolator/glance_btn_checkbox_unchecked_mtrl_animation_interpolator_1.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/interpolator/glance_btn_checkbox_unchecked_mtrl_animation_interpolator_1.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/interpolator/glance_btn_radio_to_off_mtrl_animation_interpolator_0.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/interpolator/glance_btn_radio_to_off_mtrl_animation_interpolator_0.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/interpolator/glance_btn_checkbox_checked_mtrl_animation_interpolator_1.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/interpolator/glance_btn_checkbox_checked_mtrl_animation_interpolator_1.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/interpolator/glance_btn_checkbox_unchecked_mtrl_animation_interpolator_0.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/interpolator/glance_btn_checkbox_unchecked_mtrl_animation_interpolator_0.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/interpolator/glance_btn_radio_to_on_mtrl_animation_interpolator_0.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/interpolator/glance_btn_radio_to_on_mtrl_animation_interpolator_0.xml"
+    }
+]

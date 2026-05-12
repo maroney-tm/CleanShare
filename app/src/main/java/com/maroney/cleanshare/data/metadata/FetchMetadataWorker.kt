@@ -28,10 +28,8 @@ class FetchMetadataWorker(
         if (shareRecordId == -1L) return Result.failure()
 
         val fetched = fetcher.fetch(url)
-        val metadata = if (fetched != null) {
-            fetched.copy(shareRecordId = shareRecordId)
-        } else {
-            LinkMetadata(
+        val metadata = fetched?.copy(shareRecordId = shareRecordId)
+            ?: LinkMetadata(
                 shareRecordId = shareRecordId,
                 title = null,
                 thumbnailUrl = null,
@@ -40,7 +38,6 @@ class FetchMetadataWorker(
                 contentType = ContentType.UNKNOWN,
                 fetchStatus = FetchStatus.FAILED,
             )
-        }
         dao.upsert(metadata)
         RecentSharesWidget().updateAll(applicationContext)
         return Result.success()

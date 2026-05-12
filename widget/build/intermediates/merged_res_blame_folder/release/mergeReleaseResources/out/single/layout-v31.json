@@ -1,0 +1,602 @@
+[
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_bottom_group_3.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_bottom_group_3.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_start_null_group_0.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_start_null_group_0.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_end_null_group_4.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_end_null_group_4.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_bottom_group_2.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_bottom_group_2.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_top_group_9.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_top_group_9.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_center_horizontal_null_group_2.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_center_horizontal_null_group_2.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_top_group_0.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_top_group_0.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_center_vertical_group_9.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_center_vertical_group_9.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_center_vertical_group_3.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_center_vertical_group_3.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_center_vertical_group_8.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_center_vertical_group_8.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_center_vertical_group_4.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_center_vertical_group_4.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_bottom_group_6.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_bottom_group_6.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_bottom_group_1.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_bottom_group_1.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_bottom_group_4.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_bottom_group_4.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_bottom_group_3.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_bottom_group_3.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_top_group_1.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_top_group_1.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_top_group_8.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_top_group_8.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_center_horizontal_null_group_3.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_center_horizontal_null_group_3.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_center_vertical_group_8.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_center_vertical_group_8.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_center_horizontal_null_group_0.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_center_horizontal_null_group_0.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_end_null_group_5.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_end_null_group_5.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_end_null_group_2.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_end_null_group_2.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_center_vertical_group_5.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_center_vertical_group_5.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_center_vertical_group_3.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_center_vertical_group_3.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_bottom_group_4.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_bottom_group_4.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_top_group_9.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_top_group_9.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_bottom_group_1.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_bottom_group_1.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_bottom_group_5.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_bottom_group_5.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_bottom_group_2.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_bottom_group_2.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_top_group_1.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_top_group_1.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_bottom_group_5.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_bottom_group_5.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_start_null_group_1.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_start_null_group_1.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_bottom_group_8.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_bottom_group_8.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_center_vertical_group_7.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_center_vertical_group_7.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_top_group_9.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_top_group_9.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_center_vertical_group_5.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_center_vertical_group_5.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_center_vertical_group_2.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_center_vertical_group_2.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_top_group_0.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_top_group_0.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_bottom_group_0.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_bottom_group_0.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_end_null_group_1.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_end_null_group_1.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_top_group_2.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_top_group_2.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_bottom_group_6.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_bottom_group_6.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_end_null_group_7.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_end_null_group_7.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_bottom_group_6.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_bottom_group_6.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_top_group_8.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_top_group_8.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_start_null_group_3.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_start_null_group_3.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_center_vertical_group_6.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_center_vertical_group_6.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_center_vertical_group_6.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_center_vertical_group_6.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_center_vertical_group_5.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_center_vertical_group_5.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_bottom_group_0.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_bottom_group_0.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_bottom_group_7.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_bottom_group_7.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_center_vertical_group_6.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_center_vertical_group_6.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_center_vertical_group_0.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_center_vertical_group_0.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_center_vertical_group_2.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_center_vertical_group_2.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_center_vertical_group_0.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_center_vertical_group_0.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_start_null_group_9.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_start_null_group_9.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_bottom_group_0.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_bottom_group_0.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_bottom_group_4.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_bottom_group_4.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_top_group_5.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_top_group_5.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_top_group_7.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_top_group_7.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_top_group_2.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_top_group_2.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_bottom_group_1.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_bottom_group_1.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_top_group_4.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_top_group_4.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_bottom_group_6.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_bottom_group_6.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_bottom_group_7.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_bottom_group_7.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_bottom_group_3.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_bottom_group_3.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_center_vertical_group_9.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_center_vertical_group_9.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_top_group_2.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_top_group_2.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_center_horizontal_null_group_1.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_center_horizontal_null_group_1.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_top_group_8.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_top_group_8.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_center_horizontal_null_group_4.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_center_horizontal_null_group_4.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_bottom_group_9.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_bottom_group_9.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_bottom_group_9.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_bottom_group_9.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_top_group_5.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_top_group_5.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_bottom_group_8.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_bottom_group_8.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_center_vertical_group_3.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_center_vertical_group_3.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_top_group_5.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_top_group_5.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_bottom_group_9.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_bottom_group_9.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_center_vertical_group_9.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_center_vertical_group_9.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_top_group_4.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_top_group_4.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_center_vertical_group_4.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_center_vertical_group_4.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_start_null_group_6.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_start_null_group_6.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_center_horizontal_null_group_7.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_center_horizontal_null_group_7.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_top_group_5.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_top_group_5.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_top_group_4.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_top_group_4.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_bottom_group_8.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_bottom_group_8.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_center_vertical_group_3.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_center_vertical_group_3.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_start_null_group_5.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_start_null_group_5.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_center_vertical_group_9.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_center_vertical_group_9.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_bottom_group_0.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_bottom_group_0.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_bottom_group_7.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_bottom_group_7.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_center_vertical_group_2.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_center_vertical_group_2.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_center_vertical_group_8.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_center_vertical_group_8.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_top_group_3.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_top_group_3.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_center_vertical_group_4.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_center_vertical_group_4.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_center_vertical_group_8.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_center_vertical_group_8.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_top_group_6.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_top_group_6.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_center_vertical_group_1.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_center_vertical_group_1.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_end_null_group_8.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_end_null_group_8.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_center_vertical_group_0.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_center_vertical_group_0.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_top_group_7.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_top_group_7.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_bottom_group_2.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_bottom_group_2.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_center_horizontal_null_group_5.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_center_horizontal_null_group_5.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_center_horizontal_null_group_8.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_center_horizontal_null_group_8.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_top_group_6.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_top_group_6.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_top_group_3.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_top_group_3.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_center_vertical_group_2.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_center_vertical_group_2.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_start_null_group_4.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_start_null_group_4.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_top_group_3.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_top_group_3.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_center_vertical_group_5.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_center_vertical_group_5.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_top_group_4.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_top_group_4.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_start_null_group_7.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_start_null_group_7.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_top_group_6.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_top_group_6.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_bottom_group_5.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_bottom_group_5.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_center_vertical_group_0.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_center_vertical_group_0.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_center_vertical_group_7.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_center_vertical_group_7.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_center_vertical_group_1.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_center_vertical_group_1.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_top_group_7.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_top_group_7.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_top_group_1.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_top_group_1.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_center_vertical_group_6.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_center_vertical_group_6.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_top_group_7.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_top_group_7.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_center_vertical_group_1.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_center_vertical_group_1.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_top_group_2.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_top_group_2.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_top_group_1.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_top_group_1.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_start_null_group_8.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_start_null_group_8.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_center_vertical_group_1.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_center_vertical_group_1.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_center_vertical_group_7.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_center_vertical_group_7.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_bottom_group_9.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_bottom_group_9.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_start_null_group_2.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_start_null_group_2.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_top_group_8.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_top_group_8.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_bottom_group_7.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_bottom_group_7.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_center_vertical_group_7.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_center_vertical_group_7.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_bottom_group_4.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_bottom_group_4.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_start_bottom_group_1.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_start_bottom_group_1.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_top_group_9.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_top_group_9.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_top_group_0.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_top_group_0.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/row_child_null_bottom_group_3.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/row_child_null_bottom_group_3.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_center_horizontal_null_group_6.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_center_horizontal_null_group_6.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_center_horizontal_null_group_9.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_center_horizontal_null_group_9.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_bottom_group_2.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_bottom_group_2.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_top_group_6.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_top_group_6.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_top_group_3.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_top_group_3.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_end_null_group_0.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_end_null_group_0.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_top_group_0.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_top_group_0.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_end_null_group_6.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_end_null_group_6.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_end_null_group_3.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_end_null_group_3.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_bottom_group_5.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_bottom_group_5.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/column_child_end_null_group_9.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/column_child_end_null_group_9.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_center_horizontal_bottom_group_8.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_center_horizontal_bottom_group_8.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout-v31/box_child_end_center_vertical_group_4.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout-v31/box_child_end_center_vertical_group_4.xml"
+    }
+]

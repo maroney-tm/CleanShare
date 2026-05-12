@@ -14,17 +14,14 @@ import com.maroney.cleanshare.ui.HistoryRoute
 import com.maroney.cleanshare.ui.HistoryScreen
 import com.maroney.cleanshare.ui.HistoryViewModel
 import com.maroney.cleanshare.ui.theme.CleanShareTheme
+import com.maroney.cleanshare.widget.RecentSharesWidget
 
 class MainActivity : ComponentActivity() {
-
-    companion object {
-        const val EXTRA_DETAIL_ID = "extra_detail_id"
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val detailId = intent?.getLongExtra(EXTRA_DETAIL_ID, -1L)?.takeIf { it >= 0L }
+        val detailId = intent?.getLongExtra(RecentSharesWidget.EXTRA_DETAIL_ID, -1L)?.takeIf { it >= 0L }
 
         setContent {
             CleanShareTheme {

@@ -1,0 +1,2 @@
+int layout widget_preview 0x0
+int xml widget_info 0x0

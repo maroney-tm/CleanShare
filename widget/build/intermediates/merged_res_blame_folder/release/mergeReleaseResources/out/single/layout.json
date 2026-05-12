@@ -1,0 +1,1206 @@
+[
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_top_0children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_top_0children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_start_null_6children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_start_null_6children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_bottom_8children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_bottom_8children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_end_null_7children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_end_null_7children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_start_null_7children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_start_null_7children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_center_vertical_4children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_center_vertical_4children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_bottom_2children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_bottom_2children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_bottom_4children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_bottom_4children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_bottom_0children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_bottom_0children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_end_null_10children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_end_null_10children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_center_horizontal_null_7children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_center_horizontal_null_7children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_top_3children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_top_3children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_center_vertical_0children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_center_vertical_0children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_top_4children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_top_4children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_vertical_grid_five_columns.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_vertical_grid_five_columns.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_center_vertical_2children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_center_vertical_2children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_top_1children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_top_1children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_bottom_7children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_bottom_7children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_bottom_8children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_bottom_8children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_top_10children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_top_10children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_bottom_0children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_bottom_0children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_center_vertical_7children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_center_vertical_7children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_top_2children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_top_2children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_center_vertical_6children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_center_vertical_6children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_center_vertical_10children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_center_vertical_10children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_bottom_7children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_bottom_7children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_top_8children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_top_8children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_center_vertical_9children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_center_vertical_9children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_center_vertical_8children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_center_vertical_8children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_text.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_text.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_top_9children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_top_9children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_top_9children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_top_9children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_check_box_image.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_check_box_image.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_bottom_8children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_bottom_8children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/complex_fixed_wrap.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/complex_fixed_wrap.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_vertical_grid_four_columns.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_vertical_grid_four_columns.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_start_null_7children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_start_null_7children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_start_null_5children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_start_null_5children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_error_layout.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_error_layout.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_bottom_7children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_bottom_7children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/complex_expand_match.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/complex_expand_match.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_center_vertical_3children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_center_vertical_3children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_swtch.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_swtch.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_top_2children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_top_2children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_bottom_9children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_bottom_9children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_center_vertical_5children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_center_vertical_5children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_top_4children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_top_4children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_bottom_10children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_bottom_10children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_vertical_grid_three_columns.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_vertical_grid_three_columns.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_center_horizontal_null_6children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_center_horizontal_null_6children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_list.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_list.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_bottom_0children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_bottom_0children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_center_horizontal_null_8children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_center_horizontal_null_8children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/complex_wrap_fixed.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/complex_wrap_fixed.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_bottom_10children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_bottom_10children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_end_null_0children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_end_null_0children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_top_6children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_top_6children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_center_horizontal_null_7children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_center_horizontal_null_7children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_top_4children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_top_4children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_center_horizontal_null_5children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_center_horizontal_null_5children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_center_horizontal_null_0children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_center_horizontal_null_0children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/complex_wrap_wrap.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/complex_wrap_wrap.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_center_vertical_7children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_center_vertical_7children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_center_vertical_9children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_center_vertical_9children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_end_null_6children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_end_null_6children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_end_null_8children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_end_null_8children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/complex_match_fixed.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/complex_match_fixed.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_start_null_5children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_start_null_5children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_end_null_5children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_end_null_5children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_check_box_backport.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_check_box_backport.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_bottom_2children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_bottom_2children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_center_vertical_2children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_center_vertical_2children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_bottom_6children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_bottom_6children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_image_fit.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_image_fit.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_bottom_10children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_bottom_10children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_center_vertical_6children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_center_vertical_6children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_bottom_4children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_bottom_4children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_start_null_9children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_start_null_9children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_top_6children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_top_6children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_top_1children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_top_1children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/root_wrap_match.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/root_wrap_match.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_center_vertical_1children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_center_vertical_1children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_image_crop.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_image_crop.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_top_5children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_top_5children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_top_9children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_top_9children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_bottom_1children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_bottom_1children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/size_match_match.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/size_match_match.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_bottom_0children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_bottom_0children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_center_vertical_2children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_center_vertical_2children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_top_2children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_top_2children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/notification_template_custom_big.xml",
+        "source": "com.maroney.cleanshare.widget-core-1.18.0-25:/layout/notification_template_custom_big.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_top_0children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_top_0children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_center_vertical_8children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_center_vertical_8children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_top_4children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_top_4children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_swtch_backport.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_swtch_backport.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_start_null_10children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_start_null_10children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_center_vertical_4children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_center_vertical_4children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_center_vertical_10children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_center_vertical_10children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/notification_template_part_chronometer.xml",
+        "source": "com.maroney.cleanshare.widget-core-1.18.0-25:/layout/notification_template_part_chronometer.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_center_vertical_6children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_center_vertical_6children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_bottom_5children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_bottom_5children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_center_vertical_7children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_center_vertical_7children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/complex_fixed_match.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/complex_fixed_match.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_image_fill_bounds.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_image_fill_bounds.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/ime_secondary_split_test_activity.xml",
+        "source": "com.maroney.cleanshare.widget-core-1.18.0-25:/layout/ime_secondary_split_test_activity.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_center_vertical_0children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_center_vertical_0children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_top_8children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_top_8children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_center_vertical_10children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_center_vertical_10children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_bottom_9children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_bottom_9children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_start_null_6children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_start_null_6children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_start_null_9children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_start_null_9children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_end_null_8children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_end_null_8children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/complex_fixed_fixed.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/complex_fixed_fixed.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_start_null_2children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_start_null_2children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_bottom_1children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_bottom_1children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_bottom_1children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_bottom_1children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_bottom_5children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_bottom_5children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_top_7children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_top_7children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_bottom_3children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_bottom_3children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_end_null_0children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_end_null_0children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_center_vertical_3children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_center_vertical_3children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_radio_button_backport.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_radio_button_backport.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_top_3children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_top_3children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_center_vertical_0children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_center_vertical_0children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_center_vertical_5children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_center_vertical_5children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_center_horizontal_null_8children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_center_horizontal_null_8children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_top_3children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_top_3children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_center_vertical_1children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_center_vertical_1children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_default_loading_layout.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_default_loading_layout.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/size_wrap_wrap.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/size_wrap_wrap.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_bottom_9children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_bottom_9children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_bottom_10children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_bottom_10children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_center_horizontal_null_0children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_center_horizontal_null_0children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_top_5children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_top_5children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_top_7children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_top_7children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_radio_icon.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_radio_icon.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_top_1children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_top_1children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_top_10children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_top_10children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_end_null_1children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_end_null_1children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_center_horizontal_null_4children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_center_horizontal_null_4children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/complex_expand_wrap.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/complex_expand_wrap.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_button.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_button.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_center_horizontal_null_3children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_center_horizontal_null_3children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_center_vertical_9children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_center_vertical_9children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_bottom_7children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_bottom_7children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_center_vertical_4children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_center_vertical_4children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_end_null_9children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_end_null_9children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_switch_track.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_switch_track.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_image_fill_bounds_decorative.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_image_fill_bounds_decorative.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/complex_match_wrap.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/complex_match_wrap.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_end_null_5children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_end_null_5children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_center_vertical_8children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_center_vertical_8children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_end_null_4children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_end_null_4children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/notification_action_tombstone.xml",
+        "source": "com.maroney.cleanshare.widget-core-1.18.0-25:/layout/notification_action_tombstone.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_image_crop_decorative.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_image_crop_decorative.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/invalid_list_item.xml",
+        "source": "com.maroney.cleanshare.widget-core-remoteviews-1.1.0-23:/layout/invalid_list_item.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_bottom_4children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_bottom_4children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_bottom_0children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_bottom_0children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_start_null_3children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_start_null_3children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_deleted_view.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_deleted_view.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_center_vertical_10children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_center_vertical_10children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/complex_expand_expand.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/complex_expand_expand.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_top_4children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_top_4children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_start_null_2children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_start_null_2children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_bottom_3children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_bottom_3children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_center_vertical_6children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_center_vertical_6children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_center_vertical_4children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_center_vertical_4children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_top_7children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_top_7children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_center_vertical_8children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_center_vertical_8children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_bottom_8children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_bottom_8children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_top_9children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_top_9children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_check_box_view.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_check_box_view.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/custom_dialog.xml",
+        "source": "com.maroney.cleanshare.widget-core-1.18.0-25:/layout/custom_dialog.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_center_vertical_3children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_center_vertical_3children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_bottom_3children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_bottom_3children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_top_5children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_top_5children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_bottom_4children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_bottom_4children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_center_horizontal_null_10children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_center_horizontal_null_10children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_top_0children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_top_0children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_bottom_4children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_bottom_4children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_top_6children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_top_6children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_center_vertical_1children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_center_vertical_1children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_invalid_list_item.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_invalid_list_item.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_center_vertical_2children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_center_vertical_2children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_top_10children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_top_10children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_center_vertical_0children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_center_vertical_0children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_bottom_5children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_bottom_5children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/root_match_match.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/root_match_match.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/size_match_wrap.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/size_match_wrap.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/notification_action.xml",
+        "source": "com.maroney.cleanshare.widget-core-1.18.0-25:/layout/notification_action.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_start_null_1children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_start_null_1children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_image_fit_decorative.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_image_fit_decorative.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_top_0children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_top_0children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_start_null_3children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_start_null_3children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_center_vertical_10children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_center_vertical_10children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_top_6children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_top_6children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_center_horizontal_null_4children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_center_horizontal_null_4children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_center_vertical_9children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_center_vertical_9children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_bottom_2children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_bottom_2children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/complex_expand_fixed.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/complex_expand_fixed.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_center_vertical_7children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_center_vertical_7children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_top_8children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_top_8children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_top_8children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_top_8children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_top_2children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_top_2children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_top_0children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_top_0children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_center_horizontal_null_1children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_center_horizontal_null_1children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_center_horizontal_null_3children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_center_horizontal_null_3children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_top_8children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_top_8children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/complex_wrap_expand.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/complex_wrap_expand.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_end_null_4children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_end_null_4children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_center_vertical_3children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_center_vertical_3children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_check_box.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_check_box.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_end_null_2children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_end_null_2children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_bottom_10children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_bottom_10children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_bottom_8children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_bottom_8children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_center_horizontal_null_2children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_center_horizontal_null_2children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_end_null_1children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_end_null_1children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_end_null_3children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_end_null_3children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_bottom_6children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_bottom_6children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_center_vertical_5children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_center_vertical_5children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/ime_base_split_test_activity.xml",
+        "source": "com.maroney.cleanshare.widget-core-1.18.0-25:/layout/ime_base_split_test_activity.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_check_box_text.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_check_box_text.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_bottom_6children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_bottom_6children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_bottom_2children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_bottom_2children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/notification_template_part_time.xml",
+        "source": "com.maroney.cleanshare.widget-core-1.18.0-25:/layout/notification_template_part_time.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_start_null_1children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_start_null_1children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_start_null_4children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_start_null_4children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_end_null_9children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_end_null_9children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_start_null_10children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_start_null_10children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_center_vertical_8children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_center_vertical_8children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/complex_wrap_match.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/complex_wrap_match.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_center_horizontal_null_5children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_center_horizontal_null_5children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_center_vertical_4children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_center_vertical_4children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_vertical_grid_two_columns.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_vertical_grid_two_columns.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_top_2children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_top_2children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_start_null_0children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_start_null_0children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_top_6children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_top_6children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_center_horizontal_null_9children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_center_horizontal_null_9children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_top_7children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_top_7children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/root_match_wrap.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/root_match_wrap.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_center_horizontal_null_9children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_center_horizontal_null_9children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_center_horizontal_null_10children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_center_horizontal_null_10children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_bottom_6children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_bottom_6children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_top_3children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_top_3children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_center_vertical_5children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_center_vertical_5children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/size_wrap_match.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/size_wrap_match.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_bottom_5children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_bottom_5children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_bottom_9children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_bottom_9children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_center_vertical_9children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_center_vertical_9children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/complex_match_match.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/complex_match_match.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_center_vertical_0children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_center_vertical_0children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_top_10children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_top_10children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_bottom_2children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_bottom_2children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_bottom_1children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_bottom_1children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_bottom_6children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_bottom_6children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_top_7children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_top_7children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_row_null_center_vertical_1children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_row_null_center_vertical_1children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_radio_button.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_radio_button.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/complex_fixed_expand.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/complex_fixed_expand.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_start_null_8children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_start_null_8children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_start_null_8children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_start_null_8children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_vertical_grid_one_column.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_vertical_grid_one_column.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_switch_thumb.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_switch_thumb.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_switch_text.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_switch_text.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_bottom_3children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_bottom_3children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_end_null_10children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_end_null_10children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_top_5children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_top_5children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_bottom_1children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_bottom_1children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_start_null_0children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_start_null_0children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_bottom_3children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_bottom_3children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/notification_template_icon_group.xml",
+        "source": "com.maroney.cleanshare.widget-core-1.18.0-25:/layout/notification_template_icon_group.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_center_vertical_5children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_center_vertical_5children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_center_vertical_2children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_center_vertical_2children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_center_vertical_7children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_center_vertical_7children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_top_1children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_top_1children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_bottom_7children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_bottom_7children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/root_wrap_wrap.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/root_wrap_wrap.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_top_10children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_top_10children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_top_1children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_top_1children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_vertical_grid_auto_fit.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_vertical_grid_auto_fit.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_end_center_vertical_3children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_end_center_vertical_3children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_center_vertical_1children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_center_vertical_1children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_top_5children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_top_5children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_start_top_3children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_start_top_3children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_radio_text.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_radio_text.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_center_horizontal_null_2children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_center_horizontal_null_2children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_end_null_3children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_end_null_3children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_frame.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_frame.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_center_horizontal_null_6children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_center_horizontal_null_6children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_top_9children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_top_9children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_circular_progress_indicator.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_circular_progress_indicator.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/glance_linear_progress_indicator.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/glance_linear_progress_indicator.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_bottom_9children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_bottom_9children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_end_null_2children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_end_null_2children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/box_center_horizontal_bottom_5children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/box_center_horizontal_bottom_5children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/complex_match_expand.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/complex_match_expand.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_center_horizontal_null_1children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_center_horizontal_null_1children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/radio_column_end_null_6children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/radio_column_end_null_6children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/row_null_center_vertical_6children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/row_null_center_vertical_6children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_start_null_4children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_start_null_4children.xml"
+    },
+    {
+        "merged": "com.maroney.cleanshare.widget-release-29:/layout/column_end_null_7children.xml",
+        "source": "com.maroney.cleanshare.widget-glance-appwidget-1.1.0-17:/layout/column_end_null_7children.xml"
+    }
+]

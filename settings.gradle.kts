@@ -24,3 +24,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Android(Share Sanitizer"
 include(":app")
+include(":data")
+include(":widget")

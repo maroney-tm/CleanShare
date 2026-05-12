@@ -7,10 +7,11 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.maroney.cleanshare.data.ShareRecordWithMetadata
+import com.maroney.cleanshare.data.WorkScheduler
 
-class MetadataWorkScheduler(private val workManager: WorkManager) {
+class MetadataWorkScheduler(private val workManager: WorkManager) : WorkScheduler {
 
-    fun scheduleFetch(shareRecordId: Long, url: String) {
+    override fun scheduleFetch(shareRecordId: Long, url: String) {
         enqueue(shareRecordId, url, ExistingWorkPolicy.KEEP)
     }
 

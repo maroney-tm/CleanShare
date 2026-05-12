@@ -64,9 +64,10 @@ class MetadataFetcherTest {
 
         assertNotNull(result)
         assertEquals(ContentType.ARTICLE, result!!.contentType)
-        assertNotNull(result.articleSnippet)
-        assertTrue(result.articleSnippet!!.contains("First paragraph"))
-        assertTrue(result.articleSnippet.length <= 300)
+        val snippet = result.articleSnippet
+        assertNotNull(snippet)
+        assertTrue(snippet!!.contains("First paragraph"))
+        assertTrue(snippet.length <= 300)
     }
 
     @Test fun `detects article from article tag when og type is absent`() = runTest {

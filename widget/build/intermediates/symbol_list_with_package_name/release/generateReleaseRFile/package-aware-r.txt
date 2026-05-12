@@ -1,0 +1,1 @@
+com.maroney.cleanshare.widget
