@@ -3,7 +3,7 @@ package com.maroney.cleanshare
 import android.graphics.Bitmap
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.maroney.cleanshare.widget.WidgetBitmapLoader
-import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -34,19 +34,19 @@ class WidgetBitmapLoaderTest {
         return out.toByteArray()
     }
 
-    @Test fun returnsNonNullBitmapOn200() = runTest {
+    @Test fun returnsNonNullBitmapOn200() = runBlocking {
         server.enqueue(MockResponse().setResponseCode(200).setBody(Buffer().write(pngBytes())))
         val result = loader.load(server.url("/img.png").toString())
         assertNotNull(result)
     }
 
-    @Test fun returnsNullOn404() = runTest {
+    @Test fun returnsNullOn404() = runBlocking {
         server.enqueue(MockResponse().setResponseCode(404))
         val result = loader.load(server.url("/missing.png").toString())
         assertNull(result)
     }
 
-    @Test fun returnsCachedBitmapOnSecondCall() = runTest {
+    @Test fun returnsCachedBitmapOnSecondCall() = runBlocking {
         server.enqueue(MockResponse().setResponseCode(200).setBody(Buffer().write(pngBytes())))
         val url = server.url("/cached.png").toString()
         val first = loader.load(url)
