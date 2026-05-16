@@ -10,8 +10,8 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [ShareRecord::class, LinkMetadata::class],
-    version = 3,
-    exportSchema = false,
+    version = 4,
+    exportSchema = true,
 )
 @TypeConverters(Converters::class)
 abstract class ShareDatabase : RoomDatabase() {
@@ -44,6 +44,28 @@ abstract class ShareDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE share_history ADD COLUMN sync_id    TEXT    NOT NULL DEFAULT ''")
+                db.execSQL("ALTER TABLE share_history ADD COLUMN updated_at INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE share_history ADD COLUMN source     TEXT    NOT NULL DEFAULT 'MOBILE'")
+
+                // Backfill sync_id with random UUIDs (SQLite randomblob approach)
+                db.execSQL("""
+                    UPDATE share_history
+                    SET sync_id = lower(
+                        hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-' ||
+                        hex(randomblob(2)) || '-' || hex(randomblob(2)) || '-' ||
+                        hex(randomblob(6))
+                    )
+                    WHERE sync_id = ''
+                """.trimIndent())
+
+                // Backfill updated_at from sharedAt
+                db.execSQL("UPDATE share_history SET updated_at = sharedAt WHERE updated_at = 0")
+            }
+        }
+
         fun getInstance(context: Context): ShareDatabase =
             instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
@@ -51,7 +73,7 @@ abstract class ShareDatabase : RoomDatabase() {
                     ShareDatabase::class.java,
                     "share_history.db",
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                     .build()
                     .also { instance = it }
             }
