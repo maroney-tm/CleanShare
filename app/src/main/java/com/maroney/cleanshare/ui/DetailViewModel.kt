@@ -79,8 +79,8 @@ class DetailViewModel(
     }
 
     fun retryMetadataFetch() {
-        val url = _uiState.value?.record?.cleanedText ?: return
-        workScheduler.retryFetch(id, url)
+        val record = _uiState.value?.record ?: return
+        workScheduler.retryFetch(record.id, record.cleanedText, record.syncId)
     }
 
     override fun onCleared() {

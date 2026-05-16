@@ -11,8 +11,8 @@ import com.maroney.cleanshare.data.WorkScheduler
 
 class MetadataWorkScheduler(private val workManager: WorkManager) : WorkScheduler {
 
-    override fun scheduleFetch(shareRecordId: Long, url: String) {
-        enqueue(shareRecordId, url, ExistingWorkPolicy.KEEP)
+    override fun scheduleFetch(shareRecordId: Long, url: String, syncId: String) {
+        enqueue(shareRecordId, url, syncId, ExistingWorkPolicy.KEEP)
     }
 
     fun schedulePendingFetches(records: List<ShareRecordWithMetadata>) {
@@ -20,19 +20,20 @@ class MetadataWorkScheduler(private val workManager: WorkManager) : WorkSchedule
             .filter { it.metadata == null }
             .forEach { item ->
                 val url = extractUrl(item.record.cleanedText) ?: return@forEach
-                scheduleFetch(item.record.id, url)
+                scheduleFetch(item.record.id, url, item.record.syncId)
             }
     }
 
-    fun retryFetch(shareRecordId: Long, url: String) {
-        enqueue(shareRecordId, url, ExistingWorkPolicy.REPLACE)
+    fun retryFetch(shareRecordId: Long, url: String, syncId: String) {
+        enqueue(shareRecordId, url, syncId, ExistingWorkPolicy.REPLACE)
     }
 
-    private fun enqueue(shareRecordId: Long, url: String, policy: ExistingWorkPolicy) {
+    private fun enqueue(shareRecordId: Long, url: String, syncId: String, policy: ExistingWorkPolicy) {
         val request = OneTimeWorkRequestBuilder<FetchMetadataWorker>()
             .setInputData(workDataOf(
                 FetchMetadataWorker.KEY_SHARE_RECORD_ID to shareRecordId,
                 FetchMetadataWorker.KEY_URL to url,
+                "sync_id" to syncId,
             ))
             .setConstraints(Constraints(requiredNetworkType = NetworkType.CONNECTED))
             .build()

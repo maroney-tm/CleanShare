@@ -45,8 +45,8 @@ class HistoryViewModel(
         viewModelScope.launch { repository.deleteAll() }
     }
 
-    fun retryFetch(shareRecordId: Long, url: String) {
-        workScheduler.retryFetch(shareRecordId, url)
+    fun retryFetch(shareRecordId: Long, url: String, syncId: String) {
+        workScheduler.retryFetch(shareRecordId, url, syncId)
     }
 
     companion object {

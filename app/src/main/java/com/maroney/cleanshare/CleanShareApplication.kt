@@ -7,6 +7,9 @@ import com.maroney.cleanshare.data.metadata.AppWorkerFactory
 import com.maroney.cleanshare.data.metadata.MetadataFetcher
 import com.maroney.cleanshare.data.metadata.MetadataWorkScheduler
 import com.maroney.cleanshare.data.ShareRepository
+import com.maroney.cleanshare.sync.CleanShareSyncClient
+import com.maroney.cleanshare.sync.ServerConfigRepository
+import com.maroney.cleanshare.sync.SyncManager
 import androidx.work.WorkManager
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
@@ -37,8 +40,16 @@ class CleanShareApplication : Application(), Configuration.Provider {
         MetadataWorkScheduler(WorkManager.getInstance(this))
     }
 
+    val serverConfigRepository by lazy { ServerConfigRepository(this) }
+
+    val syncClient by lazy { CleanShareSyncClient(okHttpClient) }
+
+    val syncManager by lazy {
+        SyncManager(this, syncClient, serverConfigRepository, database.shareDao(), database.linkMetadataDao())
+    }
+
     val shareRepository by lazy {
-        ShareRepository(database.shareDao(), database.linkMetadataDao(), workScheduler)
+        ShareRepository(database.shareDao(), database.linkMetadataDao(), workScheduler, syncManager)
     }
 
     override val workManagerConfiguration: Configuration

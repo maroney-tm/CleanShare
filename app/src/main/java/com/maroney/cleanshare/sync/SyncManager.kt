@@ -8,6 +8,7 @@ import com.maroney.cleanshare.data.LinkMetadataDao
 import com.maroney.cleanshare.data.ShareDao
 import com.maroney.cleanshare.data.ShareRecord
 import com.maroney.cleanshare.data.ShareSource
+import com.maroney.cleanshare.data.SyncPusher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +29,7 @@ class SyncManager(
     private val configRepo: ServerConfigRepository,
     private val shareDao: ShareDao,
     private val metadataDao: LinkMetadataDao,
-) {
+) : SyncPusher {
     private val _status = MutableStateFlow<ConnectionStatus>(ConnectionStatus.Disconnected)
     val connectionStatus: StateFlow<ConnectionStatus> = _status.asStateFlow()
 
@@ -150,15 +151,15 @@ class SyncManager(
 
     // ---- Push helpers (fire-and-forget, called from ShareRepository) ----
 
-    suspend fun pushInsert(record: ShareRecord) {
+    override suspend fun pushInsert(record: ShareRecord) {
         syncClient.postRecord(record.toSyncRecord())
     }
 
-    suspend fun pushNoteUpdate(syncId: String, notes: String?, updatedAt: Long) {
+    override suspend fun pushNoteUpdate(syncId: String, notes: String?, updatedAt: Long) {
         syncClient.patchRecord(syncId, notes, updatedAt)
     }
 
-    suspend fun pushDelete(syncId: String) {
+    override suspend fun pushDelete(syncId: String) {
         syncClient.deleteRecord(syncId)
     }
 

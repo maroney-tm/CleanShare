@@ -1,12 +1,18 @@
 package com.maroney.cleanshare.data
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 
 class ShareRepository(
     private val shareDao: ShareDao,
     private val metadataDao: LinkMetadataDao,
     private val workScheduler: WorkScheduler,
+    private val syncPusher: SyncPusher? = null,
+    private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
 ) {
 
     fun getAll(): Flow<List<ShareRecordWithMetadata>> =
@@ -25,16 +31,22 @@ class ShareRepository(
         val url = record.cleanedText
             .split("\\s+".toRegex())
             .firstOrNull { it.startsWith("http://") || it.startsWith("https://") }
-        if (url != null) workScheduler.scheduleFetch(id, url)
+        if (url != null) workScheduler.scheduleFetch(id, url, record.syncId)
+        scope.launch { syncPusher?.pushInsert(record) }
     }
 
     suspend fun updateNotes(id: Long, notes: String?) {
-        shareDao.updateNotes(id, notes)
+        val now = System.currentTimeMillis()
+        shareDao.updateNotesAndTimestamp(id, notes, now)
+        val syncId = shareDao.getSyncIdById(id) ?: return
+        scope.launch { syncPusher?.pushNoteUpdate(syncId, notes, now) }
     }
 
     suspend fun deleteById(id: Long) {
+        val syncId = shareDao.getSyncIdById(id)
         metadataDao.deleteByShareRecordId(id)
         shareDao.deleteById(id)
+        if (syncId != null) scope.launch { syncPusher?.pushDelete(syncId) }
     }
 
     suspend fun deleteAll() {
