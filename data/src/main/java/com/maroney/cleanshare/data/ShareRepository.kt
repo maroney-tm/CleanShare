@@ -49,6 +49,9 @@ class ShareRepository(
         if (syncId != null) scope.launch { syncPusher?.pushDelete(syncId) }
     }
 
+    // Note: deleteAll() does not push to the sync server — bulk-delete propagation
+    // is out of scope for MVP. Cleared records will reappear on the next fullSync()
+    // if the server still has them.
     suspend fun deleteAll() {
         shareDao.deleteAll()
         metadataDao.deleteAll()

@@ -33,7 +33,7 @@ class MetadataWorkScheduler(private val workManager: WorkManager) : WorkSchedule
             .setInputData(workDataOf(
                 FetchMetadataWorker.KEY_SHARE_RECORD_ID to shareRecordId,
                 FetchMetadataWorker.KEY_URL to url,
-                "sync_id" to syncId,
+                FetchMetadataWorker.KEY_SYNC_ID to syncId,
             ))
             .setConstraints(Constraints(requiredNetworkType = NetworkType.CONNECTED))
             .build()

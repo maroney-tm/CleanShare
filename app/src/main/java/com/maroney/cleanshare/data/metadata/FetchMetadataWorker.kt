@@ -20,6 +20,7 @@ class FetchMetadataWorker(
     companion object {
         const val KEY_SHARE_RECORD_ID = "share_record_id"
         const val KEY_URL = "url"
+        const val KEY_SYNC_ID = "sync_id"
     }
 
     override suspend fun doWork(): Result {
