@@ -45,9 +45,14 @@ class FetchMetadataWorker(
             )
         dao.upsert(metadata)
 
+        // Only push on SUCCESS — FAILED metadata isn't meaningful for other clients.
+        // On retry, the success path will push the completed metadata.
         // Push metadata to sync server if we have a syncId and the fetch succeeded.
         if (syncId.isNotEmpty() && metadata.fetchStatus == FetchStatus.SUCCESS) {
-            syncClient?.putMetadata(syncId, metadata.toSyncLinkMetadata())
+            val pushed = syncClient?.putMetadata(syncId, metadata.toSyncLinkMetadata())
+            if (pushed == false) {
+                android.util.Log.w("FetchMetadataWorker", "Metadata push failed for syncId=$syncId")
+            }
         }
 
         RecentSharesWidget().updateAll(applicationContext)
