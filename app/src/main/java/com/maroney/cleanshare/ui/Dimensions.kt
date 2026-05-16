@@ -18,4 +18,5 @@ object Radius {
 object IconSize {
     val thumbnail = 64.dp
     val favicon = 32.dp
+    val statusDot = 16.dp
 }

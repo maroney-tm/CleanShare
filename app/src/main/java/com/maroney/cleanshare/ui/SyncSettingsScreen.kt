@@ -29,7 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import com.maroney.cleanshare.ui.theme.LocalColors
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.maroney.cleanshare.sync.ConnectionStatus
@@ -41,7 +41,7 @@ fun SyncSettingsScreen(onNavigateBack: () -> Unit) {
     val config by viewModel.config.collectAsStateWithLifecycle()
     val status by viewModel.connectionStatus.collectAsStateWithLifecycle()
 
-    var draftHost by remember(config.manualHost) {
+    var draftHost by remember(config.manualHost, config.resolvedHost) {
         mutableStateOf(config.manualHost ?: config.resolvedHost ?: "")
     }
 
@@ -120,21 +120,20 @@ fun SyncSettingsScreen(onNavigateBack: () -> Unit) {
 @Composable
 private fun ConnectionStatusRow(status: ConnectionStatus) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        // Status colors are semantic indicators not covered by CleanShareColors/Dimensions tokens.
+        val colors = LocalColors.current.status
         val (dotColor, label) = when (status) {
             is ConnectionStatus.Connected ->
-                Color(0xFF4CAF50) to "Connected  ${status.host}:${status.port}"
+                colors.ok to "Connected — ${status.host}:${status.port}"
             is ConnectionStatus.Searching ->
-                Color(0xFFFFC107) to "Searching…"
+                colors.pending to "Searching…"
             is ConnectionStatus.Disconnected ->
-                Color(0xFF9E9E9E) to "Not connected"
+                colors.off to "Not connected"
         }
         Icon(
             imageVector = Icons.Default.Circle,
             contentDescription = null,
             tint = dotColor,
-            // IconSize.favicon is 32.dp; dividing Dp by Int is supported.
-            modifier = Modifier.size(IconSize.favicon / 2),
+            modifier = Modifier.size(IconSize.statusDot),
         )
         Spacer(modifier = Modifier.width(Spacing.sm))
         Text(text = label, style = MaterialTheme.typography.bodyMedium)
