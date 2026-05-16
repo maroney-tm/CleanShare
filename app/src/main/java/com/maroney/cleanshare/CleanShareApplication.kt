@@ -54,6 +54,6 @@ class CleanShareApplication : Application(), Configuration.Provider {
 
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
-            .setWorkerFactory(AppWorkerFactory(metadataFetcher, database.linkMetadataDao()))
+            .setWorkerFactory(AppWorkerFactory(metadataFetcher, database.linkMetadataDao(), syncClient))
             .build()
 }
