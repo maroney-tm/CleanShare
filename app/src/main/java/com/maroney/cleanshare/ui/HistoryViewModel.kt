@@ -9,6 +9,7 @@ import com.maroney.cleanshare.CleanShareApplication
 import com.maroney.cleanshare.data.ShareRecordWithMetadata
 import com.maroney.cleanshare.data.ShareRepository
 import com.maroney.cleanshare.data.metadata.MetadataWorkScheduler
+import com.maroney.cleanshare.sync.SyncManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -19,6 +20,7 @@ import kotlinx.coroutines.launch
 class HistoryViewModel(
     private val repository: ShareRepository,
     private val workScheduler: MetadataWorkScheduler,
+    private val syncManager: SyncManager,
 ) : ViewModel() {
 
     val history: StateFlow<List<ShareRecordWithMetadata>> = repository.getAll()
@@ -29,12 +31,21 @@ class HistoryViewModel(
         )
 
     init {
-        // Schedule fetches for any records missing metadata — covers existing
-        // rows on first launch after upgrade and workers that didn't finish.
         viewModelScope.launch(Dispatchers.IO) {
             val snapshot = repository.getAll().first()
             workScheduler.schedulePendingFetches(snapshot)
+            syncManager.resolveAndSync()
         }
+    }
+
+    /** Called from HistoryScreen when the lifecycle moves to ON_START. */
+    fun onStart() {
+        syncManager.startListening(viewModelScope)
+    }
+
+    /** Called from HistoryScreen when the lifecycle moves to ON_STOP. */
+    fun onStop() {
+        syncManager.stopListening()
     }
 
     fun deleteItem(id: Long) {
@@ -54,7 +65,7 @@ class HistoryViewModel(
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
                 val app = extras[APPLICATION_KEY] as CleanShareApplication
-                return HistoryViewModel(app.shareRepository, app.workScheduler) as T
+                return HistoryViewModel(app.shareRepository, app.workScheduler, app.syncManager) as T
             }
         }
     }

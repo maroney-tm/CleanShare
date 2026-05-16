@@ -13,8 +13,11 @@ import com.maroney.cleanshare.ui.DetailScreen
 import com.maroney.cleanshare.ui.HistoryRoute
 import com.maroney.cleanshare.ui.HistoryScreen
 import com.maroney.cleanshare.ui.HistoryViewModel
+import com.maroney.cleanshare.ui.SyncSettingsScreen
 import com.maroney.cleanshare.ui.theme.CleanShareTheme
 import com.maroney.cleanshare.widget.RecentSharesWidget
+
+data object SyncSettingsRoute
 
 class MainActivity : ComponentActivity() {
 
@@ -39,11 +42,17 @@ class MainActivity : ComponentActivity() {
                                 HistoryScreen(
                                     viewModel = viewModel,
                                     onNavigateToDetail = { id -> backStack.add(DetailRoute(id)) },
+                                    onNavigateToSettings = { backStack.add(SyncSettingsRoute) },
                                 )
                             }
                             is DetailRoute -> NavEntry(key) {
                                 DetailScreen(
                                     id = key.id,
+                                    onNavigateBack = { backStack.removeLastOrNull() },
+                                )
+                            }
+                            SyncSettingsRoute -> NavEntry(key) {
+                                SyncSettingsScreen(
                                     onNavigateBack = { backStack.removeLastOrNull() },
                                 )
                             }
