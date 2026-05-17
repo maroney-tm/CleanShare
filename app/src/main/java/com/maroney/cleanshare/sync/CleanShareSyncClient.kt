@@ -38,7 +38,17 @@ class CleanShareSyncClient(private val okHttpClient: OkHttpClient) {
 
     @Volatile private var baseUrl: String? = null
 
-    fun configure(host: String, port: Int) { baseUrl = "${schemeFor(host)}://$host:$port" }
+    fun configure(host: String, port: Int) {
+        val scheme = schemeFor(host)
+        // Omit port when it's the default for the scheme (80 for http, 443 for https)
+        // so URLs stay clean and don't trip servers that reject explicit default ports.
+        val portSuffix = when {
+            scheme == "https" && port == 443 -> ""
+            scheme == "http"  && port == 80  -> ""
+            else -> ":$port"
+        }
+        baseUrl = "$scheme://$host$portSuffix"
+    }
     fun clear() { baseUrl = null }
     fun isConfigured(): Boolean = baseUrl != null
     fun effectiveBaseUrl(): String? = baseUrl
