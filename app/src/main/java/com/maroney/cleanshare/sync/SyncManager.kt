@@ -21,7 +21,7 @@ import timber.log.Timber
 sealed class ConnectionStatus {
     data object Disconnected : ConnectionStatus()
     data object Searching    : ConnectionStatus()
-    data class  Connected(val host: String, val port: Int) : ConnectionStatus()
+    data class  Connected(val host: String, val port: Int?) : ConnectionStatus()
 }
 
 class SyncManager(
@@ -46,19 +46,25 @@ class SyncManager(
     suspend fun resolveAndSync(): Boolean = withContext(Dispatchers.IO) {
         _status.value = ConnectionStatus.Searching
         val config = configRepo.config.first()
-        val port = config.port
 
-        val host: String? = when {
-            config.manualHost != null -> config.manualHost
+        // Resolve host and port together so each source can provide its own port.
+        // Manual host: port comes from the stored override (may be null → scheme default).
+        // Auto-discover: use the port advertised by the mDNS service and cache it for reconnects.
+        // Cached host: reuse the resolved port saved from the last successful discovery.
+        val hostAndPort: Pair<String?, Int?> = when {
+            config.manualHost != null -> config.manualHost to config.port
             config.autoDiscover -> {
                 val discovered = NsdDiscoveryHelper(context).discover()
                 if (discovered != null) {
                     configRepo.setResolvedHost(discovered.first)
-                    discovered.first
-                } else null
+                    configRepo.setResolvedPort(discovered.second)
+                    discovered.first to discovered.second
+                } else null to null
             }
-            else -> config.resolvedHost
+            else -> config.resolvedHost to config.resolvedPort
         }
+        val host = hostAndPort.first
+        val port = hostAndPort.second
 
         if (host == null) {
             _status.value = ConnectionStatus.Disconnected

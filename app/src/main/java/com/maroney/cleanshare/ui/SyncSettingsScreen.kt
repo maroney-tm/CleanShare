@@ -41,8 +41,12 @@ fun SyncSettingsScreen(onNavigateBack: () -> Unit) {
     val config by viewModel.config.collectAsStateWithLifecycle()
     val status by viewModel.connectionStatus.collectAsStateWithLifecycle()
 
-    var draftHost by remember(config.manualHost, config.resolvedHost) {
-        mutableStateOf(config.manualHost ?: config.resolvedHost ?: "")
+    // Reconstruct "host:port" for display so what the user sees matches what they typed.
+    // For a manual host, use the stored override port; for a discovered host, use resolvedPort.
+    var draftHost by remember(config.manualHost, config.resolvedHost, config.port, config.resolvedPort) {
+        val h = config.manualHost ?: config.resolvedHost ?: ""
+        val p = if (config.manualHost != null) config.port else config.resolvedPort
+        mutableStateOf(if (h.isNotEmpty() && p != null) "$h:$p" else h)
     }
 
     Scaffold(
@@ -98,7 +102,7 @@ fun SyncSettingsScreen(onNavigateBack: () -> Unit) {
                 value = draftHost,
                 onValueChange = { draftHost = it },
                 enabled = !config.autoDiscover,
-                placeholder = { Text("192.168.1.x:8765") },
+                placeholder = { Text("192.168.1.x:8765 or myserver.com") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -122,8 +126,10 @@ private fun ConnectionStatusRow(status: ConnectionStatus) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         val colors = LocalColors.current.status
         val (dotColor, label) = when (status) {
-            is ConnectionStatus.Connected ->
-                colors.ok to "Connected — ${status.host}:${status.port}"
+            is ConnectionStatus.Connected -> {
+                val portSuffix = if (status.port != null) ":${status.port}" else ""
+                colors.ok to "Connected — ${status.host}$portSuffix"
+            }
             is ConnectionStatus.Searching ->
                 colors.pending to "Searching…"
             is ConnectionStatus.Disconnected ->

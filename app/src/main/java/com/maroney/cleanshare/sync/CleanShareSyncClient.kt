@@ -38,14 +38,15 @@ class CleanShareSyncClient(private val okHttpClient: OkHttpClient) {
 
     @Volatile private var baseUrl: String? = null
 
-    fun configure(host: String, port: Int) {
+    fun configure(host: String, port: Int?) {
         val scheme = schemeFor(host)
-        // Omit port when it's the default for the scheme (80 for http, 443 for https)
-        // so URLs stay clean and don't trip servers that reject explicit default ports.
+        // Null port → use the scheme default (443 for https, 80 for http) — no explicit suffix.
+        // Explicit 443/80 matching the scheme are also omitted to keep URLs clean.
         val portSuffix = when {
+            port == null                     -> ""
             scheme == "https" && port == 443 -> ""
             scheme == "http"  && port == 80  -> ""
-            else -> ":$port"
+            else                             -> ":$port"
         }
         baseUrl = "$scheme://$host$portSuffix"
     }
@@ -56,6 +57,7 @@ class CleanShareSyncClient(private val okHttpClient: OkHttpClient) {
     suspend fun health(): Boolean = withContext(Dispatchers.IO) {
         val url = baseUrl ?: return@withContext false
         try {
+            Timber.d("Checking health at $url/health")
             okHttpClient.newCall(Request.Builder().url("$url/health").build())
                 .execute().use { it.isSuccessful }
         } catch (e: Exception) {

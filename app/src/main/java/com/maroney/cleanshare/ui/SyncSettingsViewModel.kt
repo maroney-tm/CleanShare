@@ -31,8 +31,20 @@ class SyncSettingsViewModel(
 
     fun setManualHost(raw: String) {
         viewModelScope.launch {
-            val cleaned = raw.trim().ifBlank { null }
-            configRepo.setManualHost(cleaned)
+            val trimmed = raw.trim()
+            if (trimmed.isBlank()) {
+                configRepo.setManualHost(null)
+                configRepo.setPort(null)
+                return@launch
+            }
+            // Accept "host:port" notation (e.g. "192.168.1.55:8765").
+            // Splitting on the last colon keeps plain hostnames and domain names intact;
+            // only parse as a port if the suffix is a valid integer.
+            val colonIdx = trimmed.lastIndexOf(':')
+            val parsedPort = if (colonIdx > 0) trimmed.substring(colonIdx + 1).toIntOrNull() else null
+            val host = if (parsedPort != null) trimmed.substring(0, colonIdx) else trimmed
+            configRepo.setManualHost(host.ifBlank { null })
+            configRepo.setPort(parsedPort)
         }
     }
 
