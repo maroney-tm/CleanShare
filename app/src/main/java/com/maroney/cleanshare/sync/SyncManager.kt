@@ -107,8 +107,7 @@ class SyncManager(
     fun startListening(scope: CoroutineScope) {
         if (!syncClient.isConfigured()) return
         if (sseListener != null) return  // already listening — don't start a second SSE connection
-        val baseUrl = (_status.value as? ConnectionStatus.Connected)
-            ?.let { "http://${it.host}:${it.port}" } ?: return
+        val baseUrl = syncClient.effectiveBaseUrl() ?: return
 
         sseListener = SseListener(buildOkHttp()) { type, data ->
             handleSseEvent(type, data)
