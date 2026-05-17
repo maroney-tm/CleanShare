@@ -9,6 +9,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import timber.log.Timber
 
 class MetadataFetcher(private val okHttpClient: OkHttpClient) {
 
@@ -22,7 +23,8 @@ class MetadataFetcher(private val okHttpClient: OkHttpClient) {
             }
             val body = response.body.use { it.byteStream().bufferedReader().readText().take(512_000) }
             parse(body, url)
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Timber.e(e, "Metadata fetch failed for $url")
             null
         }
     }

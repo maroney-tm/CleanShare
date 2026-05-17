@@ -2,6 +2,7 @@ package com.maroney.cleanshare
 
 import android.app.Application
 import androidx.work.Configuration
+import com.maroney.cleanshare.BuildConfig
 import com.maroney.cleanshare.data.ShareDatabase
 import com.maroney.cleanshare.data.metadata.AppWorkerFactory
 import com.maroney.cleanshare.data.metadata.MetadataFetcher
@@ -12,9 +13,15 @@ import com.maroney.cleanshare.sync.ServerConfigRepository
 import com.maroney.cleanshare.sync.SyncManager
 import androidx.work.WorkManager
 import okhttp3.OkHttpClient
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class CleanShareApplication : Application(), Configuration.Provider {
+
+    override fun onCreate() {
+        super.onCreate()
+        if (BuildConfig.DEBUG) Timber.plant(Timber.DebugTree())
+    }
 
     val database by lazy { ShareDatabase.getInstance(this) }
 

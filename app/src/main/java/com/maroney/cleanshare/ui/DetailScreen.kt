@@ -63,6 +63,7 @@ import com.maroney.cleanshare.ui.fakedata.HistoryItemPreviewProvider
 import com.maroney.cleanshare.ui.theme.CleanShareTheme
 import com.maroney.cleanshare.ui.theme.LocalColors
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 // ── Stateful entry point (ViewModel-driven) ──────────────────────────────────
 
@@ -105,7 +106,7 @@ fun DetailScreen(
         onOpen = {
             try {
                 context.startActivity(Intent(Intent.ACTION_VIEW, item.record.cleanedText.toUri()))
-            } catch (_: Exception) { }
+            } catch (e: Exception) { Timber.e(e, "Failed to open URL in browser") }
         },
         onDelete = { vm.deleteItem() },
         onRetryFetch = { vm.retryMetadataFetch() },

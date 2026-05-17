@@ -11,6 +11,7 @@ import com.maroney.cleanshare.data.LinkMetadataDao
 import com.maroney.cleanshare.sync.CleanShareSyncClient
 import com.maroney.cleanshare.sync.SyncLinkMetadata
 import com.maroney.cleanshare.widget.RecentSharesWidget
+import timber.log.Timber
 
 class FetchMetadataWorker(
     context: Context,
@@ -51,7 +52,7 @@ class FetchMetadataWorker(
         if (syncId.isNotEmpty() && metadata.fetchStatus == FetchStatus.SUCCESS) {
             val pushed = syncClient?.putMetadata(syncId, metadata.toSyncLinkMetadata())
             if (pushed == false) {
-                android.util.Log.w("FetchMetadataWorker", "Metadata push failed for syncId=$syncId")
+                Timber.w("Metadata push failed for syncId=%s", syncId)
             }
         }
 

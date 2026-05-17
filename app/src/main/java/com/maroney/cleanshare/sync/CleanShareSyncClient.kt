@@ -8,6 +8,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
+import timber.log.Timber
 
 // ---- Sync-layer data types (separate from Room entities) ----
 
@@ -46,7 +47,10 @@ class CleanShareSyncClient(private val okHttpClient: OkHttpClient) {
         try {
             okHttpClient.newCall(Request.Builder().url("$url/health").build())
                 .execute().use { it.isSuccessful }
-        } catch (_: Exception) { false }
+        } catch (e: Exception) {
+            Timber.e(e, "Health check failed")
+            false
+        }
     }
 
     suspend fun getAllRecords(): List<SyncRecord> = withContext(Dispatchers.IO) {
@@ -57,7 +61,7 @@ class CleanShareSyncClient(private val okHttpClient: OkHttpClient) {
                     if (!resp.isSuccessful) return@withContext emptyList()
                     parseRecordList(resp.body.string())
                 }
-        } catch (_: Exception) { emptyList() }
+        } catch (e: Exception) { Timber.e(e, "Failed to fetch records"); emptyList() }
     }
 
     suspend fun postRecord(record: SyncRecord): Boolean = withContext(Dispatchers.IO) {
@@ -66,7 +70,7 @@ class CleanShareSyncClient(private val okHttpClient: OkHttpClient) {
             val body = buildRecordJson(record).toRequestBody(JSON_MT)
             okHttpClient.newCall(Request.Builder().url("$url/records").post(body).build())
                 .execute().use { it.isSuccessful }
-        } catch (_: Exception) { false }
+        } catch (e: Exception) { Timber.e(e, "Failed to post record"); false }
     }
 
     suspend fun patchRecord(syncId: String, notes: String?, updatedAt: Long): Boolean =
@@ -80,7 +84,7 @@ class CleanShareSyncClient(private val okHttpClient: OkHttpClient) {
                 okHttpClient.newCall(
                     Request.Builder().url("$url/records/$syncId").patch(json).build()
                 ).execute().use { it.isSuccessful }
-            } catch (_: Exception) { false }
+            } catch (e: Exception) { Timber.e(e, "Failed to patch record"); false }
         }
 
     suspend fun deleteRecord(syncId: String): Boolean = withContext(Dispatchers.IO) {
@@ -89,7 +93,7 @@ class CleanShareSyncClient(private val okHttpClient: OkHttpClient) {
             okHttpClient.newCall(
                 Request.Builder().url("$url/records/$syncId").delete().build()
             ).execute().use { it.isSuccessful }
-        } catch (_: Exception) { false }
+        } catch (e: Exception) { Timber.e(e, "Failed to delete record"); false }
     }
 
     suspend fun putMetadata(syncId: String, meta: SyncLinkMetadata): Boolean =
@@ -100,7 +104,7 @@ class CleanShareSyncClient(private val okHttpClient: OkHttpClient) {
                 okHttpClient.newCall(
                     Request.Builder().url("$url/records/$syncId/metadata").put(json).build()
                 ).execute().use { it.isSuccessful }
-            } catch (_: Exception) { false }
+            } catch (e: Exception) { Timber.e(e, "Failed to put metadata"); false }
         }
 
     // ---- JSON helpers ----

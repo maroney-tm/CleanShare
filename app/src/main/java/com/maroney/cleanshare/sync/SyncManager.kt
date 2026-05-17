@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 sealed class ConnectionStatus {
     data object Disconnected : ConnectionStatus()
@@ -147,7 +148,7 @@ class SyncManager(
                     shareDao.deleteBySyncId(syncId)
                 }
             }
-        } catch (_: Exception) { /* malformed event — ignore */ }
+        } catch (e: Exception) { Timber.w(e, "Malformed SSE event: type=$type") }
     }
 
     // ---- Push helpers (fire-and-forget, called from ShareRepository) ----

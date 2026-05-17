@@ -5,6 +5,7 @@ import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
+import timber.log.Timber
 import kotlin.coroutines.resume
 
 private const val SERVICE_TYPE = "_cleanshare._tcp"
@@ -37,7 +38,7 @@ class NsdDiscoveryHelper(context: Context) {
                             override fun onServiceResolved(s: NsdServiceInfo) {
                                 val host = s.host?.hostAddress ?: return
                                 if (cont.isActive) {
-                                    try { discoveryListener?.let { nsdManager.stopServiceDiscovery(it) } } catch (_: Exception) {}
+                                    try { discoveryListener?.let { nsdManager.stopServiceDiscovery(it) } } catch (e: Exception) { Timber.d(e, "stopServiceDiscovery failed during cleanup") }
                                     cont.resume(host to s.port)
                                 }
                             }
@@ -48,7 +49,7 @@ class NsdDiscoveryHelper(context: Context) {
                 nsdManager.discoverServices(SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
 
                 cont.invokeOnCancellation {
-                    try { discoveryListener?.let { nsdManager.stopServiceDiscovery(it) } } catch (_: Exception) {}
+                    try { discoveryListener?.let { nsdManager.stopServiceDiscovery(it) } } catch (e: Exception) { Timber.d(e, "stopServiceDiscovery failed during cleanup") }
                 }
             }
         }

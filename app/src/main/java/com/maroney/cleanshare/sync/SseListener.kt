@@ -8,6 +8,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import timber.log.Timber
 
 /**
  * Opens a persistent GET /events connection and delivers (eventType, dataJson)
@@ -49,8 +50,8 @@ class SseListener(
                         }
                     }
                 }
-            } catch (_: Exception) {
-                // Connection dropped — caller (SyncManager) can restart on next resume.
+            } catch (e: Exception) {
+                Timber.w(e, "SSE connection dropped")
             }
         }
     }

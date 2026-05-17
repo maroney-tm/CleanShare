@@ -35,6 +35,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -63,6 +64,7 @@ dependencies {
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.jsoup)
+    implementation(libs.timber)
     implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.compose.material.icons.extended)
     testImplementation(platform(libs.androidx.compose.bom))

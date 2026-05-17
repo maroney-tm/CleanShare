@@ -1,5 +1,7 @@
 package com.maroney.cleanshare.domain
 
+import timber.log.Timber
+
 /**
  * Pure Kotlin URL sanitizer — no Android imports, no I/O, no logging.
  *
@@ -50,7 +52,8 @@ object UrlSanitizer {
      */
     fun clean(input: String): String = try {
         cleanInternal(input)
-    } catch (_: Exception) {
+    } catch (e: Exception) {
+        Timber.w(e, "URL sanitization failed, returning input")
         input
     }
 
