@@ -35,6 +35,7 @@ class HistoryViewModel(
             val snapshot = repository.getAll().first()
             workScheduler.schedulePendingFetches(snapshot)
             syncManager.resolveAndSync()
+            syncManager.startListening(viewModelScope)  // safe — guarded against double-start above
         }
     }
 

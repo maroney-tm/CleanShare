@@ -20,7 +20,8 @@ class NsdDiscoveryHelper(context: Context) {
     suspend fun discover(timeoutMs: Long = 5_000L): Pair<String, Int>? =
         withTimeoutOrNull(timeoutMs) {
             suspendCancellableCoroutine<Pair<String, Int>?> { cont ->
-                val discoveryListener = object : NsdManager.DiscoveryListener {
+                var discoveryListener: NsdManager.DiscoveryListener? = null
+                discoveryListener = object : NsdManager.DiscoveryListener {
                     override fun onDiscoveryStarted(serviceType: String) {}
                     override fun onDiscoveryStopped(serviceType: String) {}
                     override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {
@@ -35,7 +36,10 @@ class NsdDiscoveryHelper(context: Context) {
                             }
                             override fun onServiceResolved(s: NsdServiceInfo) {
                                 val host = s.host?.hostAddress ?: return
-                                if (cont.isActive) cont.resume(host to s.port)
+                                if (cont.isActive) {
+                                    try { discoveryListener?.let { nsdManager.stopServiceDiscovery(it) } } catch (_: Exception) {}
+                                    cont.resume(host to s.port)
+                                }
                             }
                         })
                     }
@@ -44,7 +48,7 @@ class NsdDiscoveryHelper(context: Context) {
                 nsdManager.discoverServices(SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
 
                 cont.invokeOnCancellation {
-                    try { nsdManager.stopServiceDiscovery(discoveryListener) } catch (_: Exception) {}
+                    try { discoveryListener?.let { nsdManager.stopServiceDiscovery(it) } } catch (_: Exception) {}
                 }
             }
         }
