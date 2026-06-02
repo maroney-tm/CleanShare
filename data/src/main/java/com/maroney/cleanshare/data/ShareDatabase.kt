@@ -9,8 +9,8 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
-    entities = [ShareRecord::class, LinkMetadata::class],
-    version = 4,
+    entities = [ShareRecord::class, LinkMetadata::class, IngestionRecord::class],
+    version = 5,
     exportSchema = true,
 )
 @TypeConverters(Converters::class)
@@ -18,6 +18,7 @@ abstract class ShareDatabase : RoomDatabase() {
 
     abstract fun shareDao(): ShareDao
     abstract fun linkMetadataDao(): LinkMetadataDao
+    abstract fun ingestionDao(): IngestionDao
 
     companion object {
         @Volatile private var instance: ShareDatabase? = null
@@ -66,6 +67,30 @@ abstract class ShareDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS ingestion_record (
+                        shareRecordId INTEGER NOT NULL PRIMARY KEY,
+                        status TEXT NOT NULL,
+                        errorMessage TEXT,
+                        title TEXT,
+                        uploader TEXT,
+                        uploaderUrl TEXT,
+                        description TEXT,
+                        thumbnailUrl TEXT,
+                        uploadDate TEXT,
+                        duration INTEGER,
+                        viewCount INTEGER,
+                        likeCount INTEGER,
+                        tags TEXT,
+                        mediaType TEXT,
+                        serverVideoPath TEXT
+                    )
+                """.trimIndent())
+            }
+        }
+
         fun getInstance(context: Context): ShareDatabase =
             instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
@@ -73,7 +98,7 @@ abstract class ShareDatabase : RoomDatabase() {
                     ShareDatabase::class.java,
                     "share_history.db",
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                     .build()
                     .also { instance = it }
             }

@@ -3,6 +3,9 @@ package com.maroney.cleanshare.sync
 import android.content.Context
 import com.maroney.cleanshare.data.ContentType
 import com.maroney.cleanshare.data.FetchStatus
+import com.maroney.cleanshare.data.IngestionDao
+import com.maroney.cleanshare.data.IngestionRecord
+import com.maroney.cleanshare.data.IngestionStatus
 import com.maroney.cleanshare.data.LinkMetadata
 import com.maroney.cleanshare.data.LinkMetadataDao
 import com.maroney.cleanshare.data.ShareDao
@@ -30,6 +33,7 @@ class SyncManager(
     private val configRepo: ServerConfigRepository,
     private val shareDao: ShareDao,
     private val metadataDao: LinkMetadataDao,
+    private val ingestionDao: IngestionDao? = null,
 ) : SyncPusher {
     private val _status = MutableStateFlow<ConnectionStatus>(ConnectionStatus.Disconnected)
     val connectionStatus: StateFlow<ConnectionStatus> = _status.asStateFlow()
@@ -152,6 +156,26 @@ class SyncManager(
                     metadataDao.deleteByShareRecordId(local.id)
                     shareDao.deleteBySyncId(syncId)
                 }
+                "ingestion_metadata" -> {
+                    val dao = ingestionDao ?: return@withContext
+                    val syncId = obj.getString("syncId")
+                    val local = shareDao.getBySyncId(syncId) ?: return@withContext
+                    dao.upsert(parseIngestionRecord(local.id, obj))
+                }
+                "ingestion_complete" -> {
+                    val dao = ingestionDao ?: return@withContext
+                    val syncId = obj.getString("syncId")
+                    val local = shareDao.getBySyncId(syncId) ?: return@withContext
+                    val videoPath = if (obj.isNull("serverVideoPath")) null else obj.getString("serverVideoPath")
+                    dao.markComplete(local.id, videoPath)
+                }
+                "ingestion_failed" -> {
+                    val dao = ingestionDao ?: return@withContext
+                    val syncId = obj.getString("syncId")
+                    val local = shareDao.getBySyncId(syncId) ?: return@withContext
+                    val errorMessage = if (obj.isNull("errorMessage")) null else obj.getString("errorMessage")
+                    dao.markFailed(local.id, errorMessage)
+                }
             }
         } catch (e: Exception) { Timber.w(e, "Malformed SSE event: type=$type") }
     }
@@ -244,4 +268,26 @@ class SyncManager(
         .connectTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
         .readTimeout(0, java.util.concurrent.TimeUnit.SECONDS) // no read timeout for SSE
         .build()
+
+    private fun parseIngestionRecord(shareRecordId: Long, obj: org.json.JSONObject): IngestionRecord {
+        val statusStr = runCatching { obj.getString("status") }.getOrNull() ?: "QUEUED"
+        val status = IngestionStatus.entries.firstOrNull { it.name == statusStr } ?: IngestionStatus.QUEUED
+        return IngestionRecord(
+            shareRecordId = shareRecordId,
+            status        = status,
+            errorMessage  = obj.optString("errorMessage").takeIf { it.isNotEmpty() },
+            title         = obj.optString("title").takeIf { it.isNotEmpty() },
+            uploader      = obj.optString("uploader").takeIf { it.isNotEmpty() },
+            uploaderUrl   = obj.optString("uploaderUrl").takeIf { it.isNotEmpty() },
+            description   = obj.optString("description").takeIf { it.isNotEmpty() },
+            thumbnailUrl  = obj.optString("thumbnailUrl").takeIf { it.isNotEmpty() },
+            uploadDate    = obj.optString("uploadDate").takeIf { it.isNotEmpty() },
+            duration      = obj.optInt("duration").takeIf { it > 0 },
+            viewCount     = obj.optLong("viewCount").takeIf { it > 0 },
+            likeCount     = obj.optLong("likeCount").takeIf { it > 0 },
+            tags          = obj.optString("tags").takeIf { it.isNotEmpty() },
+            mediaType     = obj.optString("mediaType").takeIf { it.isNotEmpty() },
+            serverVideoPath = obj.optString("serverVideoPath").takeIf { it.isNotEmpty() },
+        )
+    }
 }

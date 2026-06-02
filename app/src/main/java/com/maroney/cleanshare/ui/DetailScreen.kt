@@ -57,8 +57,11 @@ import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
+import com.maroney.cleanshare.CleanShareApplication
 import com.maroney.cleanshare.data.FetchStatus
 import com.maroney.cleanshare.data.ShareRecordWithMetadata
+import com.maroney.cleanshare.domain.DomainHandler
+import com.maroney.cleanshare.domain.DomainUrlMetadata
 import com.maroney.cleanshare.ui.fakedata.HistoryItemPreviewProvider
 import com.maroney.cleanshare.ui.theme.CleanShareTheme
 import com.maroney.cleanshare.ui.theme.LocalColors
@@ -86,9 +89,16 @@ fun DetailScreen(
 
     val item = uiState ?: return
 
+    val app = LocalContext.current.applicationContext as CleanShareApplication
+    val url = item.record.cleanedText
+    val handler = remember(url) { app.domainHandlerRegistry.findHandler(url) }
+    val urlMetadata = remember(url, handler) { handler?.extractUrlMetadata(url) }
+
     DetailContent(
         item = item,
         notes = notes,
+        handler = handler,
+        urlMetadata = urlMetadata,
         onNavigateBack = onNavigateBack,
         onShare = {
             val intent = Intent(Intent.ACTION_SEND).apply {
@@ -122,6 +132,8 @@ fun DetailScreen(
 private fun DetailContent(
     item: ShareRecordWithMetadata,
     notes: String,
+    handler: DomainHandler?,
+    urlMetadata: DomainUrlMetadata?,
     onNavigateBack: () -> Unit,
     onShare: () -> Unit,
     onCopy: () -> Unit,
@@ -154,7 +166,11 @@ private fun DetailContent(
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState()),
         ) {
-            HeaderSection(item)
+            if (handler != null && urlMetadata != null) {
+                handler.DetailSection(urlMetadata, item.ingestion)
+            } else {
+                HeaderSection(item)
+            }
 
             if (item.record.cleanedText != item.record.originalText) {
                 SectionLabel("URLs")
@@ -163,8 +179,11 @@ private fun DetailContent(
                 UrlBlock(label = "ORIGINAL", url = item.record.originalText, highlighted = false)
             }
 
-            val description = item.metadata?.description?.takeIf { it.isNotBlank() }
-                ?: item.metadata?.articleSnippet?.takeIf { it.isNotBlank() }
+            // Description is hidden when a domain handler owns the header area.
+            val description = if (handler == null) {
+                item.metadata?.description?.takeIf { it.isNotBlank() }
+                    ?: item.metadata?.articleSnippet?.takeIf { it.isNotBlank() }
+            } else null
             if (description != null) {
                 SectionLabel("Description")
                 Text(
@@ -332,6 +351,8 @@ private fun DetailScreenPreview(
         DetailContent(
             item = item,
             notes = "Added this while researching Compose layouts.",
+            handler = null,
+            urlMetadata = null,
             onNavigateBack = {},
             onShare = {},
             onCopy = {},

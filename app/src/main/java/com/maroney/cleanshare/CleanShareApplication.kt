@@ -8,6 +8,8 @@ import com.maroney.cleanshare.data.metadata.AppWorkerFactory
 import com.maroney.cleanshare.data.metadata.MetadataFetcher
 import com.maroney.cleanshare.data.metadata.MetadataWorkScheduler
 import com.maroney.cleanshare.data.ShareRepository
+import com.maroney.cleanshare.domain.DomainHandlerRegistry
+import com.maroney.cleanshare.domain.InstagramDomainHandler
 import com.maroney.cleanshare.sync.CleanShareSyncClient
 import com.maroney.cleanshare.sync.ServerConfigRepository
 import com.maroney.cleanshare.sync.SyncManager
@@ -52,11 +54,28 @@ class CleanShareApplication : Application(), Configuration.Provider {
     val syncClient by lazy { CleanShareSyncClient(okHttpClient) }
 
     val syncManager by lazy {
-        SyncManager(this, syncClient, serverConfigRepository, database.shareDao(), database.linkMetadataDao())
+        SyncManager(
+            context      = this,
+            syncClient   = syncClient,
+            configRepo   = serverConfigRepository,
+            shareDao     = database.shareDao(),
+            metadataDao  = database.linkMetadataDao(),
+            ingestionDao = database.ingestionDao(),
+        )
     }
 
     val shareRepository by lazy {
-        ShareRepository(database.shareDao(), database.linkMetadataDao(), workScheduler, syncManager)
+        ShareRepository(
+            shareDao     = database.shareDao(),
+            metadataDao  = database.linkMetadataDao(),
+            workScheduler = workScheduler,
+            syncPusher   = syncManager,
+            ingestionDao = database.ingestionDao(),
+        )
+    }
+
+    val domainHandlerRegistry by lazy {
+        DomainHandlerRegistry(listOf(InstagramDomainHandler()))
     }
 
     override val workManagerConfiguration: Configuration

@@ -12,19 +12,38 @@ class ShareRepository(
     private val metadataDao: LinkMetadataDao,
     private val workScheduler: WorkScheduler,
     private val syncPusher: SyncPusher? = null,
+    private val ingestionDao: IngestionDao? = null,
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
 ) {
 
-    fun getAll(): Flow<List<ShareRecordWithMetadata>> =
-        combine(shareDao.getAll(), metadataDao.observeAll()) { records, metadataList ->
-            val byId = metadataList.associateBy { it.shareRecordId }
-            records.map { ShareRecordWithMetadata(it, byId[it.id]) }
+    fun getAll(): Flow<List<ShareRecordWithMetadata>> {
+        val ing = ingestionDao
+        return if (ing != null) {
+            combine(shareDao.getAll(), metadataDao.observeAll(), ing.observeAll()) { records, metadataList, ingestions ->
+                val metaById = metadataList.associateBy { it.shareRecordId }
+                val ingestionById = ingestions.associateBy { it.shareRecordId }
+                records.map { ShareRecordWithMetadata(it, metaById[it.id], ingestionById[it.id]) }
+            }
+        } else {
+            combine(shareDao.getAll(), metadataDao.observeAll()) { records, metadataList ->
+                val byId = metadataList.associateBy { it.shareRecordId }
+                records.map { ShareRecordWithMetadata(it, byId[it.id]) }
+            }
         }
+    }
 
-    fun getById(id: Long): Flow<ShareRecordWithMetadata?> =
-        combine(shareDao.getById(id), metadataDao.getById(id)) { record, metadata ->
-            record?.let { ShareRecordWithMetadata(it, metadata) }
+    fun getById(id: Long): Flow<ShareRecordWithMetadata?> {
+        val ing = ingestionDao
+        return if (ing != null) {
+            combine(shareDao.getById(id), metadataDao.getById(id), ing.observeById(id)) { record, metadata, ingestion ->
+                record?.let { ShareRecordWithMetadata(it, metadata, ingestion) }
+            }
+        } else {
+            combine(shareDao.getById(id), metadataDao.getById(id)) { record, metadata ->
+                record?.let { ShareRecordWithMetadata(it, metadata) }
+            }
         }
+    }
 
     suspend fun insert(record: ShareRecord) {
         val id = shareDao.insert(record)
@@ -45,6 +64,7 @@ class ShareRepository(
     suspend fun deleteById(id: Long) {
         val syncId = shareDao.getSyncIdById(id)
         metadataDao.deleteByShareRecordId(id)
+        ingestionDao?.deleteByShareRecordId(id)
         shareDao.deleteById(id)
         if (syncId != null) scope.launch { syncPusher?.pushDelete(syncId) }
     }
@@ -55,5 +75,6 @@ class ShareRepository(
     suspend fun deleteAll() {
         shareDao.deleteAll()
         metadataDao.deleteAll()
+        ingestionDao?.deleteAll()
     }
 }
