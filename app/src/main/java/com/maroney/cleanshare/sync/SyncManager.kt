@@ -21,6 +21,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
+
+
 sealed class ConnectionStatus {
     data object Disconnected : ConnectionStatus()
     data object Searching    : ConnectionStatus()
@@ -43,32 +45,13 @@ class SyncManager(
     // ---- Discovery + connection ----
 
     /**
-     * Resolves the server address (manual override → mDNS → give up),
-     * verifies with /health, and configures [syncClient].
+     * Connects to the manually configured server, verifies with /health, and syncs.
      * Returns true if a live server was found.
      */
     suspend fun resolveAndSync(): Boolean = withContext(Dispatchers.IO) {
         _status.value = ConnectionStatus.Searching
         val config = configRepo.config.first()
-
-        // Resolve host and port together so each source can provide its own port.
-        // Manual host: port comes from the stored override (may be null → scheme default).
-        // Auto-discover: use the port advertised by the mDNS service and cache it for reconnects.
-        // Cached host: reuse the resolved port saved from the last successful discovery.
-        val hostAndPort: Pair<String?, Int?> = when {
-            config.manualHost != null -> config.manualHost to config.port
-            config.autoDiscover -> {
-                val discovered = NsdDiscoveryHelper(context).discover()
-                if (discovered != null) {
-                    configRepo.setResolvedHost(discovered.first)
-                    configRepo.setResolvedPort(discovered.second)
-                    discovered.first to discovered.second
-                } else null to null
-            }
-            else -> config.resolvedHost to config.resolvedPort
-        }
-        val host = hostAndPort.first
-        val port = hostAndPort.second
+        val host = config.manualHost
 
         if (host == null) {
             _status.value = ConnectionStatus.Disconnected
@@ -76,17 +59,15 @@ class SyncManager(
             return@withContext false
         }
 
-        syncClient.configure(host, port)
+        syncClient.configure(host, config.port)
 
         if (!syncClient.health()) {
-            // Cached host is stale — clear it and give up
-            configRepo.setResolvedHost(null)
             syncClient.clear()
             _status.value = ConnectionStatus.Disconnected
             return@withContext false
         }
 
-        _status.value = ConnectionStatus.Connected(host, port)
+        _status.value = ConnectionStatus.Connected(host, config.port)
         fullSync()
         true
     }

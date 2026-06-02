@@ -39,16 +39,8 @@ class CleanShareSyncClient(private val okHttpClient: OkHttpClient) {
     @Volatile private var baseUrl: String? = null
 
     fun configure(host: String, port: Int?) {
-        val scheme = schemeFor(host)
-        // Null port → use the scheme default (443 for https, 80 for http) — no explicit suffix.
-        // Explicit 443/80 matching the scheme are also omitted to keep URLs clean.
-        val portSuffix = when {
-            port == null                     -> ""
-            scheme == "https" && port == 443 -> ""
-            scheme == "http"  && port == 80  -> ""
-            else                             -> ":$port"
-        }
-        baseUrl = "$scheme://$host$portSuffix"
+        val portSuffix = if (port != null && port != 80) ":$port" else ""
+        baseUrl = "http://$host$portSuffix"
     }
     fun clear() { baseUrl = null }
     fun isConfigured(): Boolean = baseUrl != null
@@ -179,16 +171,5 @@ class CleanShareSyncClient(private val okHttpClient: OkHttpClient) {
 
     companion object {
         private val JSON_MT = "application/json".toMediaType()
-
-        /**
-         * LAN/local addresses use plain HTTP (no certificate available).
-         * Any public hostname gets HTTPS.
-         */
-        fun schemeFor(host: String): String = when {
-            host == "localhost"                                    -> "http"
-            host.endsWith(".local")                               -> "http"  // mDNS
-            host.matches(Regex("""\d+\.\d+\.\d+\.\d+"""))        -> "http"  // IPv4
-            else                                                  -> "https"
-        }
     }
 }

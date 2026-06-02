@@ -25,10 +25,6 @@ class SyncSettingsViewModel(
 
     val connectionStatus: StateFlow<ConnectionStatus> = syncManager.connectionStatus
 
-    fun setAutoDiscover(enabled: Boolean) {
-        viewModelScope.launch { configRepo.setAutoDiscover(enabled) }
-    }
-
     fun setManualHost(raw: String) {
         viewModelScope.launch {
             val trimmed = raw.trim()
@@ -37,9 +33,7 @@ class SyncSettingsViewModel(
                 configRepo.setPort(null)
                 return@launch
             }
-            // Accept "host:port" notation (e.g. "192.168.1.55:8765").
-            // Splitting on the last colon keeps plain hostnames and domain names intact;
-            // only parse as a port if the suffix is a valid integer.
+            // Accept "ip:port" notation (e.g. "192.168.1.60:8765").
             val colonIdx = trimmed.lastIndexOf(':')
             val parsedPort = if (colonIdx > 0) trimmed.substring(colonIdx + 1).toIntOrNull() else null
             val host = if (parsedPort != null) trimmed.substring(0, colonIdx) else trimmed
