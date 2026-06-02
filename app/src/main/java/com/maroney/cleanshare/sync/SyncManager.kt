@@ -75,20 +75,35 @@ class SyncManager(
     // ---- Full pull sync ----
 
     /**
-     * Fetches all records from the server and upserts them locally (LWW).
-     * NOTE: Deletions propagate via SSE only; this method never deletes local records.
+     * Bidirectional sync: pulls server records locally (LWW) and pushes local records
+     * that are absent from the server (e.g. created before sync was configured).
+     * Deletions propagate via SSE only; this method never deletes local records.
      */
     suspend fun fullSync() = withContext(Dispatchers.IO) {
         val serverRecords = syncClient.getAllRecords()
+        val serverSyncIds = serverRecords.map { it.syncId }.toSet()
+
+        // Pull: bring server records down (LWW on notes/updatedAt).
         for (sr in serverRecords) {
             val local = shareDao.getBySyncId(sr.syncId)
             if (local == null) {
-                // Record originated on another client (e.g. future TUI) — insert locally.
                 val id = shareDao.insert(sr.toShareRecord())
                 sr.linkMetadata?.let { metadataDao.upsert(it.toLinkMetadata(id)) }
             } else if (sr.updatedAt > local.updatedAt) {
                 shareDao.updateNotesAndTimestamp(local.id, sr.notes, sr.updatedAt)
                 sr.linkMetadata?.let { metadataDao.upsert(it.toLinkMetadata(local.id)) }
+            }
+        }
+
+        // Push: send local records the server doesn't have yet (e.g. created before sync was set up).
+        val localRecords = shareDao.getAllOnce()
+        for (local in localRecords) {
+            if (local.syncId !in serverSyncIds) {
+                syncClient.postRecord(local.toSyncRecord())
+                val meta = metadataDao.getByShareRecordIdOnce(local.id)
+                if (meta != null && meta.fetchStatus == FetchStatus.SUCCESS) {
+                    syncClient.putMetadata(local.syncId, meta.toSyncLinkMetadata())
+                }
             }
         }
     }

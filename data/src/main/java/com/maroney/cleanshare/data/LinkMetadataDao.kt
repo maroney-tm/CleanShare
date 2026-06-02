@@ -17,6 +17,9 @@ interface LinkMetadataDao {
     @Query("SELECT * FROM link_metadata WHERE shareRecordId = :shareRecordId")
     fun getById(shareRecordId: Long): Flow<LinkMetadata?>
 
+    @Query("SELECT * FROM link_metadata WHERE shareRecordId = :shareRecordId")
+    suspend fun getByShareRecordIdOnce(shareRecordId: Long): LinkMetadata?
+
     @Query("DELETE FROM link_metadata WHERE shareRecordId = :shareRecordId")
     suspend fun deleteByShareRecordId(shareRecordId: Long)
 
