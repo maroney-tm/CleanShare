@@ -59,6 +59,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.maroney.cleanshare.CleanShareApplication
 import com.maroney.cleanshare.data.FetchStatus
+import com.maroney.cleanshare.data.IngestionStatus
 import com.maroney.cleanshare.data.ShareRecordWithMetadata
 import com.maroney.cleanshare.domain.DomainHandler
 import com.maroney.cleanshare.domain.DomainUrlMetadata
@@ -93,12 +94,18 @@ fun DetailScreen(
     val url = item.record.cleanedText
     val handler = remember(url) { app.domainHandlerRegistry.findHandler(url) }
     val urlMetadata = remember(url, handler) { handler?.extractUrlMetadata(url) }
+    val videoUrl = remember(item.record.syncId, item.ingestion?.status) {
+        if (item.ingestion?.status == IngestionStatus.COMPLETE) {
+            app.syncClient.effectiveBaseUrl()?.let { "$it/records/${item.record.syncId}/media" }
+        } else null
+    }
 
     DetailContent(
         item = item,
         notes = notes,
         handler = handler,
         urlMetadata = urlMetadata,
+        videoUrl = videoUrl,
         onNavigateBack = onNavigateBack,
         onShare = {
             val intent = Intent(Intent.ACTION_SEND).apply {
@@ -134,6 +141,7 @@ private fun DetailContent(
     notes: String,
     handler: DomainHandler?,
     urlMetadata: DomainUrlMetadata?,
+    videoUrl: String?,
     onNavigateBack: () -> Unit,
     onShare: () -> Unit,
     onCopy: () -> Unit,
@@ -167,7 +175,7 @@ private fun DetailContent(
                 .verticalScroll(rememberScrollState()),
         ) {
             if (handler != null && urlMetadata != null) {
-                handler.DetailSection(urlMetadata, item.ingestion)
+                handler.DetailSection(urlMetadata, item.ingestion, videoUrl)
             } else {
                 HeaderSection(item)
             }
@@ -353,6 +361,7 @@ private fun DetailScreenPreview(
             notes = "Added this while researching Compose layouts.",
             handler = null,
             urlMetadata = null,
+            videoUrl = null,
             onNavigateBack = {},
             onShare = {},
             onCopy = {},

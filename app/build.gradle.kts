@@ -65,6 +65,8 @@ dependencies {
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.jsoup)
     implementation(libs.timber)
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.ui)
     implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.compose.material.icons.extended)
     testImplementation(platform(libs.androidx.compose.bom))

@@ -7,12 +7,14 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,21 +22,34 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
 import coil3.compose.AsyncImage
 import com.maroney.cleanshare.data.IngestionRecord
 import com.maroney.cleanshare.data.IngestionStatus
@@ -94,13 +109,13 @@ class InstagramDomainHandler : DomainHandler {
     }
 
     @Composable
-    override fun DetailSection(urlMetadata: DomainUrlMetadata, ingestion: IngestionRecord?) {
+    override fun DetailSection(urlMetadata: DomainUrlMetadata, ingestion: IngestionRecord?, videoUrl: String?) {
         val meta = urlMetadata as? InstagramUrlMetadata ?: return
         when {
             ingestion == null -> UrlOnlyState(meta)
             ingestion.status == IngestionStatus.QUEUED ||
             ingestion.status == IngestionStatus.EXTRACTING_METADATA -> LoadingState()
-            else -> FullCard(meta, ingestion, showProgress = ingestion.status == IngestionStatus.DOWNLOADING)
+            else -> FullCard(meta, ingestion, showProgress = ingestion.status == IngestionStatus.DOWNLOADING, videoUrl = videoUrl)
         }
     }
 }
@@ -174,7 +189,13 @@ private fun LoadingState() {
 }
 
 @Composable
-private fun FullCard(meta: InstagramUrlMetadata, ingestion: IngestionRecord, showProgress: Boolean) {
+private fun FullCard(meta: InstagramUrlMetadata, ingestion: IngestionRecord, showProgress: Boolean, videoUrl: String?) {
+    var showPlayer by remember { mutableStateOf(false) }
+
+    if (showPlayer && videoUrl != null) {
+        VideoPlayerDialog(videoUrl = videoUrl, onDismiss = { showPlayer = false })
+    }
+
     Column(modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.md)) {
         // Header: avatar + uploader + content type + age
         Row(
@@ -203,7 +224,7 @@ private fun FullCard(meta: InstagramUrlMetadata, ingestion: IngestionRecord, sho
             )
         }
 
-        // Thumbnail with content type badge overlay
+        // Thumbnail with play button overlay when video is available
         val thumbUrl = ingestion.thumbnailUrl
         if (!thumbUrl.isNullOrBlank()) {
             Spacer(Modifier.height(Spacing.sm))
@@ -212,7 +233,8 @@ private fun FullCard(meta: InstagramUrlMetadata, ingestion: IngestionRecord, sho
                     .fillMaxWidth()
                     .aspectRatio(1.78f)
                     .clip(RoundedCornerShape(Radius.md))
-                    .border(Dp.Hairline, LocalColors.current.layout.divider, RoundedCornerShape(Radius.md)),
+                    .border(Dp.Hairline, LocalColors.current.layout.divider, RoundedCornerShape(Radius.md))
+                    .then(if (videoUrl != null) Modifier.clickable { showPlayer = true } else Modifier),
             ) {
                 AsyncImage(
                     model = thumbUrl,
@@ -226,6 +248,23 @@ private fun FullCard(meta: InstagramUrlMetadata, ingestion: IngestionRecord, sho
                         .padding(Spacing.xs),
                 ) {
                     ContentTypeBadge(meta.contentType)
+                }
+                if (videoUrl != null) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .size(IconSize.thumbnail)
+                            .clip(CircleShape)
+                            .background(Color.Black.copy(alpha = 0.5f)),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            Icons.Filled.PlayArrow,
+                            contentDescription = "Play video",
+                            tint = Color.White,
+                            modifier = Modifier.size(IconSize.favicon),
+                        )
+                    }
                 }
             }
         }
@@ -271,6 +310,42 @@ private fun FullCard(meta: InstagramUrlMetadata, ingestion: IngestionRecord, sho
 
     if (showProgress) {
         LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+    }
+}
+
+@Composable
+private fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit) {
+    val context = LocalContext.current
+    val player = remember(videoUrl) {
+        ExoPlayer.Builder(context).build().apply {
+            setMediaItem(MediaItem.fromUri(videoUrl))
+            prepare()
+            playWhenReady = true
+        }
+    }
+    DisposableEffect(player) {
+        onDispose { player.release() }
+    }
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black),
+            contentAlignment = Alignment.Center,
+        ) {
+            AndroidView(
+                factory = { ctx ->
+                    PlayerView(ctx).apply {
+                        this.player = player
+                        useController = true
+                    }
+                },
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
     }
 }
 
