@@ -3,6 +3,8 @@ package com.maroney.cleanshare.ui.fakedata
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.maroney.cleanshare.data.ContentType
 import com.maroney.cleanshare.data.FetchStatus
+import com.maroney.cleanshare.data.IngestionRecord
+import com.maroney.cleanshare.data.IngestionStatus
 import com.maroney.cleanshare.data.LinkMetadata
 import com.maroney.cleanshare.data.ShareRecord
 import com.maroney.cleanshare.data.ShareRecordWithMetadata
@@ -21,14 +23,28 @@ private val recordClean = ShareRecord(
     sharedAt = 1_715_000_000_000L,
 )
 
-// State 1: pending fetch — no metadata row yet
+private val youtubeRecord = ShareRecord(
+    id = 3L,
+    originalText = "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    cleanedText = "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    sharedAt = 1_715_100_000_000L,
+)
+
+private val instagramRecord = ShareRecord(
+    id = 4L,
+    originalText = "https://www.instagram.com/reel/CxYz123/",
+    cleanedText = "https://www.instagram.com/reel/CxYz123/",
+    sharedAt = 1_715_200_000_000L,
+)
+
+// State 1: pending fetch — no metadata yet
 val shimmerItem = ShareRecordWithMetadata(
     record = recordWithTracking,
     metadata = null,
 )
 
-// State 2: Layout A — success with thumbnail
-val layoutAItem = ShareRecordWithMetadata(
+// State 2: fetched link with OG thumbnail
+val fetchedLinkItem = ShareRecordWithMetadata(
     record = recordWithTracking,
     metadata = LinkMetadata(
         shareRecordId = 1L,
@@ -41,21 +57,21 @@ val layoutAItem = ShareRecordWithMetadata(
     ),
 )
 
-// State 3: Layout C — success, no thumbnail, has article snippet
-val layoutCItem = ShareRecordWithMetadata(
+// State 3: fetched link, no thumbnail
+val fetchedLinkNoThumbItem = ShareRecordWithMetadata(
     record = recordClean,
     metadata = LinkMetadata(
         shareRecordId = 2L,
         title = "Jetpack Compose  |  Android Developers",
         thumbnailUrl = null,
         description = "Build better apps faster with Jetpack Compose, Android's modern toolkit for building native UI.",
-        articleSnippet = "Jetpack Compose is Android's recommended modern toolkit for building native UI. It simplifies and accelerates UI development on Android. Compose uses a declarative API, which means that all you need to do is describe your UI.",
+        articleSnippet = "Jetpack Compose is Android's recommended modern toolkit for building native UI.",
         contentType = ContentType.ARTICLE,
         fetchStatus = FetchStatus.SUCCESS,
     ),
 )
 
-// State 4: Fallback — fetch failed, retry available
+// State 4: metadata fetch failed
 val fallbackItem = ShareRecordWithMetadata(
     record = recordWithTracking,
     metadata = LinkMetadata(
@@ -69,11 +85,42 @@ val fallbackItem = ShareRecordWithMetadata(
     ),
 )
 
+// State 5: ingestion downloading (title + uploader known, video in progress)
+val ingestionDownloadingItem = ShareRecordWithMetadata(
+    record = youtubeRecord,
+    metadata = null,
+    ingestion = IngestionRecord(
+        shareRecordId = 3L,
+        status = IngestionStatus.DOWNLOADING,
+        title = "Never Gonna Give You Up",
+        uploader = "RickAstleyVEVO",
+        thumbnailUrl = null,
+        duration = 213,
+    ),
+)
+
+// State 6: ingestion complete
+val ingestionCompleteItem = ShareRecordWithMetadata(
+    record = instagramRecord,
+    metadata = null,
+    ingestion = IngestionRecord(
+        shareRecordId = 4L,
+        status = IngestionStatus.COMPLETE,
+        title = "POV: you just discovered this account",
+        uploader = "natgeo",
+        thumbnailUrl = null,
+        duration = 28,
+        viewCount = 2_400_000L,
+    ),
+)
+
 class HistoryItemPreviewProvider : PreviewParameterProvider<ShareRecordWithMetadata> {
     override val values: Sequence<ShareRecordWithMetadata> = sequenceOf(
-        shimmerItem,
-        layoutAItem,
-        layoutCItem,
+        ingestionCompleteItem,
+        ingestionDownloadingItem,
+        fetchedLinkItem,
+        fetchedLinkNoThumbItem,
         fallbackItem,
+        shimmerItem,
     )
 }

@@ -33,8 +33,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -42,7 +42,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.core.net.toUri
 import coil3.compose.AsyncImage
 import com.maroney.cleanshare.data.FetchStatus
+import com.maroney.cleanshare.data.IngestionStatus
 import com.maroney.cleanshare.data.ShareRecordWithMetadata
+import com.maroney.cleanshare.domain.formatDuration
 import com.maroney.cleanshare.ui.fakedata.HistoryItemPreviewProvider
 import com.maroney.cleanshare.ui.theme.CleanShareTheme
 import com.maroney.cleanshare.ui.theme.LocalColors
@@ -61,12 +63,16 @@ fun HistoryItem(
             .fillMaxWidth()
             .combinedClickable(onClick = onNavigate),
     ) {
-        val metadata = item.metadata
+        val ing = item.ingestion
+        val meta = item.metadata
+        val hasIngestionData = ing != null && (ing.title != null || ing.thumbnailUrl != null)
+
         when {
-            metadata == null -> ShimmerRow()
-            metadata.fetchStatus == FetchStatus.FAILED -> FallbackRow(item)
-            metadata.thumbnailUrl != null -> LayoutA(item)
-            else -> LayoutC(item)
+            hasIngestionData                              -> MediaIngestionRow(item)
+            meta == null                                  -> ShimmerRow()
+            meta.fetchStatus == FetchStatus.FAILED        -> FallbackRow(item)
+            meta.thumbnailUrl != null                     -> FetchedLinkRow(item)
+            else                                          -> FetchedLinkNoThumbRow(item)
         }
     }
 }
@@ -114,18 +120,111 @@ private fun ShimmerRow() {
             Box(Modifier.fillMaxWidth(0.80f).height(Spacing.md).clip(RoundedCornerShape(Radius.sm)).background(shimmerBrush))
             Box(Modifier.fillMaxWidth(1.00f).height(Spacing.sm).clip(RoundedCornerShape(Radius.sm)).background(shimmerBrush))
             Box(Modifier.fillMaxWidth(0.65f).height(Spacing.sm).clip(RoundedCornerShape(Radius.sm)).background(shimmerBrush))
-            Box(Modifier.fillMaxWidth(0.55f).height(Spacing.sm).clip(RoundedCornerShape(Radius.sm)).background(shimmerBrush))
             Box(Modifier.fillMaxWidth(0.20f).height(Spacing.sm).clip(RoundedCornerShape(Radius.sm)).background(shimmerBrush))
             // @formatter:on
         }
     }
 }
 
-// ── Layout A: leading 64×64 thumbnail ────────────────────────────────────────
+// ── Tier 1: ingested media (YouTube / Instagram / TikTok) ───────────────────
 
 @Composable
-private fun LayoutA(item: ShareRecordWithMetadata) {
+private fun MediaIngestionRow(item: ShareRecordWithMetadata) {
+    val ing = item.ingestion!!
+    val thumbUrl = ing.thumbnailUrl ?: item.metadata?.thumbnailUrl
+    Row(
+        modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.md),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        // Thumbnail — duration badge overlaid when complete
+        Box(
+            modifier = Modifier
+                .size(IconSize.thumbnail)
+                .clip(RoundedCornerShape(Radius.md))
+                .border(Dp.Hairline, LocalColors.current.layout.divider, RoundedCornerShape(Radius.md))
+                .background(MaterialTheme.colorScheme.surfaceVariant),
+        ) {
+            if (thumbUrl != null) {
+                AsyncImage(
+                    model = thumbUrl,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.matchParentSize(),
+                )
+            }
+            val duration = ing.duration
+            if (ing.status == IngestionStatus.COMPLETE && duration != null) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(Spacing.xs)
+                        .clip(RoundedCornerShape(Radius.sm))
+                        .background(Color.Black.copy(alpha = 0.8f))
+                        .padding(horizontal = Spacing.xs, vertical = Spacing.xs),
+                ) {
+                    Text(
+                        text = formatDuration(duration),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White,
+                    )
+                }
+            }
+        }
+
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+            val title = ing.title ?: item.metadata?.title
+            if (title != null) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleSmall,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+            if (ing.uploader != null) {
+                Text(
+                    text = "@${ing.uploader}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+            when (ing.status) {
+                IngestionStatus.DOWNLOADING -> Text(
+                    text = "Downloading…",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                IngestionStatus.FAILED -> Text(
+                    text = "Download failed",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.error,
+                )
+                else -> {}
+            }
+            Text(
+                text = formatAge(item.record.sharedAt),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+
+        Icon(
+            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+// ── Tier 2a: fetched link with OG thumbnail ──────────────────────────────────
+
+@Composable
+private fun FetchedLinkRow(item: ShareRecordWithMetadata) {
     val metadata = item.metadata!!
+    val domain = remember(item.record.cleanedText) { extractDomain(item.record.cleanedText) }
     Row(
         modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.md),
         horizontalArrangement = Arrangement.spacedBy(Spacing.md),
@@ -143,20 +242,19 @@ private fun LayoutA(item: ShareRecordWithMetadata) {
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
             metadata.title?.let {
                 Text(
-                    it,
+                    text = it,
                     style = MaterialTheme.typography.titleSmall,
                     maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
-            metadata.description?.let {
+            if (domain != null) {
                 Text(
-                    it, style = MaterialTheme.typography.bodySmall,
+                    text = domain,
+                    style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2, overflow = TextOverflow.Ellipsis
                 )
             }
-            UrlLines(item)
             Text(
                 text = formatAge(item.record.sharedAt),
                 style = MaterialTheme.typography.labelSmall,
@@ -171,19 +269,18 @@ private fun LayoutA(item: ShareRecordWithMetadata) {
     }
 }
 
-// ── Layout C: 32×32 favicon, no thumbnail ────────────────────────────────────
+// ── Tier 2b: fetched link, no thumbnail — favicon placeholder ────────────────
 
 @Composable
-private fun LayoutC(item: ShareRecordWithMetadata) {
+private fun FetchedLinkNoThumbRow(item: ShareRecordWithMetadata) {
     val metadata = item.metadata!!
-    val faviconUrl = remember(item.record.cleanedText) {
-        runCatching { item.record.cleanedText.toUri().host }
-            .getOrNull()?.takeIf { it.isNotBlank() }
-            ?.let { "https://www.google.com/s2/favicons?sz=64&domain=$it" }
+    val domain = remember(item.record.cleanedText) { extractDomain(item.record.cleanedText) }
+    val faviconUrl = remember(domain) {
+        domain?.let { "https://www.google.com/s2/favicons?sz=64&domain=$it" }
     }
     Row(
         modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.md),
-        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
@@ -193,26 +290,30 @@ private fun LayoutC(item: ShareRecordWithMetadata) {
                 .border(Dp.Hairline, LocalColors.current.layout.divider, RoundedCornerShape(Radius.md)),
             contentAlignment = Alignment.Center,
         ) {
-            if (faviconUrl != null) AsyncImage(model = faviconUrl, contentDescription = null)
+            if (faviconUrl != null) {
+                AsyncImage(
+                    model = faviconUrl,
+                    contentDescription = null,
+                    modifier = Modifier.size(IconSize.favicon),
+                )
+            }
         }
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
             metadata.title?.let {
                 Text(
-                    it,
+                    text = it,
                     style = MaterialTheme.typography.titleSmall,
                     maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
-            val snippet = metadata.articleSnippet ?: metadata.description
-            snippet?.let {
+            if (domain != null) {
                 Text(
-                    it, style = MaterialTheme.typography.bodySmall,
+                    text = domain,
+                    style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2, overflow = TextOverflow.Ellipsis
                 )
             }
-            UrlLines(item)
             Text(
                 text = formatAge(item.record.sharedAt),
                 style = MaterialTheme.typography.labelSmall,
@@ -227,14 +328,13 @@ private fun LayoutC(item: ShareRecordWithMetadata) {
     }
 }
 
-// ── Fallback: fetch failed ────────────────────────────────────────────────────
+// ── Tier 3: metadata fetch failed ────────────────────────────────────────────
 
 @Composable
 private fun FallbackRow(item: ShareRecordWithMetadata) {
-    val faviconUrl = remember(item.record.cleanedText) {
-        runCatching { item.record.cleanedText.toUri().host }
-            .getOrNull()?.takeIf { it.isNotBlank() }
-            ?.let { "https://www.google.com/s2/favicons?sz=64&domain=$it" }
+    val domain = remember(item.record.cleanedText) { extractDomain(item.record.cleanedText) }
+    val faviconUrl = remember(domain) {
+        domain?.let { "https://www.google.com/s2/favicons?sz=64&domain=$it" }
     }
     Row(
         modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.md),
@@ -251,7 +351,13 @@ private fun FallbackRow(item: ShareRecordWithMetadata) {
             if (faviconUrl != null) AsyncImage(model = faviconUrl, contentDescription = null)
         }
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
-            UrlLines(item)
+            Text(
+                text = domain ?: item.record.cleanedText,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
             Text(
                 text = formatAge(item.record.sharedAt),
                 style = MaterialTheme.typography.labelSmall,
@@ -266,19 +372,13 @@ private fun FallbackRow(item: ShareRecordWithMetadata) {
     }
 }
 
-// ── Shared sub-composables ────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
-@Composable
-private fun UrlLines(item: ShareRecordWithMetadata) {
-    Text(
-        text = item.record.cleanedText,
-        style = MaterialTheme.typography.labelSmall,
-        fontFamily = FontFamily.Monospace,
-        color = MaterialTheme.colorScheme.outline,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-    )
-}
+private fun extractDomain(url: String): String? =
+    runCatching { url.toUri().host }
+        .getOrNull()
+        ?.takeIf { it.isNotBlank() }
+        ?.removePrefix("www.")
 
 internal fun formatAge(timestamp: Long): String {
     val delta = System.currentTimeMillis() - timestamp
