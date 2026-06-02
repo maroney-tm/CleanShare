@@ -10,6 +10,7 @@ import com.maroney.cleanshare.data.metadata.MetadataWorkScheduler
 import com.maroney.cleanshare.data.ShareRepository
 import com.maroney.cleanshare.domain.DomainHandlerRegistry
 import com.maroney.cleanshare.domain.InstagramDomainHandler
+import com.maroney.cleanshare.domain.YoutubeDomainHandler
 import com.maroney.cleanshare.sync.CleanShareSyncClient
 import com.maroney.cleanshare.sync.ServerConfigRepository
 import com.maroney.cleanshare.sync.SyncManager
@@ -75,7 +76,7 @@ class CleanShareApplication : Application(), Configuration.Provider {
     }
 
     val domainHandlerRegistry by lazy {
-        DomainHandlerRegistry(listOf(InstagramDomainHandler()))
+        DomainHandlerRegistry(listOf(InstagramDomainHandler(), YoutubeDomainHandler()))
     }
 
     override val workManagerConfiguration: Configuration
