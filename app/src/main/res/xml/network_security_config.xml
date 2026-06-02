@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Cleartext (HTTP) is permitted globally because this app intentionally connects to
+    user-owned LAN servers that have no TLS certificate. Public hostnames are handled
+    at the code level: CleanShareSyncClient.schemeFor() returns "https" for any host
+    that isn't a LAN IP or .local mDNS name, so cleartext never reaches the internet.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
