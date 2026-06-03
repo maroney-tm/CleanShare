@@ -95,7 +95,16 @@ class SyncManager(
                     shareDao.updateNotesAndTimestamp(local.id, sr.notes, sr.updatedAt)
                     sr.linkMetadata?.let { metadataDao.upsert(it.toLinkMetadata(local.id)) }
                 }
-                sr.ingestion?.let { ingestionDao?.upsert(it.toIngestionRecord(local.id)) }
+                sr.ingestion?.let { serverIng ->
+                    val dao = ingestionDao ?: return@let
+                    if (serverIng.title != null || serverIng.thumbnailUrl != null) {
+                        dao.upsert(serverIng.toIngestionRecord(local.id))
+                    } else {
+                        val status = IngestionStatus.entries.firstOrNull { it.name == serverIng.status }
+                            ?: IngestionStatus.QUEUED
+                        dao.updateStatusOnly(local.id, status, serverIng.errorMessage)
+                    }
+                }
             }
         }
 

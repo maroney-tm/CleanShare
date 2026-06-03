@@ -17,6 +17,11 @@ interface IngestionDao {
     @Query("SELECT * FROM ingestion_record")
     fun observeAll(): Flow<List<IngestionRecord>>
 
+    // Used by fullSync() when the server record has no metadata — updates only
+    // status/errorMessage so locally-held title/thumbnail are not cleared.
+    @Query("UPDATE ingestion_record SET status = :status, errorMessage = :errorMessage WHERE shareRecordId = :shareRecordId")
+    suspend fun updateStatusOnly(shareRecordId: Long, status: IngestionStatus, errorMessage: String?)
+
     // Used for ingestion_complete SSE — only updates status + serverVideoPath so
     // metadata fields from ingestion_metadata are preserved.
     @Query("UPDATE ingestion_record SET status = 'COMPLETE', serverVideoPath = :serverVideoPath WHERE shareRecordId = :shareRecordId")
