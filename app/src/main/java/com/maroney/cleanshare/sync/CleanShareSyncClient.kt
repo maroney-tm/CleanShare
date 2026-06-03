@@ -21,6 +21,7 @@ data class SyncRecord(
     val notes: String?,
     val source: String,
     val linkMetadata: SyncLinkMetadata?,
+    val ingestion: SyncIngestionRecord? = null,
 )
 
 data class SyncLinkMetadata(
@@ -30,6 +31,22 @@ data class SyncLinkMetadata(
     val articleSnippet: String?,
     val contentType: String,
     val fetchStatus: String,
+)
+
+data class SyncIngestionRecord(
+    val status: String,
+    val errorMessage: String?,
+    val title: String?,
+    val uploader: String?,
+    val uploaderUrl: String?,
+    val description: String?,
+    val thumbnailUrl: String?,
+    val uploadDate: String?,
+    val duration: Int?,
+    val viewCount: Long?,
+    val likeCount: Long?,
+    val tags: String?,
+    val mediaType: String?,
 )
 
 // ---- REST client ----
@@ -122,6 +139,8 @@ class CleanShareSyncClient(private val okHttpClient: OkHttpClient) {
     private fun parseRecord(obj: JSONObject): SyncRecord {
         val meta = if (!obj.isNull("linkMetadata"))
             parseMetadata(obj.getJSONObject("linkMetadata")) else null
+        val ingestion = if (!obj.isNull("ingestion") && obj.has("ingestion"))
+            parseIngestion(obj.getJSONObject("ingestion")) else null
         return SyncRecord(
             syncId       = obj.getString("syncId"),
             originalText = obj.getString("originalText"),
@@ -131,8 +150,25 @@ class CleanShareSyncClient(private val okHttpClient: OkHttpClient) {
             notes        = if (obj.isNull("notes")) null else obj.getString("notes"),
             source       = obj.getString("source"),
             linkMetadata = meta,
+            ingestion    = ingestion,
         )
     }
+
+    private fun parseIngestion(obj: JSONObject) = SyncIngestionRecord(
+        status       = obj.getString("status"),
+        errorMessage = obj.nullableString("errorMessage"),
+        title        = obj.nullableString("title"),
+        uploader     = obj.nullableString("uploader"),
+        uploaderUrl  = obj.nullableString("uploaderUrl"),
+        description  = obj.nullableString("description"),
+        thumbnailUrl = obj.nullableString("thumbnailUrl"),
+        uploadDate   = obj.nullableString("uploadDate"),
+        duration     = if (!obj.has("duration") || obj.isNull("duration")) null else obj.getInt("duration"),
+        viewCount    = if (!obj.has("viewCount") || obj.isNull("viewCount")) null else obj.getLong("viewCount"),
+        likeCount    = if (!obj.has("likeCount") || obj.isNull("likeCount")) null else obj.getLong("likeCount"),
+        tags         = obj.nullableString("tags"),
+        mediaType    = obj.nullableString("mediaType"),
+    )
 
     private fun parseMetadata(obj: JSONObject) = SyncLinkMetadata(
         title          = obj.nullableString("title"),

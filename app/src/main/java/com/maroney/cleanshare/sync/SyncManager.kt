@@ -83,15 +83,19 @@ class SyncManager(
         val serverRecords = syncClient.getAllRecords()
         val serverSyncIds = serverRecords.map { it.syncId }.toSet()
 
-        // Pull: bring server records down (LWW on notes/updatedAt).
+        // Pull: bring server records down (LWW on notes/updatedAt; server always wins for ingestion).
         for (sr in serverRecords) {
             val local = shareDao.getBySyncId(sr.syncId)
             if (local == null) {
                 val id = shareDao.insert(sr.toShareRecord())
                 sr.linkMetadata?.let { metadataDao.upsert(it.toLinkMetadata(id)) }
-            } else if (sr.updatedAt > local.updatedAt) {
-                shareDao.updateNotesAndTimestamp(local.id, sr.notes, sr.updatedAt)
-                sr.linkMetadata?.let { metadataDao.upsert(it.toLinkMetadata(local.id)) }
+                sr.ingestion?.let { ingestionDao?.upsert(it.toIngestionRecord(id)) }
+            } else {
+                if (sr.updatedAt > local.updatedAt) {
+                    shareDao.updateNotesAndTimestamp(local.id, sr.notes, sr.updatedAt)
+                    sr.linkMetadata?.let { metadataDao.upsert(it.toLinkMetadata(local.id)) }
+                }
+                sr.ingestion?.let { ingestionDao?.upsert(it.toIngestionRecord(local.id)) }
             }
         }
 
@@ -225,6 +229,23 @@ class SyncManager(
         articleSnippet = articleSnippet,
         contentType    = runCatching { ContentType.valueOf(contentType) }.getOrDefault(ContentType.UNKNOWN),
         fetchStatus    = runCatching { FetchStatus.valueOf(fetchStatus) }.getOrDefault(FetchStatus.FAILED),
+    )
+
+    private fun SyncIngestionRecord.toIngestionRecord(shareRecordId: Long) = IngestionRecord(
+        shareRecordId = shareRecordId,
+        status        = IngestionStatus.entries.firstOrNull { it.name == status } ?: IngestionStatus.QUEUED,
+        errorMessage  = errorMessage,
+        title         = title,
+        uploader      = uploader,
+        uploaderUrl   = uploaderUrl,
+        description   = description,
+        thumbnailUrl  = thumbnailUrl,
+        uploadDate    = uploadDate,
+        duration      = duration,
+        viewCount     = viewCount,
+        likeCount     = likeCount,
+        tags          = tags,
+        mediaType     = mediaType,
     )
 
     private fun LinkMetadata.toSyncLinkMetadata() = SyncLinkMetadata(

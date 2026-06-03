@@ -16,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -33,6 +34,7 @@ fun HistoryScreen(
     onNavigateToSettings: () -> Unit,
 ) {
     val history by viewModel.history.collectAsStateWithLifecycle()
+    val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
 
     LifecycleEventEffect(Lifecycle.Event.ON_START) { viewModel.onStart() }
     LifecycleEventEffect(Lifecycle.Event.ON_STOP)  { viewModel.onStop() }
@@ -49,22 +51,28 @@ fun HistoryScreen(
             )
         },
     ) { innerPadding ->
-        if (history.isEmpty()) {
-            EmptyState(modifier = Modifier.padding(innerPadding))
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentPadding = PaddingValues(vertical = Spacing.sm),
-            ) {
-                items(history, key = { it.record.id }) { item ->
-                    HistoryItem(
-                        item = item,
-                        onNavigate = { onNavigateToDetail(item.record.id) },
-                    )
-                    if (item != history.last()) {
-                        HorizontalDivider(modifier = Modifier.padding(horizontal = Spacing.md))
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = viewModel::refresh,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+        ) {
+            if (history.isEmpty()) {
+                EmptyState(modifier = Modifier.fillMaxSize())
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(vertical = Spacing.sm),
+                ) {
+                    items(history, key = { it.record.id }) { item ->
+                        HistoryItem(
+                            item = item,
+                            onNavigate = { onNavigateToDetail(item.record.id) },
+                        )
+                        if (item != history.last()) {
+                            HorizontalDivider(modifier = Modifier.padding(horizontal = Spacing.md))
+                        }
                     }
                 }
             }

@@ -31,6 +31,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -79,6 +80,7 @@ fun DetailScreen(
     val vm: DetailViewModel = viewModel(key = id.toString(), factory = DetailViewModel.factory(id))
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     val notes by vm.notes.collectAsStateWithLifecycle()
+    val isRefreshing by vm.isRefreshing.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val clipboard = LocalClipboard.current
     val haptic = LocalHapticFeedback.current
@@ -106,6 +108,8 @@ fun DetailScreen(
         handler = handler,
         urlMetadata = urlMetadata,
         videoUrl = videoUrl,
+        isRefreshing = isRefreshing,
+        onRefresh = vm::refresh,
         onNavigateBack = onNavigateBack,
         onShare = {
             val intent = Intent(Intent.ACTION_SEND).apply {
@@ -142,6 +146,8 @@ private fun DetailContent(
     handler: DomainHandler?,
     urlMetadata: DomainUrlMetadata?,
     videoUrl: String?,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit,
     onNavigateBack: () -> Unit,
     onShare: () -> Unit,
     onCopy: () -> Unit,
@@ -168,12 +174,18 @@ private fun DetailContent(
             )
         },
     ) { innerPadding ->
-        Column(
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState()),
+                .padding(innerPadding),
         ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
+            ) {
             if (handler != null && urlMetadata != null) {
                 handler.DetailSection(urlMetadata, item.ingestion, videoUrl)
             } else {
@@ -249,6 +261,7 @@ private fun DetailContent(
                 }
             }
             Spacer(Modifier.height(Spacing.lg))
+            }
         }
     }
 }
@@ -362,6 +375,8 @@ private fun DetailScreenPreview(
             handler = null,
             urlMetadata = null,
             videoUrl = null,
+            isRefreshing = false,
+            onRefresh = {},
             onNavigateBack = {},
             onShare = {},
             onCopy = {},

@@ -11,8 +11,10 @@ import com.maroney.cleanshare.data.ShareRepository
 import com.maroney.cleanshare.data.metadata.MetadataWorkScheduler
 import com.maroney.cleanshare.sync.SyncManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -30,12 +32,26 @@ class HistoryViewModel(
             initialValue = emptyList(),
         )
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
             val snapshot = repository.getAll().first()
             workScheduler.schedulePendingFetches(snapshot)
             syncManager.resolveAndSync()
             syncManager.startListening(viewModelScope)  // safe — guarded against double-start above
+        }
+    }
+
+    fun refresh() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _isRefreshing.value = true
+            try {
+                syncManager.fullSync()
+            } finally {
+                _isRefreshing.value = false
+            }
         }
     }
 

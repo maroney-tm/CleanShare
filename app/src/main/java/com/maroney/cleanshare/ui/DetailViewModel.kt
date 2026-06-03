@@ -9,6 +9,7 @@ import com.maroney.cleanshare.CleanShareApplication
 import com.maroney.cleanshare.data.ShareRecordWithMetadata
 import com.maroney.cleanshare.data.ShareRepository
 import com.maroney.cleanshare.data.metadata.MetadataWorkScheduler
+import com.maroney.cleanshare.sync.SyncManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -25,6 +26,7 @@ class DetailViewModel(
     private val id: Long,
     private val repository: ShareRepository,
     private val workScheduler: MetadataWorkScheduler,
+    private val syncManager: SyncManager,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ShareRecordWithMetadata?>(null)
@@ -35,6 +37,9 @@ class DetailViewModel(
 
     private val _deleted = MutableSharedFlow<Unit>()
     val deleted: SharedFlow<Unit> = _deleted.asSharedFlow()
+
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 
     private var debounceJob: Job? = null
     private var pendingSave = false
@@ -78,6 +83,17 @@ class DetailViewModel(
         }
     }
 
+    fun refresh() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _isRefreshing.value = true
+            try {
+                syncManager.fullSync()
+            } finally {
+                _isRefreshing.value = false
+            }
+        }
+    }
+
     fun retryMetadataFetch() {
         val record = _uiState.value?.record ?: return
         workScheduler.retryFetch(record.id, record.cleanedText, record.syncId)
@@ -99,7 +115,7 @@ class DetailViewModel(
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
                 val app = extras[APPLICATION_KEY] as CleanShareApplication
-                return DetailViewModel(id, app.shareRepository, app.workScheduler) as T
+                return DetailViewModel(id, app.shareRepository, app.workScheduler, app.syncManager) as T
             }
         }
     }
