@@ -67,6 +67,7 @@ class SyncManager(
             return@withContext false
         }
 
+        configRepo.setLastSeenAt(System.currentTimeMillis())
         _status.value = ConnectionStatus.Connected(host, config.port)
         fullSync()
         true
