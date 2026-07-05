@@ -22,6 +22,8 @@ import androidx.compose.material.icons.filled.RepeatOneOn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -140,8 +142,11 @@ internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit) {
     }
 
     var controlsVisible by remember { mutableStateOf(false) }
-    LaunchedEffect(controlsVisible) {
-        if (controlsVisible) {
+    var isScrubbing by remember { mutableStateOf(false) }
+    var scrubProgress by remember { mutableFloatStateOf(0f) }
+    LaunchedEffect(controlsVisible, isScrubbing) {
+        // Don't auto-hide out from under an in-progress drag on the seek bar.
+        if (controlsVisible && !isScrubbing) {
             delay(CONTROLS_AUTO_HIDE_MS)
             controlsVisible = false
         }
@@ -215,19 +220,45 @@ internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit) {
                 }
             }
 
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .height(Spacing.xs)
-                    .background(Color.White.copy(alpha = 0.25f)),
-            ) {
+            if (controlsVisible) {
+                // A real Slider (not a hand-rolled drag detector) so tap-to-seek and
+                // drag-to-scrub are both correct out of the box.
+                Slider(
+                    value = if (isScrubbing) scrubProgress else progress,
+                    onValueChange = {
+                        isScrubbing = true
+                        scrubProgress = it
+                    },
+                    onValueChangeFinished = {
+                        val duration = player.duration.takeIf { it > 0 } ?: 0L
+                        player.seekTo((scrubProgress * duration).toLong())
+                        isScrubbing = false
+                    },
+                    colors = SliderDefaults.colors(
+                        thumbColor = Color.White,
+                        activeTrackColor = Color.White,
+                        inactiveTrackColor = Color.White.copy(alpha = 0.25f),
+                    ),
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .padding(horizontal = Spacing.md),
+                )
+            } else {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth(progress)
-                        .fillMaxHeight()
-                        .background(Color.White),
-                )
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .height(Spacing.xs)
+                        .background(Color.White.copy(alpha = 0.25f)),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(progress)
+                            .fillMaxHeight()
+                            .background(Color.White),
+                    )
+                }
             }
 
             if (controlsVisible) {
