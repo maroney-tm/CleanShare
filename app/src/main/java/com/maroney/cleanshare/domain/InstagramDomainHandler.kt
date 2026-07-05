@@ -31,7 +31,6 @@ import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,14 +41,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
-import androidx.media3.common.MediaItem
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.ui.PlayerView
 import coil3.compose.AsyncImage
 import com.maroney.cleanshare.data.IngestionRecord
 import com.maroney.cleanshare.data.IngestionStatus
@@ -311,42 +303,6 @@ private fun FullCard(meta: InstagramUrlMetadata, ingestion: IngestionRecord, sho
 
     if (showProgress) {
         LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-    }
-}
-
-@Composable
-private fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit) {
-    val context = LocalContext.current
-    val player = remember(videoUrl) {
-        ExoPlayer.Builder(context).build().apply {
-            setMediaItem(MediaItem.fromUri(videoUrl))
-            prepare()
-            playWhenReady = true
-        }
-    }
-    DisposableEffect(player) {
-        onDispose { player.release() }
-    }
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false),
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black),
-            contentAlignment = Alignment.Center,
-        ) {
-            AndroidView(
-                factory = { ctx ->
-                    PlayerView(ctx).apply {
-                        this.player = player
-                        useController = true
-                    }
-                },
-                modifier = Modifier.fillMaxSize(),
-            )
-        }
     }
 }
 
