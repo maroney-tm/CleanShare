@@ -17,6 +17,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -39,6 +40,8 @@ fun SyncSettingsScreen(onNavigateBack: () -> Unit) {
     val viewModel: SyncSettingsViewModel = viewModel(factory = SyncSettingsViewModel.Factory)
     val config by viewModel.config.collectAsStateWithLifecycle()
     val status by viewModel.connectionStatus.collectAsStateWithLifecycle()
+    val failedDownloadCount by viewModel.failedDownloadCount.collectAsStateWithLifecycle()
+    val isRetryingAll by viewModel.isRetryingAll.collectAsStateWithLifecycle()
 
     var draftHost by remember(config.manualHost, config.port) {
         val h = config.manualHost ?: ""
@@ -90,6 +93,26 @@ fun SyncSettingsScreen(onNavigateBack: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text("Connect")
+            }
+
+            if (failedDownloadCount > 0) {
+                Spacer(modifier = Modifier.height(Spacing.md))
+                HorizontalDivider()
+                Spacer(modifier = Modifier.height(Spacing.md))
+
+                Text(
+                    text = "Maintenance",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(modifier = Modifier.height(Spacing.xs))
+                OutlinedButton(
+                    onClick = viewModel::retryAllFailedDownloads,
+                    enabled = !isRetryingAll,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(if (isRetryingAll) "Retrying…" else "Retry All Failed Downloads ($failedDownloadCount)")
+                }
             }
         }
     }
