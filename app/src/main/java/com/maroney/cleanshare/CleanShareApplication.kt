@@ -14,6 +14,7 @@ import com.maroney.cleanshare.data.ShareRepository
 import com.maroney.cleanshare.domain.DomainHandlerRegistry
 import com.maroney.cleanshare.domain.InstagramDomainHandler
 import com.maroney.cleanshare.domain.YoutubeDomainHandler
+import com.maroney.cleanshare.settings.PlaybackPreferencesRepository
 import com.maroney.cleanshare.sync.CleanShareSyncClient
 import com.maroney.cleanshare.sync.ServerConfigRepository
 import com.maroney.cleanshare.sync.SyncManager
@@ -80,6 +81,8 @@ class CleanShareApplication : Application(), Configuration.Provider {
     }
 
     val serverConfigRepository by lazy { ServerConfigRepository(this) }
+
+    val playbackPreferencesRepository by lazy { PlaybackPreferencesRepository(this) }
 
     val syncClient by lazy { CleanShareSyncClient(okHttpClient) }
 

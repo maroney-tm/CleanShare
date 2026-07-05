@@ -1,5 +1,6 @@
 package com.maroney.cleanshare.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -42,6 +44,7 @@ fun SyncSettingsScreen(onNavigateBack: () -> Unit) {
     val status by viewModel.connectionStatus.collectAsStateWithLifecycle()
     val failedDownloadCount by viewModel.failedDownloadCount.collectAsStateWithLifecycle()
     val isRetryingAll by viewModel.isRetryingAll.collectAsStateWithLifecycle()
+    val loopVideosByDefault by viewModel.loopVideosByDefault.collectAsStateWithLifecycle()
 
     var draftHost by remember(config.manualHost, config.port) {
         val h = config.manualHost ?: ""
@@ -93,6 +96,28 @@ fun SyncSettingsScreen(onNavigateBack: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text("Connect")
+            }
+
+            Spacer(modifier = Modifier.height(Spacing.md))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(Spacing.md))
+
+            Text(
+                text = "Playback",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(modifier = Modifier.height(Spacing.xs))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text("Loop videos by default", style = MaterialTheme.typography.bodyMedium)
+                Switch(
+                    checked = loopVideosByDefault,
+                    onCheckedChange = viewModel::setLoopVideosByDefault,
+                )
             }
 
             if (failedDownloadCount > 0) {

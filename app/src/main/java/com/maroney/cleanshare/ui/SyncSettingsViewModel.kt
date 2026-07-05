@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import com.maroney.cleanshare.CleanShareApplication
 import com.maroney.cleanshare.data.ShareRepository
 import com.maroney.cleanshare.data.isFailure
+import com.maroney.cleanshare.settings.PlaybackPreferencesRepository
 import com.maroney.cleanshare.sync.ConnectionStatus
 import com.maroney.cleanshare.sync.ServerConfig
 import com.maroney.cleanshare.sync.ServerConfigRepository
@@ -26,6 +27,7 @@ class SyncSettingsViewModel(
     private val configRepo: ServerConfigRepository,
     private val syncManager: SyncManager,
     private val shareRepository: ShareRepository,
+    private val playbackPreferencesRepository: PlaybackPreferencesRepository,
 ) : ViewModel() {
 
     val config: StateFlow<ServerConfig> = configRepo.config
@@ -39,6 +41,13 @@ class SyncSettingsViewModel(
 
     private val _isRetryingAll = MutableStateFlow(false)
     val isRetryingAll: StateFlow<Boolean> = _isRetryingAll.asStateFlow()
+
+    val loopVideosByDefault: StateFlow<Boolean> = playbackPreferencesRepository.loopVideosByDefault
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    fun setLoopVideosByDefault(enabled: Boolean) {
+        viewModelScope.launch { playbackPreferencesRepository.setLoopVideosByDefault(enabled) }
+    }
 
     fun setManualHost(raw: String) {
         viewModelScope.launch {
@@ -91,7 +100,12 @@ class SyncSettingsViewModel(
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
                 val app = extras[APPLICATION_KEY] as CleanShareApplication
-                return SyncSettingsViewModel(app.serverConfigRepository, app.syncManager, app.shareRepository) as T
+                return SyncSettingsViewModel(
+                    app.serverConfigRepository,
+                    app.syncManager,
+                    app.shareRepository,
+                    app.playbackPreferencesRepository,
+                ) as T
             }
         }
     }

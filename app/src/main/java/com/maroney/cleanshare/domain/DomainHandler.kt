@@ -1,15 +1,26 @@
 package com.maroney.cleanshare.domain
 
-import android.view.View
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FastForward
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Replay5
+import androidx.compose.material.icons.filled.RepeatOne
+import androidx.compose.material.icons.filled.RepeatOneOn
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,12 +41,16 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import com.maroney.cleanshare.CleanShareApplication
 import com.maroney.cleanshare.data.IngestionRecord
+import com.maroney.cleanshare.ui.IconSize
 import com.maroney.cleanshare.ui.Radius
 import com.maroney.cleanshare.ui.Spacing
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 
 /**
@@ -59,22 +74,24 @@ class DomainHandlerRegistry(private val handlers: List<DomainHandler>) {
     fun findHandler(url: String): DomainHandler? = handlers.firstOrNull { it.matches(url) }
 }
 
-private const val SKIP_MS = 10_000L
+private const val DOUBLE_TAP_SKIP_MS = 10_000L
+private const val BUTTON_REWIND_MS = 5_000L
+private const val BUTTON_SKIP_MS = 15_000L
 private const val FAST_FORWARD_SPEED = 2f
+private const val CONTROLS_AUTO_HIDE_MS = 3_000L
 
 /**
  * Full-screen video player used by domain handlers' thumbnail-tap-to-play. Shared across
  * handlers since playback isn't platform-specific.
  *
- * Shows a minimal playback progress line pinned to the bottom of the screen, spanning the
- * full width, whenever PlayerView's own tap-to-reveal controls (which have their own seek
- * bar) are hidden — avoids showing two overlapping progress bars at once.
+ * Uses a fully custom control surface (PlayerView's own controller is disabled) so we can
+ * offer exactly: rewind 5s, play/pause, skip 15s, and a loop toggle — plus a minimal
+ * always-visible progress line pinned to the bottom of the screen.
  *
- * Also supports, while controls are hidden: tap-and-hold anywhere to play at 2x speed
- * (reverting to normal speed on release), and double-tapping the left/right half of the
- * screen to skip 10 seconds backward/forward. Built on Compose's own tap/long-press/
- * double-tap gesture detector so a plain tap (to reveal controls) is never confused with
- * these — unlike a hand-rolled gesture, [detectTapGestures] handles that disambiguation.
+ * Also supports: tap-and-hold anywhere to play at 2x speed (reverting to normal speed on
+ * release), and double-tapping the left/right half of the screen to skip 10 seconds
+ * backward/forward. Built on Compose's own tap/long-press/double-tap gesture detector so a
+ * plain tap (to reveal/hide the control row) is never confused with these.
  */
 @Composable
 internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit) {
@@ -88,6 +105,25 @@ internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit) {
     }
     DisposableEffect(player) {
         onDispose { player.release() }
+    }
+
+    var isPlaying by remember { mutableStateOf(player.isPlaying) }
+    DisposableEffect(player) {
+        val listener = object : Player.Listener {
+            override fun onIsPlayingChanged(playing: Boolean) {
+                isPlaying = playing
+            }
+        }
+        player.addListener(listener)
+        onDispose { player.removeListener(listener) }
+    }
+
+    var loopEnabled by remember { mutableStateOf(false) }
+    LaunchedEffect(player) {
+        val app = context.applicationContext as CleanShareApplication
+        val defaultLoop = app.playbackPreferencesRepository.loopVideosByDefault.first()
+        loopEnabled = defaultLoop
+        player.repeatMode = if (defaultLoop) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
     }
 
     var progress by remember { mutableFloatStateOf(0f) }
@@ -104,7 +140,13 @@ internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit) {
     }
 
     var controlsVisible by remember { mutableStateOf(false) }
-    var playerView by remember { mutableStateOf<PlayerView?>(null) }
+    LaunchedEffect(controlsVisible) {
+        if (controlsVisible) {
+            delay(CONTROLS_AUTO_HIDE_MS)
+            controlsVisible = false
+        }
+    }
+
     var isFastForwarding by remember { mutableStateOf(false) }
 
     Dialog(
@@ -121,49 +163,40 @@ internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit) {
                 factory = { ctx ->
                     PlayerView(ctx).apply {
                         this.player = player
-                        useController = true
-                        setControllerVisibilityListener(
-                            PlayerView.ControllerVisibilityListener { visibility ->
-                                controlsVisible = visibility == View.VISIBLE
-                            },
-                        )
-                    }.also { playerView = it }
+                        useController = false
+                    }
                 },
                 modifier = Modifier.fillMaxSize(),
             )
 
-            // Active only while controls are hidden, so native button taps and seek-bar
-            // dragging inside the visible controller UI are left untouched.
-            if (!controlsVisible) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .pointerInput(player) {
-                            detectTapGestures(
-                                onPress = {
-                                    tryAwaitRelease()
-                                    if (isFastForwarding) {
-                                        player.setPlaybackSpeed(1f)
-                                        isFastForwarding = false
-                                    }
-                                },
-                                onLongPress = {
-                                    isFastForwarding = true
-                                    player.setPlaybackSpeed(FAST_FORWARD_SPEED)
-                                },
-                                onDoubleTap = { offset ->
-                                    val duration = player.duration.takeIf { it > 0 } ?: Long.MAX_VALUE
-                                    if (offset.x < size.width / 2f) {
-                                        player.seekTo((player.currentPosition - SKIP_MS).coerceAtLeast(0L))
-                                    } else {
-                                        player.seekTo((player.currentPosition + SKIP_MS).coerceAtMost(duration))
-                                    }
-                                },
-                                onTap = { playerView?.showController() },
-                            )
-                        },
-                )
-            }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .pointerInput(player) {
+                        detectTapGestures(
+                            onPress = {
+                                tryAwaitRelease()
+                                if (isFastForwarding) {
+                                    player.setPlaybackSpeed(1f)
+                                    isFastForwarding = false
+                                }
+                            },
+                            onLongPress = {
+                                isFastForwarding = true
+                                player.setPlaybackSpeed(FAST_FORWARD_SPEED)
+                            },
+                            onDoubleTap = { offset ->
+                                val duration = player.duration.takeIf { it > 0 } ?: Long.MAX_VALUE
+                                if (offset.x < size.width / 2f) {
+                                    player.seekTo((player.currentPosition - DOUBLE_TAP_SKIP_MS).coerceAtLeast(0L))
+                                } else {
+                                    player.seekTo((player.currentPosition + DOUBLE_TAP_SKIP_MS).coerceAtMost(duration))
+                                }
+                            },
+                            onTap = { controlsVisible = !controlsVisible },
+                        )
+                    },
+            )
 
             if (isFastForwarding) {
                 Box(
@@ -182,20 +215,73 @@ internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit) {
                 }
             }
 
-            if (!controlsVisible) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .height(Spacing.xs)
+                    .background(Color.White.copy(alpha = 0.25f)),
+            ) {
                 Box(
                     modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .fillMaxWidth()
-                        .height(Spacing.xs)
-                        .background(Color.White.copy(alpha = 0.25f)),
+                        .fillMaxWidth(progress)
+                        .fillMaxHeight()
+                        .background(Color.White),
+                )
+            }
+
+            if (controlsVisible) {
+                Row(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.lg),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(progress)
-                            .fillMaxHeight()
-                            .background(Color.White),
-                    )
+                    IconButton(
+                        onClick = {
+                            player.seekTo((player.currentPosition - BUTTON_REWIND_MS).coerceAtLeast(0L))
+                        },
+                    ) {
+                        Icon(
+                            Icons.Filled.Replay5,
+                            contentDescription = "Rewind 5 seconds",
+                            tint = Color.White,
+                            modifier = Modifier.size(IconSize.favicon),
+                        )
+                    }
+                    IconButton(onClick = { if (isPlaying) player.pause() else player.play() }) {
+                        Icon(
+                            if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+                            contentDescription = if (isPlaying) "Pause" else "Play",
+                            tint = Color.White,
+                            modifier = Modifier.size(IconSize.thumbnail),
+                        )
+                    }
+                    IconButton(
+                        onClick = {
+                            val duration = player.duration.takeIf { it > 0 } ?: Long.MAX_VALUE
+                            player.seekTo((player.currentPosition + BUTTON_SKIP_MS).coerceAtMost(duration))
+                        },
+                    ) {
+                        Icon(
+                            Icons.Filled.FastForward,
+                            contentDescription = "Skip 15 seconds",
+                            tint = Color.White,
+                            modifier = Modifier.size(IconSize.favicon),
+                        )
+                    }
+                    IconButton(
+                        onClick = {
+                            loopEnabled = !loopEnabled
+                            player.repeatMode = if (loopEnabled) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
+                        },
+                    ) {
+                        Icon(
+                            if (loopEnabled) Icons.Filled.RepeatOneOn else Icons.Filled.RepeatOne,
+                            contentDescription = "Toggle loop",
+                            tint = Color.White,
+                            modifier = Modifier.size(IconSize.favicon),
+                        )
+                    }
                 }
             }
         }
