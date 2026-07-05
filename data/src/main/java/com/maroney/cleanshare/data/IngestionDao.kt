@@ -14,6 +14,9 @@ interface IngestionDao {
     @Query("SELECT * FROM ingestion_record WHERE shareRecordId = :shareRecordId")
     fun observeById(shareRecordId: Long): Flow<IngestionRecord?>
 
+    @Query("SELECT * FROM ingestion_record WHERE shareRecordId = :shareRecordId")
+    suspend fun getByIdOnce(shareRecordId: Long): IngestionRecord?
+
     @Query("SELECT * FROM ingestion_record")
     fun observeAll(): Flow<List<IngestionRecord>>
 
@@ -27,9 +30,11 @@ interface IngestionDao {
     @Query("UPDATE ingestion_record SET status = 'COMPLETE', serverVideoPath = :serverVideoPath WHERE shareRecordId = :shareRecordId")
     suspend fun markComplete(shareRecordId: Long, serverVideoPath: String?)
 
-    // Used for ingestion_failed SSE — only updates status + errorMessage.
-    @Query("UPDATE ingestion_record SET status = 'FAILED', errorMessage = :errorMessage WHERE shareRecordId = :shareRecordId")
-    suspend fun markFailed(shareRecordId: Long, errorMessage: String?)
+    // Used for ingestion_failed SSE — only updates status + errorMessage. status comes
+    // from the server payload (FAILED for a scheduled auto-retry, FAILED_PERMANENT once
+    // the server has given up), not hardcoded, so the terminal state renders correctly.
+    @Query("UPDATE ingestion_record SET status = :status, errorMessage = :errorMessage WHERE shareRecordId = :shareRecordId")
+    suspend fun markFailed(shareRecordId: Long, status: IngestionStatus, errorMessage: String?)
 
     @Query("DELETE FROM ingestion_record WHERE shareRecordId = :shareRecordId")
     suspend fun deleteByShareRecordId(shareRecordId: Long)

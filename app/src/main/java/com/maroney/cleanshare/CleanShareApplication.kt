@@ -1,6 +1,9 @@
 package com.maroney.cleanshare
 
 import android.app.Application
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.work.Configuration
 import com.maroney.cleanshare.BuildConfig
 import com.maroney.cleanshare.data.ShareDatabase
@@ -15,15 +18,41 @@ import com.maroney.cleanshare.sync.CleanShareSyncClient
 import com.maroney.cleanshare.sync.ServerConfigRepository
 import com.maroney.cleanshare.sync.SyncManager
 import androidx.work.WorkManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class CleanShareApplication : Application(), Configuration.Provider {
 
+    // Long-lived, process-scoped: SSE listening must outlive any single screen's
+    // ViewModel, otherwise navigating between screens (which disposes off-stack
+    // composables and their lifecycles) tears down the app's one SSE connection.
+    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
     override fun onCreate() {
         super.onCreate()
         if (BuildConfig.DEBUG) Timber.plant(Timber.DebugTree())
+
+        // SSE lifecycle is tied to the whole app's foreground/background state, not to
+        // whichever screen happens to be on top — so it survives navigating between
+        // History and Detail. Also re-syncs on every foreground to catch up on anything
+        // missed while backgrounded (SSE events are not queued/replayed by the server).
+        ProcessLifecycleOwner.get().lifecycle.addObserver(object : DefaultLifecycleObserver {
+            override fun onStart(owner: LifecycleOwner) {
+                applicationScope.launch {
+                    syncManager.resolveAndSync()
+                    syncManager.startListening()
+                }
+            }
+
+            override fun onStop(owner: LifecycleOwner) {
+                syncManager.stopListening()
+            }
+        })
     }
 
     val database by lazy { ShareDatabase.getInstance(this) }

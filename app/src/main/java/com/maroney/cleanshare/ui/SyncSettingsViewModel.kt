@@ -43,7 +43,13 @@ class SyncSettingsViewModel(
     }
 
     fun testConnection() {
-        viewModelScope.launch { syncManager.resolveAndSync() }
+        viewModelScope.launch {
+            syncManager.resolveAndSync()
+            // Covers first-time setup: if this is the first successful connection this
+            // session, SSE hasn't started yet (nothing else triggers it once the app is
+            // already foregrounded). No-op if already listening.
+            syncManager.startListening()
+        }
     }
 
     companion object {

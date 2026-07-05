@@ -22,7 +22,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,6 +46,7 @@ import coil3.compose.AsyncImage
 import com.maroney.cleanshare.data.FetchStatus
 import com.maroney.cleanshare.data.IngestionStatus
 import com.maroney.cleanshare.data.ShareRecordWithMetadata
+import com.maroney.cleanshare.data.isFailure
 import com.maroney.cleanshare.domain.formatDuration
 import com.maroney.cleanshare.ui.fakedata.HistoryItemPreviewProvider
 import com.maroney.cleanshare.ui.theme.CleanShareTheme
@@ -57,6 +60,7 @@ fun HistoryItem(
     item: ShareRecordWithMetadata,
     onNavigate: () -> Unit,
     modifier: Modifier = Modifier,
+    onRetryIngestion: () -> Unit = {},
 ) {
     Box(
         modifier = modifier
@@ -68,7 +72,7 @@ fun HistoryItem(
         val hasIngestionData = ing != null && (ing.title != null || ing.thumbnailUrl != null)
 
         when {
-            hasIngestionData                              -> MediaIngestionRow(item)
+            hasIngestionData                              -> MediaIngestionRow(item, onRetryIngestion)
             meta == null                                  -> ShimmerRow()
             meta.fetchStatus == FetchStatus.FAILED        -> FallbackRow(item)
             meta.thumbnailUrl != null                     -> FetchedLinkRow(item)
@@ -129,7 +133,7 @@ private fun ShimmerRow() {
 // ── Tier 1: ingested media (YouTube / Instagram / TikTok) ───────────────────
 
 @Composable
-private fun MediaIngestionRow(item: ShareRecordWithMetadata) {
+private fun MediaIngestionRow(item: ShareRecordWithMetadata, onRetryIngestion: () -> Unit) {
     val ing = item.ingestion!!
     val thumbUrl = ing.thumbnailUrl ?: item.metadata?.thumbnailUrl
     Row(
@@ -192,17 +196,28 @@ private fun MediaIngestionRow(item: ShareRecordWithMetadata) {
                 )
             }
             when (ing.status) {
+                IngestionStatus.QUEUED -> Text(
+                    text = "Queued…",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                IngestionStatus.EXTRACTING_METADATA -> Text(
+                    text = "Fetching details…",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                )
                 IngestionStatus.DOWNLOADING -> Text(
                     text = "Downloading…",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.primary,
                 )
-                IngestionStatus.FAILED -> Text(
-                    text = "Download failed",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.error,
-                )
-                else -> {}
+                else -> if (ing.status.isFailure) {
+                    Text(
+                        text = "Download failed",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
             }
             Text(
                 text = formatAge(item.record.sharedAt),
@@ -211,11 +226,21 @@ private fun MediaIngestionRow(item: ShareRecordWithMetadata) {
             )
         }
 
-        Icon(
-            Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        if (ing.status.isFailure) {
+            IconButton(onClick = onRetryIngestion) {
+                Icon(
+                    Icons.Default.Refresh,
+                    contentDescription = "Retry download",
+                    tint = MaterialTheme.colorScheme.error,
+                )
+            }
+        } else {
+            Icon(
+                Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
 

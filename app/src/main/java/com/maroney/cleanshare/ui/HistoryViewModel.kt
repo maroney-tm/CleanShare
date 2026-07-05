@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 fun computeOfflineBannerTimestamp(
     status: ConnectionStatus,
@@ -69,10 +70,12 @@ class HistoryViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val snapshot = repository.getAll().first()
             workScheduler.schedulePendingFetches(snapshot)
-            syncManager.resolveAndSync()
-            syncManager.startListening(viewModelScope)
         }
     }
+
+    // SSE listening is owned by CleanShareApplication (tied to the whole app's
+    // foreground/background state via ProcessLifecycleOwner), not this screen —
+    // otherwise navigating to Detail would tear down the app's one SSE connection.
 
     fun refresh() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -85,16 +88,6 @@ class HistoryViewModel(
         }
     }
 
-    /** Called from HistoryScreen when the lifecycle moves to ON_START. */
-    fun onStart() {
-        syncManager.startListening(viewModelScope)
-    }
-
-    /** Called from HistoryScreen when the lifecycle moves to ON_STOP. */
-    fun onStop() {
-        syncManager.stopListening()
-    }
-
     fun deleteItem(id: Long) {
         viewModelScope.launch { repository.deleteById(id) }
     }
@@ -105,6 +98,14 @@ class HistoryViewModel(
 
     fun retryFetch(shareRecordId: Long, url: String, syncId: String) {
         workScheduler.retryFetch(shareRecordId, url, syncId)
+    }
+
+    fun retryIngestion(syncId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (!syncManager.retryIngestion(syncId)) {
+                Timber.w("Retry ingestion request failed for $syncId")
+            }
+        }
     }
 
     companion object {

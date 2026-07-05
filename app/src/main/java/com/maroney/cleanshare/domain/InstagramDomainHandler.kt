@@ -53,6 +53,7 @@ import androidx.media3.ui.PlayerView
 import coil3.compose.AsyncImage
 import com.maroney.cleanshare.data.IngestionRecord
 import com.maroney.cleanshare.data.IngestionStatus
+import com.maroney.cleanshare.data.isFailure
 import com.maroney.cleanshare.ui.IconSize
 import com.maroney.cleanshare.ui.Radius
 import com.maroney.cleanshare.ui.Spacing
@@ -297,7 +298,7 @@ private fun FullCard(meta: InstagramUrlMetadata, ingestion: IngestionRecord, sho
             }
         }
 
-        if (ingestion.status == IngestionStatus.FAILED) {
+        if (ingestion.status.isFailure) {
             Spacer(Modifier.height(Spacing.xs))
             val msg = ingestion.errorMessage ?: "Download failed"
             Text(

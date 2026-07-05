@@ -62,6 +62,7 @@ import com.maroney.cleanshare.CleanShareApplication
 import com.maroney.cleanshare.data.FetchStatus
 import com.maroney.cleanshare.data.IngestionStatus
 import com.maroney.cleanshare.data.ShareRecordWithMetadata
+import com.maroney.cleanshare.data.isFailure
 import com.maroney.cleanshare.domain.DomainHandler
 import com.maroney.cleanshare.domain.DomainUrlMetadata
 import com.maroney.cleanshare.ui.fakedata.HistoryItemPreviewProvider
@@ -131,6 +132,7 @@ fun DetailScreen(
         },
         onDelete = { vm.deleteItem() },
         onRetryFetch = { vm.retryMetadataFetch() },
+        onRetryIngestion = { vm.retryIngestion() },
         onNotesChanged = vm::onNotesChanged,
         onNotesFocusLost = vm::onNotesFocusLost,
     )
@@ -154,6 +156,7 @@ private fun DetailContent(
     onOpen: () -> Unit,
     onDelete: () -> Unit,
     onRetryFetch: () -> Unit,
+    onRetryIngestion: () -> Unit,
     onNotesChanged: (String) -> Unit,
     onNotesFocusLost: () -> Unit,
 ) {
@@ -257,6 +260,14 @@ private fun DetailContent(
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text("Retry Metadata Fetch")
+                    }
+                }
+                if (item.ingestion?.status?.isFailure == true) {
+                    OutlinedButton(
+                        onClick = onRetryIngestion,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text("Retry Download")
                     }
                 }
             }
@@ -383,6 +394,7 @@ private fun DetailScreenPreview(
             onOpen = {},
             onDelete = {},
             onRetryFetch = {},
+            onRetryIngestion = {},
             onNotesChanged = {},
             onNotesFocusLost = {},
         )

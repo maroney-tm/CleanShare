@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class DetailViewModel(
     private val id: Long,
@@ -97,6 +98,15 @@ class DetailViewModel(
     fun retryMetadataFetch() {
         val record = _uiState.value?.record ?: return
         workScheduler.retryFetch(record.id, record.cleanedText, record.syncId)
+    }
+
+    fun retryIngestion() {
+        val record = _uiState.value?.record ?: return
+        viewModelScope.launch(Dispatchers.IO) {
+            if (!syncManager.retryIngestion(record.syncId)) {
+                Timber.w("Retry ingestion request failed for ${record.syncId}")
+            }
+        }
     }
 
     override fun onCleared() {

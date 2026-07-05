@@ -129,6 +129,16 @@ class CleanShareSyncClient(private val okHttpClient: OkHttpClient) {
             } catch (e: Exception) { Timber.e(e, "Failed to put metadata"); false }
         }
 
+    suspend fun retryIngestion(syncId: String): Boolean = withContext(Dispatchers.IO) {
+        val url = baseUrl ?: return@withContext false
+        try {
+            val body = "{}".toRequestBody(JSON_MT)
+            okHttpClient.newCall(
+                Request.Builder().url("$url/records/$syncId/retry").post(body).build()
+            ).execute().use { it.isSuccessful }
+        } catch (e: Exception) { Timber.e(e, "Failed to retry ingestion"); false }
+    }
+
     // ---- JSON helpers ----
 
     private fun parseRecordList(json: String): List<SyncRecord> {

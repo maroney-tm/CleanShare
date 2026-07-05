@@ -29,8 +29,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.maroney.cleanshare.ui.theme.LocalColors
 
@@ -44,9 +42,6 @@ fun HistoryScreen(
     val history by viewModel.history.collectAsStateWithLifecycle()
     val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
     val offlineBannerText by viewModel.offlineBannerText.collectAsStateWithLifecycle()
-
-    LifecycleEventEffect(Lifecycle.Event.ON_START) { viewModel.onStart() }
-    LifecycleEventEffect(Lifecycle.Event.ON_STOP)  { viewModel.onStop() }
 
     Scaffold(
         topBar = {
@@ -82,6 +77,7 @@ fun HistoryScreen(
                             HistoryItem(
                                 item = item,
                                 onNavigate = { onNavigateToDetail(item.record.id) },
+                                onRetryIngestion = { viewModel.retryIngestion(item.record.syncId) },
                             )
                             if (item != history.last()) {
                                 HorizontalDivider(modifier = Modifier.padding(horizontal = Spacing.md))

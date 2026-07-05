@@ -14,6 +14,7 @@ import com.maroney.cleanshare.data.ShareSource
 import com.maroney.cleanshare.data.SyncPusher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -41,6 +42,13 @@ class SyncManager(
     val connectionStatus: StateFlow<ConnectionStatus> = _status.asStateFlow()
 
     private var sseListener: SseListener? = null
+
+    // SyncManager is a process-wide singleton, so the SSE listening job's lifetime
+    // should be too — not borrowed from whichever caller happens to invoke
+    // startListening() (a ViewModel's viewModelScope would cancel the connection the
+    // moment that particular screen is torn down, e.g. leaving Settings after first
+    // configuring a server).
+    private val listenerScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     // ---- Discovery + connection ----
 
@@ -124,7 +132,7 @@ class SyncManager(
 
     // ---- SSE ----
 
-    fun startListening(scope: CoroutineScope) {
+    fun startListening() {
         if (!syncClient.isConfigured()) return
         if (sseListener != null) return  // already listening — don't start a second SSE connection
         val baseUrl = syncClient.effectiveBaseUrl() ?: return
@@ -132,7 +140,7 @@ class SyncManager(
         sseListener = SseListener(buildOkHttp()) { type, data ->
             handleSseEvent(type, data)
         }
-        sseListener?.start(baseUrl, scope)
+        sseListener?.start(baseUrl, listenerScope)
     }
 
     fun stopListening() {
@@ -170,7 +178,21 @@ class SyncManager(
                     val dao = ingestionDao ?: return@withContext
                     val syncId = obj.getString("syncId")
                     val local = shareDao.getBySyncId(syncId) ?: return@withContext
-                    dao.upsert(parseIngestionRecord(local.id, obj))
+                    val incoming = parseIngestionRecord(local.id, obj)
+                    // Status-only broadcasts (QUEUED/EXTRACTING_METADATA, e.g. right after a
+                    // manual retry) carry no title/thumbnail. If a row already exists — from
+                    // a prior successful download — a plain upsert would null out its
+                    // metadata and make the row vanish from the UI until fresh metadata
+                    // arrives. Preserve it with a status-only update instead; only overwrite
+                    // metadata wholesale when the event actually carries it, or when this is
+                    // the first-ever row for this item (so it still appears immediately as
+                    // "loading" rather than not appearing at all).
+                    val hasMetadata = incoming.title != null || incoming.thumbnailUrl != null
+                    if (hasMetadata || dao.getByIdOnce(local.id) == null) {
+                        dao.upsert(incoming)
+                    } else {
+                        dao.updateStatusOnly(local.id, incoming.status, incoming.errorMessage)
+                    }
                 }
                 "ingestion_complete" -> {
                     val dao = ingestionDao ?: return@withContext
@@ -183,8 +205,10 @@ class SyncManager(
                     val dao = ingestionDao ?: return@withContext
                     val syncId = obj.getString("syncId")
                     val local = shareDao.getBySyncId(syncId) ?: return@withContext
+                    val statusStr = runCatching { obj.getString("status") }.getOrNull() ?: "FAILED"
+                    val status = IngestionStatus.entries.firstOrNull { it.name == statusStr } ?: IngestionStatus.FAILED
                     val errorMessage = if (obj.isNull("errorMessage")) null else obj.getString("errorMessage")
-                    dao.markFailed(local.id, errorMessage)
+                    dao.markFailed(local.id, status, errorMessage)
                 }
             }
         } catch (e: Exception) { Timber.w(e, "Malformed SSE event: type=$type") }
@@ -207,6 +231,10 @@ class SyncManager(
     suspend fun pushMetadata(syncId: String, meta: LinkMetadata) {
         syncClient.putMetadata(syncId, meta.toSyncLinkMetadata())
     }
+
+    /** Manually retries a failed video/social ingestion. The state change (QUEUED → ...)
+     * arrives back over SSE, so no local Room update is needed here. */
+    suspend fun retryIngestion(syncId: String): Boolean = syncClient.retryIngestion(syncId)
 
     // ---- Conversion helpers ----
 

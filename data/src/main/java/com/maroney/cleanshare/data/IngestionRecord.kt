@@ -3,7 +3,10 @@ package com.maroney.cleanshare.data
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-enum class IngestionStatus { QUEUED, EXTRACTING_METADATA, DOWNLOADING, COMPLETE, FAILED }
+enum class IngestionStatus { QUEUED, EXTRACTING_METADATA, DOWNLOADING, COMPLETE, FAILED, FAILED_PERMANENT }
+
+val IngestionStatus.isFailure: Boolean
+    get() = this == IngestionStatus.FAILED || this == IngestionStatus.FAILED_PERMANENT
 
 @Entity(tableName = "ingestion_record")
 data class IngestionRecord(
