@@ -9,8 +9,8 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
-    entities = [ShareRecord::class, LinkMetadata::class, IngestionRecord::class],
-    version = 5,
+    entities = [ShareRecord::class, LinkMetadata::class, IngestionRecord::class, OfflineVideoRecord::class],
+    version = 6,
     exportSchema = true,
 )
 @TypeConverters(Converters::class)
@@ -19,6 +19,7 @@ abstract class ShareDatabase : RoomDatabase() {
     abstract fun shareDao(): ShareDao
     abstract fun linkMetadataDao(): LinkMetadataDao
     abstract fun ingestionDao(): IngestionDao
+    abstract fun offlineVideoDao(): OfflineVideoDao
 
     companion object {
         @Volatile private var instance: ShareDatabase? = null
@@ -91,6 +92,21 @@ abstract class ShareDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS offline_video (
+                        shareRecordId INTEGER NOT NULL PRIMARY KEY,
+                        status TEXT NOT NULL,
+                        localFilePath TEXT,
+                        fileSizeBytes INTEGER NOT NULL,
+                        savedAt INTEGER NOT NULL,
+                        errorMessage TEXT
+                    )
+                """.trimIndent())
+            }
+        }
+
         fun getInstance(context: Context): ShareDatabase =
             instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
@@ -98,7 +114,14 @@ abstract class ShareDatabase : RoomDatabase() {
                     ShareDatabase::class.java,
                     "share_history.db",
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+                    // Only a safety net for genuine downgrades (e.g. sideloading an older
+                    // build over a device that already ran a newer one during development) —
+                    // there is no valid forward migration path for those, so without this Room
+                    // crashes on launch instead of just recreating the local cache tables.
+                    // Forward upgrades still go through the explicit migrations above and keep
+                    // the user's data.
+                    .fallbackToDestructiveMigrationOnDowngrade(dropAllTables = true)
                     .build()
                     .also { instance = it }
             }

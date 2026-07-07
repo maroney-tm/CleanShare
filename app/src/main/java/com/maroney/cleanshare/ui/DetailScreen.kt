@@ -61,6 +61,8 @@ import coil3.compose.AsyncImage
 import com.maroney.cleanshare.CleanShareApplication
 import com.maroney.cleanshare.data.FetchStatus
 import com.maroney.cleanshare.data.IngestionStatus
+import com.maroney.cleanshare.data.OfflineVideoRecord
+import com.maroney.cleanshare.data.OfflineVideoStatus
 import com.maroney.cleanshare.data.ShareRecordWithMetadata
 import com.maroney.cleanshare.data.isFailure
 import com.maroney.cleanshare.domain.DomainHandler
@@ -82,6 +84,7 @@ fun DetailScreen(
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     val notes by vm.notes.collectAsStateWithLifecycle()
     val isRefreshing by vm.isRefreshing.collectAsStateWithLifecycle()
+    val offlineVideo by vm.offlineVideo.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val clipboard = LocalClipboard.current
     val haptic = LocalHapticFeedback.current
@@ -102,13 +105,19 @@ fun DetailScreen(
             app.syncClient.effectiveBaseUrl()?.let { "$it/records/${item.record.syncId}/media" }
         } else null
     }
+    // Prefer the fully-downloaded local copy when one has been saved offline, so playback
+    // works without a connection and doesn't touch the (separately bounded) streaming cache.
+    val playableVideoUrl = remember(videoUrl, offlineVideo) {
+        offlineVideo?.takeIf { it.status == OfflineVideoStatus.COMPLETE }?.localFilePath ?: videoUrl
+    }
 
     DetailContent(
         item = item,
         notes = notes,
         handler = handler,
         urlMetadata = urlMetadata,
-        videoUrl = videoUrl,
+        videoUrl = playableVideoUrl,
+        offlineVideo = offlineVideo,
         isRefreshing = isRefreshing,
         onRefresh = vm::refresh,
         onNavigateBack = onNavigateBack,
@@ -133,6 +142,8 @@ fun DetailScreen(
         onDelete = { vm.deleteItem() },
         onRetryFetch = { vm.retryMetadataFetch() },
         onRetryIngestion = { vm.retryIngestion() },
+        onSaveOffline = { videoUrl?.let(vm::saveOffline) },
+        onRemoveOffline = { vm.removeOffline() },
         onNotesChanged = vm::onNotesChanged,
         onNotesFocusLost = vm::onNotesFocusLost,
     )
@@ -148,6 +159,7 @@ private fun DetailContent(
     handler: DomainHandler?,
     urlMetadata: DomainUrlMetadata?,
     videoUrl: String?,
+    offlineVideo: OfflineVideoRecord?,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     onNavigateBack: () -> Unit,
@@ -157,6 +169,8 @@ private fun DetailContent(
     onDelete: () -> Unit,
     onRetryFetch: () -> Unit,
     onRetryIngestion: () -> Unit,
+    onSaveOffline: () -> Unit,
+    onRemoveOffline: () -> Unit,
     onNotesChanged: (String) -> Unit,
     onNotesFocusLost: () -> Unit,
 ) {
@@ -241,6 +255,36 @@ private fun DetailContent(
                 }
                 OutlinedButton(onClick = onCopy, modifier = Modifier.fillMaxWidth()) {
                     Text("Copy Link")
+                }
+                if (videoUrl != null) {
+                    when (offlineVideo?.status) {
+                        null, OfflineVideoStatus.FAILED -> OutlinedButton(
+                            onClick = onSaveOffline,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text("Save Offline")
+                        }
+                        OfflineVideoStatus.DOWNLOADING -> OutlinedButton(
+                            onClick = {},
+                            enabled = false,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text("Saving Offline…")
+                        }
+                        OfflineVideoStatus.COMPLETE -> OutlinedButton(
+                            onClick = onRemoveOffline,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text("Remove Offline Copy (${formatBytes(offlineVideo.fileSizeBytes)})")
+                        }
+                    }
+                    if (offlineVideo?.status == OfflineVideoStatus.FAILED) {
+                        Text(
+                            text = "Couldn't save offline: ${offlineVideo.errorMessage ?: "unknown error"}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                    }
                 }
                 OutlinedButton(
                     onClick = onDelete,
@@ -386,6 +430,7 @@ private fun DetailScreenPreview(
             handler = null,
             urlMetadata = null,
             videoUrl = null,
+            offlineVideo = null,
             isRefreshing = false,
             onRefresh = {},
             onNavigateBack = {},
@@ -395,6 +440,8 @@ private fun DetailScreenPreview(
             onDelete = {},
             onRetryFetch = {},
             onRetryIngestion = {},
+            onSaveOffline = {},
+            onRemoveOffline = {},
             onNotesChanged = {},
             onNotesFocusLost = {},
         )

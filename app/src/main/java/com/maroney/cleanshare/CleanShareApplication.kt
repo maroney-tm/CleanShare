@@ -14,6 +14,9 @@ import com.maroney.cleanshare.data.ShareRepository
 import com.maroney.cleanshare.domain.DomainHandlerRegistry
 import com.maroney.cleanshare.domain.InstagramDomainHandler
 import com.maroney.cleanshare.domain.YoutubeDomainHandler
+import com.maroney.cleanshare.media.OfflineVideoRepository
+import com.maroney.cleanshare.media.VideoCacheManager
+import com.maroney.cleanshare.settings.CachePreferencesRepository
 import com.maroney.cleanshare.settings.PlaybackPreferencesRepository
 import com.maroney.cleanshare.sync.CleanShareSyncClient
 import com.maroney.cleanshare.sync.ServerConfigRepository
@@ -54,6 +57,15 @@ class CleanShareApplication : Application(), Configuration.Provider {
                 syncManager.stopListening()
             }
         })
+
+        // Keeps the streaming cache's eviction limit in sync with the user's Settings choice
+        // for the rest of the process's life — the SimpleCache itself is a long-lived
+        // singleton (see VideoCacheManager), so this is the only place the setting is applied.
+        applicationScope.launch {
+            cachePreferencesRepository.cacheSizeLimitBytes.collect { maxBytes ->
+                videoCacheManager.setMaxBytes(maxBytes)
+            }
+        }
     }
 
     val database by lazy { ShareDatabase.getInstance(this) }
@@ -83,6 +95,18 @@ class CleanShareApplication : Application(), Configuration.Provider {
     val serverConfigRepository by lazy { ServerConfigRepository(this) }
 
     val playbackPreferencesRepository by lazy { PlaybackPreferencesRepository(this) }
+
+    val cachePreferencesRepository by lazy { CachePreferencesRepository(this) }
+
+    val videoCacheManager by lazy { VideoCacheManager(this) }
+
+    val offlineVideoRepository by lazy {
+        OfflineVideoRepository(
+            context     = this,
+            dao         = database.offlineVideoDao(),
+            okHttpClient = okHttpClient,
+        )
+    }
 
     val syncClient by lazy { CleanShareSyncClient(okHttpClient) }
 

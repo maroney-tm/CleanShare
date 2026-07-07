@@ -6,9 +6,11 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.maroney.cleanshare.CleanShareApplication
+import com.maroney.cleanshare.data.OfflineVideoRecord
 import com.maroney.cleanshare.data.ShareRecordWithMetadata
 import com.maroney.cleanshare.data.ShareRepository
 import com.maroney.cleanshare.data.metadata.MetadataWorkScheduler
+import com.maroney.cleanshare.media.OfflineVideoRepository
 import com.maroney.cleanshare.sync.SyncManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,9 +19,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -28,6 +32,7 @@ class DetailViewModel(
     private val repository: ShareRepository,
     private val workScheduler: MetadataWorkScheduler,
     private val syncManager: SyncManager,
+    private val offlineVideoRepository: OfflineVideoRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ShareRecordWithMetadata?>(null)
@@ -41,6 +46,9 @@ class DetailViewModel(
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
+    val offlineVideo: StateFlow<OfflineVideoRecord?> = offlineVideoRepository.observeById(id)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     private var debounceJob: Job? = null
     private var pendingSave = false
@@ -79,10 +87,15 @@ class DetailViewModel(
 
     fun deleteItem() {
         viewModelScope.launch {
+            offlineVideoRepository.removeOffline(id)
             repository.deleteById(id)
             _deleted.emit(Unit)
         }
     }
+
+    fun saveOffline(videoUrl: String) = offlineVideoRepository.saveOffline(id, videoUrl)
+
+    fun removeOffline() = offlineVideoRepository.removeOffline(id)
 
     fun refresh() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -125,7 +138,9 @@ class DetailViewModel(
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
                 val app = extras[APPLICATION_KEY] as CleanShareApplication
-                return DetailViewModel(id, app.shareRepository, app.workScheduler, app.syncManager) as T
+                return DetailViewModel(
+                    id, app.shareRepository, app.workScheduler, app.syncManager, app.offlineVideoRepository,
+                ) as T
             }
         }
     }

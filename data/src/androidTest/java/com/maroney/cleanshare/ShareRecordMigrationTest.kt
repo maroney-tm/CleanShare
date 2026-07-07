@@ -43,4 +43,24 @@ class ShareRecordMigrationTest {
 
         cursor.close()
     }
+
+    @Test
+    fun migrate5To6_createsOfflineVideoTable() {
+        val db = helper.createDatabase("migration_test_5_6", 5)
+        db.close()
+
+        val migrated = helper.runMigrationsAndValidate(
+            "migration_test_5_6", 6, true, ShareDatabase.MIGRATION_5_6
+        )
+
+        migrated.execSQL(
+            "INSERT INTO offline_video (shareRecordId, status, localFilePath, fileSizeBytes, savedAt, errorMessage) " +
+                "VALUES (1, 'COMPLETE', '/x/1.mp4', 42, 1000, NULL)"
+        )
+        val cursor = migrated.query("SELECT status, fileSizeBytes FROM offline_video WHERE shareRecordId = 1")
+        assertTrue("Expected one row", cursor.moveToFirst())
+        assertEquals("COMPLETE", cursor.getString(cursor.getColumnIndexOrThrow("status")))
+        assertEquals(42L, cursor.getLong(cursor.getColumnIndexOrThrow("fileSizeBytes")))
+        cursor.close()
+    }
 }

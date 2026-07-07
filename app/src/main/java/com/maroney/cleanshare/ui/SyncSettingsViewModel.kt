@@ -6,8 +6,12 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.maroney.cleanshare.CleanShareApplication
+import com.maroney.cleanshare.data.OfflineVideoStatus
 import com.maroney.cleanshare.data.ShareRepository
 import com.maroney.cleanshare.data.isFailure
+import com.maroney.cleanshare.media.OfflineVideoRepository
+import com.maroney.cleanshare.media.VideoCacheManager
+import com.maroney.cleanshare.settings.CachePreferencesRepository
 import com.maroney.cleanshare.settings.PlaybackPreferencesRepository
 import com.maroney.cleanshare.sync.ConnectionStatus
 import com.maroney.cleanshare.sync.ServerConfig
@@ -28,6 +32,9 @@ class SyncSettingsViewModel(
     private val syncManager: SyncManager,
     private val shareRepository: ShareRepository,
     private val playbackPreferencesRepository: PlaybackPreferencesRepository,
+    private val cachePreferencesRepository: CachePreferencesRepository,
+    private val videoCacheManager: VideoCacheManager,
+    private val offlineVideoRepository: OfflineVideoRepository,
 ) : ViewModel() {
 
     val config: StateFlow<ServerConfig> = configRepo.config
@@ -47,6 +54,33 @@ class SyncSettingsViewModel(
 
     fun setLoopVideosByDefault(enabled: Boolean) {
         viewModelScope.launch { playbackPreferencesRepository.setLoopVideosByDefault(enabled) }
+    }
+
+    val cacheSizeLimitBytes: StateFlow<Long> = cachePreferencesRepository.cacheSizeLimitBytes
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), CachePreferencesRepository.DEFAULT_CACHE_SIZE_BYTES)
+
+    private val _cacheUsageBytes = MutableStateFlow(0L)
+    val cacheUsageBytes: StateFlow<Long> = _cacheUsageBytes.asStateFlow()
+
+    val offlineStorageUsageBytes: StateFlow<Long> = offlineVideoRepository.observeAll()
+        .map { videos -> videos.filter { it.status == OfflineVideoStatus.COMPLETE }.sumOf { it.fileSizeBytes } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0L)
+
+    fun refreshCacheUsage() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _cacheUsageBytes.value = videoCacheManager.currentCacheUsageBytes()
+        }
+    }
+
+    fun setCacheSizeLimit(bytes: Long) {
+        viewModelScope.launch { cachePreferencesRepository.setCacheSizeLimitBytes(bytes) }
+    }
+
+    fun clearCache() {
+        viewModelScope.launch(Dispatchers.IO) {
+            videoCacheManager.clearCache()
+            _cacheUsageBytes.value = videoCacheManager.currentCacheUsageBytes()
+        }
     }
 
     fun setManualHost(raw: String) {
@@ -105,6 +139,9 @@ class SyncSettingsViewModel(
                     app.syncManager,
                     app.shareRepository,
                     app.playbackPreferencesRepository,
+                    app.cachePreferencesRepository,
+                    app.videoCacheManager,
+                    app.offlineVideoRepository,
                 ) as T
             }
         }

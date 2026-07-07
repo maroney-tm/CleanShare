@@ -9,11 +9,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,6 +27,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.maroney.cleanshare.settings.CacheSizeOption
 import com.maroney.cleanshare.sync.ConnectionStatus
 import com.maroney.cleanshare.ui.theme.LocalColors
 
@@ -45,6 +49,14 @@ fun SyncSettingsScreen(onNavigateBack: () -> Unit) {
     val failedDownloadCount by viewModel.failedDownloadCount.collectAsStateWithLifecycle()
     val isRetryingAll by viewModel.isRetryingAll.collectAsStateWithLifecycle()
     val loopVideosByDefault by viewModel.loopVideosByDefault.collectAsStateWithLifecycle()
+    val cacheSizeLimitBytes by viewModel.cacheSizeLimitBytes.collectAsStateWithLifecycle()
+    val cacheUsageBytes by viewModel.cacheUsageBytes.collectAsStateWithLifecycle()
+    val offlineStorageUsageBytes by viewModel.offlineStorageUsageBytes.collectAsStateWithLifecycle()
+
+    // cacheUsageBytes is a point-in-time snapshot (SimpleCache has no reactive size API), and
+    // the ViewModel instance outlives a single visit to this screen — re-query it every time
+    // the screen is (re-)entered so it reflects bytes cached by videos watched elsewhere since.
+    LaunchedEffect(Unit) { viewModel.refreshCacheUsage() }
 
     var draftHost by remember(config.manualHost, config.port) {
         val h = config.manualHost ?: ""
@@ -118,6 +130,45 @@ fun SyncSettingsScreen(onNavigateBack: () -> Unit) {
                     checked = loopVideosByDefault,
                     onCheckedChange = viewModel::setLoopVideosByDefault,
                 )
+            }
+
+            Spacer(modifier = Modifier.height(Spacing.md))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(Spacing.md))
+
+            Text(
+                text = "Storage",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(modifier = Modifier.height(Spacing.xs))
+            Text("Video cache size", style = MaterialTheme.typography.bodyMedium)
+            Spacer(modifier = Modifier.height(Spacing.xs))
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+                CacheSizeOption.entries.forEach { option ->
+                    FilterChip(
+                        selected = option.bytes == cacheSizeLimitBytes,
+                        onClick = { viewModel.setCacheSizeLimit(option.bytes) },
+                        label = { Text(option.label) },
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(Spacing.sm))
+            Text(
+                text = "Used: ${formatBytes(cacheUsageBytes)} of ${formatBytes(cacheSizeLimitBytes)}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            if (offlineStorageUsageBytes > 0) {
+                Text(
+                    text = "Saved offline: ${formatBytes(offlineStorageUsageBytes)} (not counted against the cache above)",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Spacer(modifier = Modifier.height(Spacing.sm))
+            OutlinedButton(onClick = viewModel::clearCache, modifier = Modifier.fillMaxWidth()) {
+                Text("Clear Cache")
             }
 
             if (failedDownloadCount > 0) {

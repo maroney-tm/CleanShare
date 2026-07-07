@@ -45,6 +45,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.ui.PlayerView
 import com.maroney.cleanshare.CleanShareApplication
 import com.maroney.cleanshare.data.IngestionRecord
@@ -99,7 +100,16 @@ private const val CONTROLS_AUTO_HIDE_MS = 3_000L
 internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit) {
     val context = LocalContext.current
     val player = remember(videoUrl) {
-        ExoPlayer.Builder(context).build().apply {
+        // Saved-offline videos are already fully downloaded local files (absolute paths, no
+        // "http(s)" prefix) — play those directly rather than routing them through the
+        // streaming cache, which would needlessly duplicate them into the LRU-bounded cache.
+        val isRemote = videoUrl.startsWith("http://") || videoUrl.startsWith("https://")
+        val builder = ExoPlayer.Builder(context)
+        if (isRemote) {
+            val app = context.applicationContext as CleanShareApplication
+            builder.setMediaSourceFactory(DefaultMediaSourceFactory(app.videoCacheManager.cacheDataSourceFactory()))
+        }
+        builder.build().apply {
             setMediaItem(MediaItem.fromUri(videoUrl))
             prepare()
             playWhenReady = true
