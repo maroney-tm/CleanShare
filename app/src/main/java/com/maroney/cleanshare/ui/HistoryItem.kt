@@ -142,15 +142,17 @@ private fun MediaIngestionRow(item: ShareRecordWithMetadata, onRetryIngestion: (
     // The server re-hosts a local copy of the thumbnail during ingestion instead of us
     // linking directly to the platform's CDN, whose signed URLs expire after a few weeks
     // (see CleanShareApplication.syncClient / the ingestion server's downloadThumbnail).
-    // ing.thumbnailUrl is folded into the URL purely as a cache-busting version tag: Coil
+    // ing.thumbnailReady is folded into the URL purely as a cache-busting version tag: Coil
     // treats an unchanged model as "already handled" and won't retry a failed request just
     // because the row recomposes, so without this a thumbnail that was 404 on first load
     // (e.g. ingestion still in progress, or a legacy entry mid-backfill) would stay blank
-    // forever even after the server SSE-pushes the now-ready thumbnail_url.
+    // forever even after the server SSE-pushes the now-ready thumbnail. Note this can't be
+    // ing.thumbnailUrl itself — some platforms' thumbnail URLs (e.g. YouTube's) don't change
+    // even after a local copy becomes available, so that alone would never trigger a retry.
     val app = LocalContext.current.applicationContext as CleanShareApplication
-    val thumbUrl = remember(item.record.syncId, ing.thumbnailUrl) {
+    val thumbUrl = remember(item.record.syncId, ing.thumbnailReady) {
         app.syncClient.effectiveBaseUrl()?.let {
-            "$it/records/${item.record.syncId}/thumbnail?v=${ing.thumbnailUrl?.hashCode() ?: 0}"
+            "$it/records/${item.record.syncId}/thumbnail?v=${ing.thumbnailReady}"
         }
     } ?: item.metadata?.thumbnailUrl
     Row(

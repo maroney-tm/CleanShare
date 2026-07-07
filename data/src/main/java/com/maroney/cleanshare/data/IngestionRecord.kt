@@ -25,4 +25,10 @@ data class IngestionRecord(
     val tags: String? = null,
     val mediaType: String? = null,
     val serverVideoPath: String? = null,
+    // Whether the server currently has a local copy of the thumbnail to serve — distinct
+    // from thumbnailUrl being non-null, since thumbnailUrl often doesn't change even once
+    // a local copy becomes available (e.g. YouTube's thumbnail URLs are stable, not
+    // signed/expiring like Instagram's). The UI keys its image request off this flipping
+    // true so Coil actually retries a thumbnail that previously 404'd.
+    val thumbnailReady: Boolean = false,
 )

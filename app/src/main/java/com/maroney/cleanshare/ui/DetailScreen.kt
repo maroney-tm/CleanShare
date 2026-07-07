@@ -134,13 +134,14 @@ fun DetailScreen(
     // whose signed URLs expire after a few weeks. Available as soon as ingestion's metadata
     // phase completes — well before videoUrl, which needs the (much slower) video download
     // to finish — so this isn't gated on COMPLETE the way videoUrl is.
-    // ingestion.thumbnailUrl is folded in purely as a cache-busting version tag — see the
-    // matching comment in HistoryItem.MediaIngestionRow for why that's needed.
-    val thumbnailUrl = remember(item.record.syncId, item.ingestion?.thumbnailUrl) {
+    // ingestion.thumbnailReady is folded in purely as a cache-busting version tag — see the
+    // matching comment in HistoryItem.MediaIngestionRow for why that's needed (and why it
+    // can't just be thumbnailUrl).
+    val thumbnailUrl = remember(item.record.syncId, item.ingestion?.thumbnailReady) {
         val ingestion = item.ingestion
         if (ingestion != null) {
             app.syncClient.effectiveBaseUrl()?.let {
-                "$it/records/${item.record.syncId}/thumbnail?v=${ingestion.thumbnailUrl?.hashCode() ?: 0}"
+                "$it/records/${item.record.syncId}/thumbnail?v=${ingestion.thumbnailReady}"
             }
         } else null
     }

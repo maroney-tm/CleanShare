@@ -284,6 +284,7 @@ class SyncManager(
         likeCount     = likeCount,
         tags          = tags,
         mediaType     = mediaType,
+        thumbnailReady = thumbnailReady,
     )
 
     private fun LinkMetadata.toSyncLinkMetadata() = SyncLinkMetadata(
@@ -343,6 +344,7 @@ class SyncManager(
             tags          = obj.optString("tags").takeIf { it.isNotEmpty() },
             mediaType     = obj.optString("mediaType").takeIf { it.isNotEmpty() },
             serverVideoPath = obj.optString("serverVideoPath").takeIf { it.isNotEmpty() },
+            thumbnailReady  = obj.optBoolean("thumbnailReady", false),
         )
     }
 }

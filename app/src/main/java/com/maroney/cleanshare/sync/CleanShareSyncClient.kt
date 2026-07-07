@@ -47,6 +47,7 @@ data class SyncIngestionRecord(
     val likeCount: Long?,
     val tags: String?,
     val mediaType: String?,
+    val thumbnailReady: Boolean,
 )
 
 // ---- REST client ----
@@ -178,6 +179,7 @@ class CleanShareSyncClient(private val okHttpClient: OkHttpClient) {
         likeCount    = if (!obj.has("likeCount") || obj.isNull("likeCount")) null else obj.getLong("likeCount"),
         tags         = obj.nullableString("tags"),
         mediaType    = obj.nullableString("mediaType"),
+        thumbnailReady = obj.optBoolean("thumbnailReady", false),
     )
 
     private fun parseMetadata(obj: JSONObject) = SyncLinkMetadata(

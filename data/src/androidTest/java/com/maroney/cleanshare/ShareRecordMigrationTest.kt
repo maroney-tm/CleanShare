@@ -82,4 +82,22 @@ class ShareRecordMigrationTest {
         assertEquals("[]", cursor.getString(cursor.getColumnIndexOrThrow("tags")))
         cursor.close()
     }
+
+    @Test
+    fun migrate7To8_addsThumbnailReadyColumnDefaultingFalse() {
+        val db = helper.createDatabase("migration_test_7_8", 7)
+        db.execSQL(
+            "INSERT INTO ingestion_record (shareRecordId, status) VALUES (1, 'COMPLETE')"
+        )
+        db.close()
+
+        val migrated = helper.runMigrationsAndValidate(
+            "migration_test_7_8", 8, true, ShareDatabase.MIGRATION_7_8
+        )
+
+        val cursor = migrated.query("SELECT thumbnailReady FROM ingestion_record WHERE shareRecordId = 1")
+        assertTrue("Expected one row", cursor.moveToFirst())
+        assertEquals("thumbnailReady should default to false (0) for pre-existing rows", 0, cursor.getInt(cursor.getColumnIndexOrThrow("thumbnailReady")))
+        cursor.close()
+    }
 }
