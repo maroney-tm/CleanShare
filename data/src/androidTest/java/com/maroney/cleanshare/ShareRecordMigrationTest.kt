@@ -63,4 +63,23 @@ class ShareRecordMigrationTest {
         assertEquals(42L, cursor.getLong(cursor.getColumnIndexOrThrow("fileSizeBytes")))
         cursor.close()
     }
+
+    @Test
+    fun migrate6To7_addsTagsColumnWithDefaultEmptyArray() {
+        val db = helper.createDatabase("migration_test_6_7", 6)
+        db.execSQL(
+            "INSERT INTO share_history (originalText, cleanedText, sharedAt, notes, sync_id, updated_at, source) " +
+                "VALUES ('orig', 'clean', 12345, NULL, 'uuid-1', 12345, 'MOBILE')"
+        )
+        db.close()
+
+        val migrated = helper.runMigrationsAndValidate(
+            "migration_test_6_7", 7, true, ShareDatabase.MIGRATION_6_7
+        )
+
+        val cursor = migrated.query("SELECT tags FROM share_history WHERE sync_id = 'uuid-1'")
+        assertTrue("Expected one row", cursor.moveToFirst())
+        assertEquals("[]", cursor.getString(cursor.getColumnIndexOrThrow("tags")))
+        cursor.close()
+    }
 }

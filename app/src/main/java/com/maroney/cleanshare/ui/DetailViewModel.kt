@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -49,6 +50,21 @@ class DetailViewModel(
 
     val offlineVideo: StateFlow<OfflineVideoRecord?> = offlineVideoRepository.observeById(id)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    // Shared upstream so tagVocabulary/suggestedTags don't each open their own
+    // getAll() combine() subscription just to read tags off every entry.
+    private val allRecords: StateFlow<List<ShareRecordWithMetadata>> = repository.getAll()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    /** Full tag vocabulary across all entries, for autocomplete while typing a new tag. */
+    val tagVocabulary: StateFlow<List<String>> = allRecords
+        .map { allTags(it) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    /** The most-used tags across all entries, for one-tap quick tagging. */
+    val suggestedTags: StateFlow<List<String>> = allRecords
+        .map { topTags(it) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     private var debounceJob: Job? = null
     private var pendingSave = false
@@ -96,6 +112,21 @@ class DetailViewModel(
     fun saveOffline(videoUrl: String) = offlineVideoRepository.saveOffline(id, videoUrl)
 
     fun removeOffline() = offlineVideoRepository.removeOffline(id)
+
+    fun addTag(tag: String) {
+        val record = _uiState.value?.record ?: return
+        val trimmed = tag.trim()
+        if (trimmed.isEmpty()) return
+        if (record.tags.any { it.equals(trimmed, ignoreCase = true) }) return
+        viewModelScope.launch { repository.updateTags(id, record.tags + trimmed) }
+    }
+
+    fun removeTag(tag: String) {
+        val record = _uiState.value?.record ?: return
+        viewModelScope.launch {
+            repository.updateTags(id, record.tags.filterNot { it.equals(tag, ignoreCase = true) })
+        }
+    }
 
     fun refresh() {
         viewModelScope.launch(Dispatchers.IO) {

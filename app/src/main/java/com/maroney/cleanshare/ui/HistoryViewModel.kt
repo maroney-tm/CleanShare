@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -32,6 +33,29 @@ fun computeOfflineBannerTimestamp(
     if (status != ConnectionStatus.Disconnected) return null
     if (config.manualHost == null) return null
     return config.lastSeenAt
+}
+
+enum class SortOption(val label: String) {
+    NEWEST_FIRST("Newest first"),
+    OLDEST_FIRST("Oldest first"),
+}
+
+/** Filters to entries matching ANY of [selectedTags] (OR semantics; no filter when empty),
+ * then sorts by [sort]. Pulled out as a pure function so it's unit-testable without a ViewModel. */
+fun applyHistorySortAndFilter(
+    records: List<ShareRecordWithMetadata>,
+    sort: SortOption,
+    selectedTags: Set<String>,
+): List<ShareRecordWithMetadata> {
+    val filtered = if (selectedTags.isEmpty()) {
+        records
+    } else {
+        records.filter { it.record.tags.any { tag -> tag in selectedTags } }
+    }
+    return when (sort) {
+        SortOption.NEWEST_FIRST -> filtered.sortedByDescending { it.record.sharedAt }
+        SortOption.OLDEST_FIRST -> filtered.sortedBy { it.record.sharedAt }
+    }
 }
 
 class HistoryViewModel(
@@ -50,6 +74,36 @@ class HistoryViewModel(
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
+    private val _sortOption = MutableStateFlow(SortOption.NEWEST_FIRST)
+    val sortOption: StateFlow<SortOption> = _sortOption.asStateFlow()
+
+    private val _selectedTags = MutableStateFlow<Set<String>>(emptySet())
+    val selectedTags: StateFlow<Set<String>> = _selectedTags.asStateFlow()
+
+    // Derived from the unfiltered `history` so the full tag vocabulary stays selectable
+    // even once some filters are already applied.
+    val availableTags: StateFlow<List<String>> = history
+        .map { records -> allTags(records) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    val visibleHistory: StateFlow<List<ShareRecordWithMetadata>> =
+        combine(history, sortOption, selectedTags) { records, sort, tags ->
+            applyHistorySortAndFilter(records, sort, tags)
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    fun setSortOption(option: SortOption) {
+        _sortOption.value = option
+    }
+
+    fun toggleTagFilter(tag: String) {
+        _selectedTags.value =
+            if (tag in _selectedTags.value) _selectedTags.value - tag else _selectedTags.value + tag
+    }
+
+    fun clearFilters() {
+        _selectedTags.value = emptySet()
+    }
 
     val offlineBannerText: StateFlow<String?> =
         combine(syncManager.connectionStatus, configRepo.config) { status, config ->

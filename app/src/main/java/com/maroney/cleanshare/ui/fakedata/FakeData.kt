@@ -21,6 +21,7 @@ private val recordClean = ShareRecord(
     originalText = "https://developer.android.com/jetpack/compose",
     cleanedText = "https://developer.android.com/jetpack/compose",
     sharedAt = 1_715_000_000_000L,
+    tags = listOf("compose", "reading-list"),
 )
 
 private val youtubeRecord = ShareRecord(

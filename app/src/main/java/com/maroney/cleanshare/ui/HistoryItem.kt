@@ -14,6 +14,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,6 +27,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -224,6 +226,7 @@ private fun MediaIngestionRow(item: ShareRecordWithMetadata, onRetryIngestion: (
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            TagChipsRow(item.record.tags)
         }
 
         if (ing.status.isFailure) {
@@ -285,6 +288,7 @@ private fun FetchedLinkRow(item: ShareRecordWithMetadata) {
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            TagChipsRow(item.record.tags)
         }
         Icon(
             Icons.AutoMirrored.Filled.KeyboardArrowRight,
@@ -344,6 +348,7 @@ private fun FetchedLinkNoThumbRow(item: ShareRecordWithMetadata) {
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            TagChipsRow(item.record.tags)
         }
         Icon(
             Icons.AutoMirrored.Filled.KeyboardArrowRight,
@@ -388,12 +393,26 @@ private fun FallbackRow(item: ShareRecordWithMetadata) {
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            TagChipsRow(item.record.tags)
         }
         Icon(
             Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+    }
+}
+
+@Composable
+private fun TagChipsRow(tags: List<String>) {
+    if (tags.isEmpty()) return
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+        tags.forEach { tag ->
+            SuggestionChip(
+                onClick = {},
+                label = { Text(tag, style = MaterialTheme.typography.labelSmall) },
+            )
+        }
     }
 }
 

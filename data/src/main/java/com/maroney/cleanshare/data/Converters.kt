@@ -18,4 +18,10 @@ class Converters {
     @TypeConverter fun fromIngestionStatus(v: IngestionStatus): String = v.name
     @TypeConverter fun toIngestionStatus(v: String): IngestionStatus =
         IngestionStatus.entries.firstOrNull { it.name == v } ?: IngestionStatus.FAILED
+
+    @TypeConverter fun fromTags(tags: List<String>): String = org.json.JSONArray(tags).toString()
+    @TypeConverter fun toTags(value: String): List<String> = runCatching {
+        val arr = org.json.JSONArray(value)
+        List(arr.length()) { arr.getString(it) }
+    }.getOrDefault(emptyList())
 }

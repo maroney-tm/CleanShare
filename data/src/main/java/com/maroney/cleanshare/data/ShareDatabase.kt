@@ -10,7 +10,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [ShareRecord::class, LinkMetadata::class, IngestionRecord::class, OfflineVideoRecord::class],
-    version = 6,
+    version = 7,
     exportSchema = true,
 )
 @TypeConverters(Converters::class)
@@ -107,6 +107,12 @@ abstract class ShareDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE share_history ADD COLUMN tags TEXT NOT NULL DEFAULT '[]'")
+            }
+        }
+
         fun getInstance(context: Context): ShareDatabase =
             instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
@@ -114,7 +120,7 @@ abstract class ShareDatabase : RoomDatabase() {
                     ShareDatabase::class.java,
                     "share_history.db",
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
                     // Only a safety net for genuine downgrades (e.g. sideloading an older
                     // build over a device that already ran a newer one during development) —
                     // there is no valid forward migration path for those, so without this Room

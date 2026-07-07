@@ -4,9 +4,12 @@ import android.content.ClipData
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,16 +18,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Send
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -35,14 +41,20 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboard
@@ -50,10 +62,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -85,6 +99,8 @@ fun DetailScreen(
     val notes by vm.notes.collectAsStateWithLifecycle()
     val isRefreshing by vm.isRefreshing.collectAsStateWithLifecycle()
     val offlineVideo by vm.offlineVideo.collectAsStateWithLifecycle()
+    val tagVocabulary by vm.tagVocabulary.collectAsStateWithLifecycle()
+    val suggestedTags by vm.suggestedTags.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val clipboard = LocalClipboard.current
     val haptic = LocalHapticFeedback.current
@@ -118,6 +134,9 @@ fun DetailScreen(
         urlMetadata = urlMetadata,
         videoUrl = playableVideoUrl,
         offlineVideo = offlineVideo,
+        tags = item.record.tags,
+        tagVocabulary = tagVocabulary,
+        suggestedTags = suggestedTags,
         isRefreshing = isRefreshing,
         onRefresh = vm::refresh,
         onNavigateBack = onNavigateBack,
@@ -144,6 +163,8 @@ fun DetailScreen(
         onRetryIngestion = { vm.retryIngestion() },
         onSaveOffline = { videoUrl?.let(vm::saveOffline) },
         onRemoveOffline = { vm.removeOffline() },
+        onAddTag = vm::addTag,
+        onRemoveTag = vm::removeTag,
         onNotesChanged = vm::onNotesChanged,
         onNotesFocusLost = vm::onNotesFocusLost,
     )
@@ -160,6 +181,9 @@ private fun DetailContent(
     urlMetadata: DomainUrlMetadata?,
     videoUrl: String?,
     offlineVideo: OfflineVideoRecord?,
+    tags: List<String>,
+    tagVocabulary: List<String>,
+    suggestedTags: List<String>,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     onNavigateBack: () -> Unit,
@@ -171,6 +195,8 @@ private fun DetailContent(
     onRetryIngestion: () -> Unit,
     onSaveOffline: () -> Unit,
     onRemoveOffline: () -> Unit,
+    onAddTag: (String) -> Unit,
+    onRemoveTag: (String) -> Unit,
     onNotesChanged: (String) -> Unit,
     onNotesFocusLost: () -> Unit,
 ) {
@@ -242,6 +268,73 @@ private fun DetailContent(
                     .padding(horizontal = Spacing.md)
                     .onFocusChanged { if (!it.isFocused) onNotesFocusLost() },
             )
+
+            SectionLabel("Tags")
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Spacing.md),
+                verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+            ) {
+                // Quick-tap suggestions (most-used tags) not yet applied to this entry share
+                // the row with the entry's own tags — tapping one adds it and it immediately
+                // re-renders as a normal (solid) chip alongside the rest.
+                val untappedSuggestions = suggestedTags.filter { suggestion ->
+                    tags.none { it.equals(suggestion, ignoreCase = true) }
+                }
+                if (tags.isNotEmpty() || untappedSuggestions.isNotEmpty()) {
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+                        tags.forEach { tag ->
+                            AddedTagChip(text = tag, onClick = { onRemoveTag(tag) })
+                        }
+                        untappedSuggestions.forEach { tag ->
+                            SuggestedTagPill(text = tag, onClick = { onAddTag(tag) })
+                        }
+                    }
+                }
+
+                var newTagText by remember { mutableStateOf("") }
+                val autocompleteMatches = remember(newTagText, tagVocabulary, tags) {
+                    if (newTagText.isBlank()) {
+                        emptyList()
+                    } else {
+                        tagVocabulary
+                            .filter { candidate -> tags.none { it.equals(candidate, ignoreCase = true) } }
+                            .filter { it.contains(newTagText, ignoreCase = true) }
+                            .sortedBy { !it.startsWith(newTagText, ignoreCase = true) }
+                            .take(5)
+                    }
+                }
+                OutlinedTextField(
+                    value = newTagText,
+                    onValueChange = { newTagText = it },
+                    placeholder = { Text("Add tag…") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = { onAddTag(newTagText); newTagText = "" }),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                if (autocompleteMatches.isNotEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(Radius.sm))
+                            .background(MaterialTheme.colorScheme.surfaceVariant),
+                    ) {
+                        autocompleteMatches.forEach { match ->
+                            Text(
+                                text = match,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { onAddTag(match); newTagText = "" }
+                                    .padding(horizontal = Spacing.sm, vertical = Spacing.sm),
+                            )
+                        }
+                    }
+                }
+            }
 
             Spacer(Modifier.height(Spacing.md))
             Column(
@@ -322,6 +415,74 @@ private fun DetailContent(
 }
 
 // ── Sub-composables ───────────────────────────────────────────────────────────
+
+private val TagPillShape = RoundedCornerShape(Radius.md)
+
+/** Shared layout for both tag pill styles — a real (solid) applied tag and a dashed-border
+ * suggestion turn into one another on tap, so they must share identical height/padding/
+ * alignment or that transition visibly jumps. Only [decoration] (fill vs. dashed outline)
+ * and [content] differ between the two. */
+@Composable
+private fun TagPill(
+    decoration: Modifier,
+    onClick: () -> Unit,
+    content: @Composable RowScope.() -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .height(InputChipDefaults.Height)
+            .clip(TagPillShape)
+            .then(decoration)
+            .clickable(onClick = onClick)
+            .padding(horizontal = Spacing.sm),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+        content = content,
+    )
+}
+
+/** A tag already applied to this entry — tapping it removes it. */
+@Composable
+private fun AddedTagChip(text: String, onClick: () -> Unit) {
+    val contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+    TagPill(
+        decoration = Modifier.background(MaterialTheme.colorScheme.secondaryContainer),
+        onClick = onClick,
+    ) {
+        Text(text, style = MaterialTheme.typography.labelLarge, color = contentColor)
+        Icon(
+            Icons.Default.Close,
+            contentDescription = "Remove tag $text",
+            tint = contentColor,
+            modifier = Modifier.size(InputChipDefaults.IconSize),
+        )
+    }
+}
+
+/** A quick-tap tag suggestion not yet applied to this entry — a transparent, dashed-border
+ * pill (tapping it adds the tag, after which it renders as an [AddedTagChip] instead). */
+@Composable
+private fun SuggestedTagPill(text: String, onClick: () -> Unit) {
+    val borderColor = MaterialTheme.colorScheme.outline
+    TagPill(
+        decoration = Modifier.drawBehind {
+            // A plain Canvas stroke doesn't get the 1-physical-pixel auto-substitution
+            // Modifier.border(Dp.Hairline, ...) applies elsewhere in this app, so this
+            // spells out the same hairline weight explicitly.
+            drawRoundRect(
+                color = borderColor,
+                style = Stroke(
+                    width = 1.dp.toPx(),
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 4f), 0f),
+                ),
+                cornerRadius = CornerRadius(Radius.md.toPx(), Radius.md.toPx()),
+            )
+        },
+        onClick = onClick,
+    ) {
+        Text(text, style = MaterialTheme.typography.labelLarge, color = borderColor)
+    }
+}
 
 @Composable
 private fun HeaderSection(item: ShareRecordWithMetadata) {
@@ -431,6 +592,9 @@ private fun DetailScreenPreview(
             urlMetadata = null,
             videoUrl = null,
             offlineVideo = null,
+            tags = listOf("compose", "reading-list"),
+            tagVocabulary = listOf("compose", "kotlin", "reading-list", "video"),
+            suggestedTags = listOf("compose", "kotlin", "video"),
             isRefreshing = false,
             onRefresh = {},
             onNavigateBack = {},
@@ -442,6 +606,8 @@ private fun DetailScreenPreview(
             onRetryIngestion = {},
             onSaveOffline = {},
             onRemoveOffline = {},
+            onAddTag = {},
+            onRemoveTag = {},
             onNotesChanged = {},
             onNotesFocusLost = {},
         )

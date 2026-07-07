@@ -61,6 +61,11 @@ class ShareRepository(
         scope.launch { syncPusher?.pushNoteUpdate(syncId, notes, now) }
     }
 
+    // Tags are local-only for now — intentionally no syncPusher call, unlike updateNotes.
+    suspend fun updateTags(id: Long, tags: List<String>) {
+        shareDao.updateTags(id, tags)
+    }
+
     suspend fun deleteById(id: Long) {
         val syncId = shareDao.getSyncIdById(id)
         metadataDao.deleteByShareRecordId(id)

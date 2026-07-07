@@ -12,6 +12,7 @@ data class ShareRecord(
     val cleanedText: String,
     val sharedAt: Long = System.currentTimeMillis(),
     val notes: String? = null,
+    val tags: List<String> = emptyList(),
     @ColumnInfo(name = "sync_id")
     val syncId: String = UUID.randomUUID().toString(),
     @ColumnInfo(name = "updated_at")
