@@ -5,6 +5,10 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.work.Configuration
+import coil3.ImageLoader
+import coil3.PlatformContext
+import coil3.SingletonImageLoader
+import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import com.maroney.cleanshare.BuildConfig
 import com.maroney.cleanshare.data.ShareDatabase
 import com.maroney.cleanshare.data.metadata.AppWorkerFactory
@@ -30,7 +34,7 @@ import okhttp3.OkHttpClient
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
-class CleanShareApplication : Application(), Configuration.Provider {
+class CleanShareApplication : Application(), Configuration.Provider, SingletonImageLoader.Factory {
 
     // Long-lived, process-scoped: SSE listening must outlive any single screen's
     // ViewModel, otherwise navigating between screens (which disposes off-stack
@@ -66,7 +70,21 @@ class CleanShareApplication : Application(), Configuration.Provider {
                 videoCacheManager.setMaxBytes(maxBytes)
             }
         }
+
+        // Coil's disk cache opens its LRU journal file lazily on first access, which takes
+        // ~350ms and is guarded by a single lock (see coil3.disk.DiskLruCache). Without this,
+        // that cost lands on whichever thumbnail request happens to be first — typically a
+        // burst of AsyncImage requests as the user scrolls the history list — serializing all
+        // of them behind it. Touching the cache once here pays that cost at startup instead.
+        applicationScope.launch {
+            SingletonImageLoader.get(this@CleanShareApplication).diskCache?.openSnapshot("warmup")?.close()
+        }
     }
+
+    override fun newImageLoader(context: PlatformContext): ImageLoader =
+        ImageLoader.Builder(context)
+            .components { add(OkHttpNetworkFetcherFactory(okHttpClient)) }
+            .build()
 
     val database by lazy { ShareDatabase.getInstance(this) }
 
