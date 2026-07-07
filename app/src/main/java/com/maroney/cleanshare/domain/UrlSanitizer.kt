@@ -99,4 +99,21 @@ object UrlSanitizer {
 
     private fun isDenied(key: String): Boolean =
         DENY_SET.contains(key) || key.startsWith("utm_")
+
+    /**
+     * Returns the exact `key=value` query-string tokens present in [original] but not in
+     * [cleaned] — i.e. what [clean] stripped. Used to highlight the removed portion when
+     * displaying the original URL instead of a separate cleaned-URL block.
+     */
+    fun removedQueryParams(original: String, cleaned: String): Set<String> {
+        val cleanedTokens = queryTokens(cleaned).toSet()
+        return queryTokens(original).filterNot { it in cleanedTokens }.toSet()
+    }
+
+    private fun queryTokens(url: String): List<String> {
+        val beforeFragment = url.substringBefore('#')
+        val queryIdx = beforeFragment.indexOf('?')
+        if (queryIdx < 0) return emptyList()
+        return beforeFragment.substring(queryIdx + 1).split('&').filter { it.isNotEmpty() }
+    }
 }

@@ -164,4 +164,47 @@ class UrlSanitizerTest {
             UrlSanitizer.cleanText("  https://example.com/p?si=x  ")
         )
     }
+
+    // ── removedQueryParams ───────────────────────────────────────────────────
+
+    @Test
+    fun `removedQueryParams - identifies a single stripped trailing param`() {
+        assertEquals(
+            setOf("utm_source=twitter"),
+            UrlSanitizer.removedQueryParams(
+                "https://example.com/p?utm_source=twitter",
+                "https://example.com/p",
+            )
+        )
+    }
+
+    @Test
+    fun `removedQueryParams - identifies multiple non-adjacent stripped params`() {
+        assertEquals(
+            setOf("utm_source=x", "fbclid=y"),
+            UrlSanitizer.removedQueryParams(
+                "https://example.com/p?a=1&utm_source=x&b=2&fbclid=y",
+                "https://example.com/p?a=1&b=2",
+            )
+        )
+    }
+
+    @Test
+    fun `removedQueryParams - empty when nothing was stripped`() {
+        assertEquals(
+            emptySet<String>(),
+            UrlSanitizer.removedQueryParams(
+                "https://example.com/p?a=1",
+                "https://example.com/p?a=1",
+            )
+        )
+    }
+
+    @Test
+    fun `removedQueryParams - empty when original has no query string`() {
+        assertEquals(
+            emptySet<String>(),
+            UrlSanitizer.removedQueryParams("https://example.com/p", "https://example.com/p")
+        )
+    }
 }

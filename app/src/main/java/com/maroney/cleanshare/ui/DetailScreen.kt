@@ -25,9 +25,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChipDefaults
@@ -36,6 +39,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -53,7 +57,6 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
@@ -61,9 +64,13 @@ import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.toClipEntry
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
@@ -81,6 +88,7 @@ import com.maroney.cleanshare.data.ShareRecordWithMetadata
 import com.maroney.cleanshare.data.isFailure
 import com.maroney.cleanshare.domain.DomainHandler
 import com.maroney.cleanshare.domain.DomainUrlMetadata
+import com.maroney.cleanshare.domain.UrlSanitizer
 import com.maroney.cleanshare.ui.fakedata.HistoryItemPreviewProvider
 import com.maroney.cleanshare.ui.theme.CleanShareTheme
 import com.maroney.cleanshare.ui.theme.LocalColors
@@ -200,6 +208,27 @@ private fun DetailContent(
     onNotesChanged: (String) -> Unit,
     onNotesFocusLost: () -> Unit,
 ) {
+    var showOverflowMenu by remember { mutableStateOf(false) }
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
+
+    if (showDeleteConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirmation = false },
+            title = { Text("Delete this entry?") },
+            text = { Text("This can't be undone.") },
+            confirmButton = {
+                TextButton(onClick = { showDeleteConfirmation = false; onDelete() }) {
+                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirmation = false }) {
+                    Text("Cancel")
+                }
+            },
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -212,6 +241,44 @@ private fun DetailContent(
                 actions = {
                     IconButton(onClick = onShare) {
                         Icon(Icons.AutoMirrored.Outlined.Send, contentDescription = "Share")
+                    }
+                    IconButton(onClick = { showOverflowMenu = true }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "More options")
+                    }
+                    DropdownMenu(
+                        expanded = showOverflowMenu,
+                        onDismissRequest = { showOverflowMenu = false },
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Open Link") },
+                            onClick = { showOverflowMenu = false; onOpen() },
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Copy Link") },
+                            onClick = { showOverflowMenu = false; onCopy() },
+                        )
+                        if (videoUrl != null) {
+                            when (offlineVideo?.status) {
+                                null, OfflineVideoStatus.FAILED -> DropdownMenuItem(
+                                    text = { Text("Save Offline") },
+                                    onClick = { showOverflowMenu = false; onSaveOffline() },
+                                )
+                                OfflineVideoStatus.DOWNLOADING -> DropdownMenuItem(
+                                    text = { Text("Saving Offline…") },
+                                    onClick = {},
+                                    enabled = false,
+                                )
+                                OfflineVideoStatus.COMPLETE -> DropdownMenuItem(
+                                    text = { Text("Remove Offline Copy (${formatBytes(offlineVideo.fileSizeBytes)})") },
+                                    onClick = { showOverflowMenu = false; onRemoveOffline() },
+                                )
+                            }
+                        }
+                        HorizontalDivider()
+                        DropdownMenuItem(
+                            text = { Text("Delete", color = MaterialTheme.colorScheme.error) },
+                            onClick = { showOverflowMenu = false; showDeleteConfirmation = true },
+                        )
                     }
                 },
             )
@@ -236,10 +303,26 @@ private fun DetailContent(
             }
 
             if (item.record.cleanedText != item.record.originalText) {
-                SectionLabel("URLs")
-                UrlBlock(label = "CLEANED", url = item.record.cleanedText, highlighted = true)
-                Spacer(Modifier.height(Spacing.sm))
-                UrlBlock(label = "ORIGINAL", url = item.record.originalText, highlighted = false)
+                val removedParams = remember(item.record.originalText, item.record.cleanedText) {
+                    UrlSanitizer.removedQueryParams(item.record.originalText, item.record.cleanedText)
+                }
+                val removedColor = MaterialTheme.colorScheme.error
+                val annotatedUrl = remember(item.record.originalText, removedParams, removedColor) {
+                    buildOriginalUrlAnnotatedString(item.record.originalText, removedParams, removedColor)
+                }
+                Spacer(Modifier.height(Spacing.md))
+                Text(
+                    text = annotatedUrl,
+                    style = MaterialTheme.typography.bodySmall,
+                    fontFamily = FontFamily.Monospace,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Spacing.md)
+                        .clip(RoundedCornerShape(Radius.sm))
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .padding(Spacing.sm),
+                )
             }
 
             // Description is hidden when a domain handler owns the header area.
@@ -343,53 +426,14 @@ private fun DetailContent(
                     .padding(horizontal = Spacing.md),
                 verticalArrangement = Arrangement.spacedBy(Spacing.sm),
             ) {
-                Button(onClick = onOpen, modifier = Modifier.fillMaxWidth()) {
-                    Text("Open Link")
-                }
-                OutlinedButton(onClick = onCopy, modifier = Modifier.fillMaxWidth()) {
-                    Text("Copy Link")
-                }
-                if (videoUrl != null) {
-                    when (offlineVideo?.status) {
-                        null, OfflineVideoStatus.FAILED -> OutlinedButton(
-                            onClick = onSaveOffline,
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Text("Save Offline")
-                        }
-                        OfflineVideoStatus.DOWNLOADING -> OutlinedButton(
-                            onClick = {},
-                            enabled = false,
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Text("Saving Offline…")
-                        }
-                        OfflineVideoStatus.COMPLETE -> OutlinedButton(
-                            onClick = onRemoveOffline,
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Text("Remove Offline Copy (${formatBytes(offlineVideo.fileSizeBytes)})")
-                        }
-                    }
-                    if (offlineVideo?.status == OfflineVideoStatus.FAILED) {
-                        Text(
-                            text = "Couldn't save offline: ${offlineVideo.errorMessage ?: "unknown error"}",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    }
-                }
-                OutlinedButton(
-                    onClick = onDelete,
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.error,
-                    ),
-                    border = ButtonDefaults.outlinedButtonBorder(enabled = true).copy(
-                        brush = SolidColor(MaterialTheme.colorScheme.error),
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text("Delete")
+                // The save/remove-offline action itself now lives in the toolbar overflow
+                // menu, but a failure still needs to be visible without opening it.
+                if (videoUrl != null && offlineVideo?.status == OfflineVideoStatus.FAILED) {
+                    Text(
+                        text = "Couldn't save offline: ${offlineVideo.errorMessage ?: "unknown error"}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.error,
+                    )
                 }
                 if (item.metadata?.fetchStatus == FetchStatus.FAILED) {
                     OutlinedButton(
@@ -543,37 +587,33 @@ private fun SectionLabel(label: String) {
     )
 }
 
-@Composable
-private fun UrlBlock(label: String, url: String, highlighted: Boolean) {
-    val containerColor: Color
-    val contentColor: Color
-    if (highlighted) {
-        containerColor = MaterialTheme.colorScheme.primaryContainer
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-    } else {
-        containerColor = MaterialTheme.colorScheme.surfaceVariant
-        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+/** Renders [original] verbatim, with each query-string token in [removed] (the params
+ * [UrlSanitizer.clean] would strip) colored [removedColor] via a span, so a single URL
+ * block can show both the original link and what cleaning it would remove. */
+internal fun buildOriginalUrlAnnotatedString(
+    original: String,
+    removed: Set<String>,
+    removedColor: Color,
+): AnnotatedString = buildAnnotatedString {
+    val hashIdx = original.indexOf('#')
+    val fragment = if (hashIdx >= 0) original.substring(hashIdx) else ""
+    val beforeFragment = if (hashIdx >= 0) original.substring(0, hashIdx) else original
+    val queryIdx = beforeFragment.indexOf('?')
+    if (queryIdx < 0) {
+        append(original)
+        return@buildAnnotatedString
     }
 
-    Text(
-        text = label,
-        style = MaterialTheme.typography.labelSmall,
-        color = contentColor,
-        modifier = Modifier.padding(horizontal = Spacing.md),
-    )
-    Spacer(Modifier.height(Spacing.xs))
-    Text(
-        text = url,
-        style = MaterialTheme.typography.bodySmall,
-        fontFamily = FontFamily.Monospace,
-        color = contentColor,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = Spacing.md)
-            .clip(RoundedCornerShape(Radius.sm))
-            .background(containerColor)
-            .padding(Spacing.sm),
-    )
+    append(beforeFragment.substring(0, queryIdx + 1))
+    beforeFragment.substring(queryIdx + 1).split('&').forEachIndexed { index, token ->
+        if (index > 0) append("&")
+        if (token in removed) {
+            withStyle(SpanStyle(color = removedColor)) { append(token) }
+        } else {
+            append(token)
+        }
+    }
+    append(fragment)
 }
 
 // ── Preview ───────────────────────────────────────────────────────────────────
