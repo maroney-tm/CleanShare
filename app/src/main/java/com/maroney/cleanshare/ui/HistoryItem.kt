@@ -39,12 +39,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.core.net.toUri
 import coil3.compose.AsyncImage
+import com.maroney.cleanshare.CleanShareApplication
 import com.maroney.cleanshare.data.FetchStatus
 import com.maroney.cleanshare.data.IngestionStatus
 import com.maroney.cleanshare.data.ShareRecordWithMetadata
@@ -137,7 +139,20 @@ private fun ShimmerRow() {
 @Composable
 private fun MediaIngestionRow(item: ShareRecordWithMetadata, onRetryIngestion: () -> Unit) {
     val ing = item.ingestion!!
-    val thumbUrl = ing.thumbnailUrl ?: item.metadata?.thumbnailUrl
+    // The server re-hosts a local copy of the thumbnail during ingestion instead of us
+    // linking directly to the platform's CDN, whose signed URLs expire after a few weeks
+    // (see CleanShareApplication.syncClient / the ingestion server's downloadThumbnail).
+    // ing.thumbnailUrl is folded into the URL purely as a cache-busting version tag: Coil
+    // treats an unchanged model as "already handled" and won't retry a failed request just
+    // because the row recomposes, so without this a thumbnail that was 404 on first load
+    // (e.g. ingestion still in progress, or a legacy entry mid-backfill) would stay blank
+    // forever even after the server SSE-pushes the now-ready thumbnail_url.
+    val app = LocalContext.current.applicationContext as CleanShareApplication
+    val thumbUrl = remember(item.record.syncId, ing.thumbnailUrl) {
+        app.syncClient.effectiveBaseUrl()?.let {
+            "$it/records/${item.record.syncId}/thumbnail?v=${ing.thumbnailUrl?.hashCode() ?: 0}"
+        }
+    } ?: item.metadata?.thumbnailUrl
     Row(
         modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.md),
         horizontalArrangement = Arrangement.spacedBy(Spacing.md),

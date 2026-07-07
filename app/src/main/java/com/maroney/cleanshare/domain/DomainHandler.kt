@@ -67,7 +67,7 @@ interface DomainHandler {
     fun extractUrlMetadata(url: String): DomainUrlMetadata
 
     @Composable
-    fun DetailSection(urlMetadata: DomainUrlMetadata, ingestion: IngestionRecord?, videoUrl: String?)
+    fun DetailSection(urlMetadata: DomainUrlMetadata, ingestion: IngestionRecord?, videoUrl: String?, thumbnailUrl: String?)
 }
 
 /** Marker sealed class for per-platform URL metadata derived from path parsing. */

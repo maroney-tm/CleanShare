@@ -119,13 +119,13 @@ class YoutubeDomainHandler : DomainHandler {
     }
 
     @Composable
-    override fun DetailSection(urlMetadata: DomainUrlMetadata, ingestion: IngestionRecord?, videoUrl: String?) {
+    override fun DetailSection(urlMetadata: DomainUrlMetadata, ingestion: IngestionRecord?, videoUrl: String?, thumbnailUrl: String?) {
         val meta = urlMetadata as? YoutubeUrlMetadata ?: return
         when {
             ingestion == null -> UrlOnlyState(meta)
             ingestion.status == IngestionStatus.QUEUED ||
             ingestion.status == IngestionStatus.EXTRACTING_METADATA -> LoadingState()
-            else -> FullCard(meta, ingestion, showProgress = ingestion.status == IngestionStatus.DOWNLOADING, videoUrl = videoUrl)
+            else -> FullCard(meta, ingestion, showProgress = ingestion.status == IngestionStatus.DOWNLOADING, videoUrl = videoUrl, thumbnailUrl = thumbnailUrl)
         }
     }
 }
@@ -199,7 +199,7 @@ private fun LoadingState() {
 }
 
 @Composable
-private fun FullCard(meta: YoutubeUrlMetadata, ingestion: IngestionRecord, showProgress: Boolean, videoUrl: String?) {
+private fun FullCard(meta: YoutubeUrlMetadata, ingestion: IngestionRecord, showProgress: Boolean, videoUrl: String?, thumbnailUrl: String?) {
     var showPlayer by remember { mutableStateOf(false) }
 
     if (showPlayer && videoUrl != null) {
@@ -234,7 +234,7 @@ private fun FullCard(meta: YoutubeUrlMetadata, ingestion: IngestionRecord, showP
         }
 
         // Thumbnail with play overlay
-        val thumbUrl = ingestion.thumbnailUrl
+        val thumbUrl = thumbnailUrl
         if (!thumbUrl.isNullOrBlank()) {
             Spacer(Modifier.height(Spacing.sm))
             Box(

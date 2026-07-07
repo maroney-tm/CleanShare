@@ -129,6 +129,21 @@ fun DetailScreen(
             app.syncClient.effectiveBaseUrl()?.let { "$it/records/${item.record.syncId}/media" }
         } else null
     }
+    // The server re-hosts a local copy of the thumbnail during ingestion (see
+    // Ingester.downloadThumbnail) rather than us linking directly to the platform's CDN,
+    // whose signed URLs expire after a few weeks. Available as soon as ingestion's metadata
+    // phase completes — well before videoUrl, which needs the (much slower) video download
+    // to finish — so this isn't gated on COMPLETE the way videoUrl is.
+    // ingestion.thumbnailUrl is folded in purely as a cache-busting version tag — see the
+    // matching comment in HistoryItem.MediaIngestionRow for why that's needed.
+    val thumbnailUrl = remember(item.record.syncId, item.ingestion?.thumbnailUrl) {
+        val ingestion = item.ingestion
+        if (ingestion != null) {
+            app.syncClient.effectiveBaseUrl()?.let {
+                "$it/records/${item.record.syncId}/thumbnail?v=${ingestion.thumbnailUrl?.hashCode() ?: 0}"
+            }
+        } else null
+    }
     // Prefer the fully-downloaded local copy when one has been saved offline, so playback
     // works without a connection and doesn't touch the (separately bounded) streaming cache.
     val playableVideoUrl = remember(videoUrl, offlineVideo) {
@@ -141,6 +156,7 @@ fun DetailScreen(
         handler = handler,
         urlMetadata = urlMetadata,
         videoUrl = playableVideoUrl,
+        thumbnailUrl = thumbnailUrl,
         offlineVideo = offlineVideo,
         tags = item.record.tags,
         tagVocabulary = tagVocabulary,
@@ -188,6 +204,7 @@ private fun DetailContent(
     handler: DomainHandler?,
     urlMetadata: DomainUrlMetadata?,
     videoUrl: String?,
+    thumbnailUrl: String?,
     offlineVideo: OfflineVideoRecord?,
     tags: List<String>,
     tagVocabulary: List<String>,
@@ -297,7 +314,7 @@ private fun DetailContent(
                     .verticalScroll(rememberScrollState()),
             ) {
             if (handler != null && urlMetadata != null) {
-                handler.DetailSection(urlMetadata, item.ingestion, videoUrl)
+                handler.DetailSection(urlMetadata, item.ingestion, videoUrl, thumbnailUrl)
             } else {
                 HeaderSection(item)
             }
@@ -631,6 +648,7 @@ private fun DetailScreenPreview(
             handler = null,
             urlMetadata = null,
             videoUrl = null,
+            thumbnailUrl = null,
             offlineVideo = null,
             tags = listOf("compose", "reading-list"),
             tagVocabulary = listOf("compose", "kotlin", "reading-list", "video"),
