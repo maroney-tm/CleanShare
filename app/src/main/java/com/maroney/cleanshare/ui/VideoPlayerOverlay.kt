@@ -54,8 +54,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.Player
+import androidx.media3.ui.compose.PlayerSurface
+import androidx.media3.ui.compose.SURFACE_TYPE_TEXTURE_VIEW
 import com.maroney.cleanshare.CleanShareApplication
 import com.maroney.cleanshare.media.PoolRole
 import com.maroney.cleanshare.media.VideoPlayerPool
@@ -143,15 +144,23 @@ private fun basePositionPx(role: PoolRole, widthPx: Int): Float = when (role) {
 /**
  * Full-screen video player, rendered once at the app root (see `MainActivity`) rather than as a
  * `Dialog` owned by whichever entry's detail screen is on top — see [VideoPlayerPool]'s kdoc for
- * why: reusing a *prepared* standby player across a swipe only helps if the [PlayerView] showing
- * it also survives the swipe, which a per-entry `Dialog` (a distinct Android Window each time)
+ * why: reusing a *prepared* standby player across a swipe only helps if whatever's rendering it
+ * also survives the swipe, which a per-entry `Dialog` (a distinct Android Window each time)
  * can't do. This composable is always present in composition; [VideoPlayerPool.isOpen] controls
  * whether it's actually visible/sized, not whether it exists.
  *
- * Lays out the pool's three [VideoPlayerPool.slots] side by side — previous, current, next,
- * based on each slot's current [PoolRole] — inside a row that follows horizontal drags, so
- * swiping doesn't just animate the outgoing video away but visibly slides the (already-prepared,
- * already-rendering) incoming one into view.
+ * Renders each of the pool's three [VideoPlayerPool.slots] with Media3's native Compose
+ * `PlayerSurface`, in `SURFACE_TYPE_TEXTURE_VIEW` mode — not an `AndroidView`-hosted classic
+ * `PlayerView`, whose `SurfaceView`-backed Surface rendered independently of Compose's own
+ * layout/draw passes and never actually painted a frame (audio played; the screen stayed black).
+ * `TextureView` composites as an ordinary part of the view hierarchy instead of punching its own
+ * window-level hole, which is also what makes having three of them alive at once — two fully
+ * off-screen — visually safe.
+ *
+ * Lays out the three slots side by side — previous, current, next, based on each slot's current
+ * [PoolRole] — inside a row that follows horizontal drags, so swiping doesn't just animate the
+ * outgoing video away but visibly slides the (already-prepared, already-rendering) incoming one
+ * into view.
  *
  * Otherwise unchanged from before: tap-and-hold anywhere for 2x playback, double-tapping the
  * left/right half to skip 10 seconds backward/forward, and a custom control surface (rewind 5s,
@@ -235,12 +244,13 @@ fun VideoPlayerOverlay(pool: VideoPlayerPool) {
             .then(if (pool.isOpen) Modifier.fillMaxSize() else Modifier.size(0.dp))
             .background(if (pool.isOpen) Color.Black else Color.Transparent),
     ) {
-        // The pool's three players/views never get created or torn down here — only
-        // repositioned, based on each slot's current role. That's what keeps a neighbor's
-        // already-decoded frame intact across a swipe instead of losing it to a fresh Surface.
+        // The pool's three players never get created or torn down here — only repositioned,
+        // based on each slot's current role. That's what keeps a neighbor's already-decoded
+        // frame intact across a swipe instead of losing it to a fresh Surface.
         pool.slots.forEach { slot ->
-            AndroidView(
-                factory = { slot.playerView },
+            PlayerSurface(
+                player = slot.player,
+                surfaceType = SURFACE_TYPE_TEXTURE_VIEW,
                 modifier = Modifier
                     .fillMaxSize()
                     .offset {

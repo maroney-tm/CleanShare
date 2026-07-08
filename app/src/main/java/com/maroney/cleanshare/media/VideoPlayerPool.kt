@@ -10,30 +10,21 @@ import androidx.compose.runtime.setValue
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
-import androidx.media3.ui.PlayerView
 
 /** Which position in the swipeable video sequence a [PooledPlayer] currently represents. Roles
  * rotate between the pool's fixed slots as the user swipes — the slots (and their underlying
- * players/views) never get recreated, only relabeled. */
+ * players) never get recreated, only relabeled. */
 enum class PoolRole { PREVIOUS, CURRENT, NEXT }
 
 /**
- * One slot in [VideoPlayerPool]: a persistent [ExoPlayer] + [PlayerView] pair that gets
- * reassigned to whatever video currently needs its [role], rather than being torn down and
- * rebuilt — see [VideoPlayerPool]'s kdoc for why.
+ * One slot in [VideoPlayerPool]: a persistent [ExoPlayer] that gets reassigned to whatever video
+ * currently needs its [role], rather than being torn down and rebuilt — see [VideoPlayerPool]'s
+ * kdoc for why. Rendered via Media3's native Compose `PlayerSurface`
+ * (`com.maroney.cleanshare.ui.VideoPlayerOverlay`), not an `AndroidView`-hosted `PlayerView` —
+ * see that composable's kdoc for why.
  */
 class PooledPlayer internal constructor(context: Context, mediaSourceFactory: DefaultMediaSourceFactory) {
     val player: ExoPlayer = ExoPlayer.Builder(context).setMediaSourceFactory(mediaSourceFactory).build()
-
-    val playerView: PlayerView = PlayerView(context).apply {
-        this.player = player
-        useController = false
-        // Without this, a SurfaceView-backed PlayerView's independent Surface doesn't stay in
-        // sync with Compose's own layout/draw passes — audio plays fine but no video frame ever
-        // shows. Media3 added this flag specifically for PlayerView-inside-AndroidView usage;
-        // it's a no-op below the platform API level it relies on.
-        setEnableComposeSurfaceSyncWorkaround(true)
-    }
 
     /** The URL currently loaded on [player] (prepared, whether playing or paused-on-standby),
      * or null if nothing's been assigned to this slot yet. */
@@ -70,18 +61,18 @@ data class VideoNavigation(
 }
 
 /**
- * Owns three persistent [ExoPlayer]/[PlayerView] pairs — previous, current, and next — so that
- * swiping between videos is a pure role swap (instant, since the target was already playing on
- * standby with a decoded frame ready) instead of tearing down and rebuilding a single player per
- * video. That per-swipe rebuild is what left a black screen visible on the new entry until its
- * player caught up: even with a warm cache, parsing the container and decoding a first frame
- * takes real (if short) time, and a single-player design pays that cost synchronously on every
- * swipe rather than ahead of time.
+ * Owns three persistent [ExoPlayer]s — previous, current, and next — so that swiping between
+ * videos is a pure role swap (instant, since the target was already playing on standby with a
+ * decoded frame ready) instead of tearing down and rebuilding a single player per video. That
+ * per-swipe rebuild is what left a black screen visible on the new entry until its player caught
+ * up: even with a warm cache, parsing the container and decoding a first frame takes real (if
+ * short) time, and a single-player design pays that cost synchronously on every swipe rather
+ * than ahead of time.
  *
  * The pool — and the fullscreen overlay that displays it (see
  * `com.maroney.cleanshare.ui.VideoPlayerOverlay`) — is process-wide and rendered once at the app
  * root, deliberately outside the per-entry navigation/composition lifecycle: reusing a
- * *prepared* player across a swipe only helps if the [PlayerView] showing it also survives the
+ * *prepared* player across a swipe only helps if whatever's rendering it also survives the
  * swipe, and a `Dialog` (a distinct Android Window per instance) can't preserve a rendered
  * Surface across being torn down and recreated.
  */
