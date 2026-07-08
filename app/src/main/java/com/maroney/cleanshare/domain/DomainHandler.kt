@@ -370,7 +370,12 @@ internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit, videoNav
                                             .firstOrNull { it.id == down.id } ?: continue
                                         dx = change.position.x - down.position.x
                                         dy = change.position.y - down.position.y
-                                        if (!armed && abs(dx) > abs(dy) && abs(dx) >= followThreshold) {
+                                        // At either end of the list, there's nothing to swipe
+                                        // to in that direction — don't let the player follow
+                                        // the drag at all rather than following it only to
+                                        // spring back once released.
+                                        val canNavigate = if (dx < 0) videoNavigation.hasNext else videoNavigation.hasPrevious
+                                        if (!armed && canNavigate && abs(dx) > abs(dy) && abs(dx) >= followThreshold) {
                                             // Crossing the breakpoint arms the swipe — catch the
                                             // player up to the finger with a spring instead of
                                             // popping it straight there, since it hasn't moved
@@ -388,9 +393,11 @@ internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit, videoNav
                                     }
                                     // Following the drag (above) is a much lower bar than
                                     // actually committing to the next/previous video: released
-                                    // short of the halfway point, the player springs back to
-                                    // center instead of navigating, even if it was armed.
-                                    if (armed && abs(dx) >= commitThreshold) {
+                                    // short of the halfway point, or with nothing left in that
+                                    // direction, the player springs back to center instead of
+                                    // navigating, even if it was armed.
+                                    val canCommit = if (dx < 0) videoNavigation.hasNext else videoNavigation.hasPrevious
+                                    if (armed && canCommit && abs(dx) >= commitThreshold) {
                                         val exitTarget = if (dx < 0) -size.width.toFloat() else size.width.toFloat()
                                         val goToNext = dx < 0
                                         swipeAnimationScope.launch {
