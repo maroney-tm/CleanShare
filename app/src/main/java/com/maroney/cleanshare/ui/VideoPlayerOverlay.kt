@@ -89,7 +89,7 @@ private const val SWIPE_NAVIGATE_THRESHOLD_FRACTION = 0.10f
 // Crossing the breakpoint above only arms the drag to *follow* the finger — actually moving to
 // the previous/next video additionally requires releasing past a third of the screen's width,
 // so a drag that's let go partway through springs back instead of committing.
-private const val SWIPE_COMMIT_THRESHOLD_FRACTION = 0.33f
+private const val SWIPE_COMMIT_THRESHOLD_FRACTION = 0.20f
 
 // Well past the platform's default long-press timeout (~500ms) so an ordinary tap-and-hold —
 // e.g. steadying a finger on the screen — doesn't accidentally kick off 2x playback.
