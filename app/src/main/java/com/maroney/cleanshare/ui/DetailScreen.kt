@@ -91,7 +91,7 @@ import com.maroney.cleanshare.data.isFailure
 import com.maroney.cleanshare.domain.DomainHandler
 import com.maroney.cleanshare.domain.DomainUrlMetadata
 import com.maroney.cleanshare.domain.UrlSanitizer
-import com.maroney.cleanshare.domain.VideoNavigation
+import com.maroney.cleanshare.media.VideoNavigation
 import com.maroney.cleanshare.ui.fakedata.HistoryItemPreviewProvider
 import com.maroney.cleanshare.ui.theme.CleanShareTheme
 import com.maroney.cleanshare.ui.theme.LocalColors
@@ -105,7 +105,6 @@ fun DetailScreen(
     id: Long,
     onNavigateBack: () -> Unit,
     orderedIds: List<Long> = emptyList(),
-    autoPlayVideo: Boolean = false,
     onNavigateToEntry: (Long) -> Unit = {},
 ) {
     val vm: DetailViewModel = viewModel(
@@ -162,14 +161,22 @@ fun DetailScreen(
     val playableVideoUrl = remember(videoUrl, offlineVideo) {
         offlineVideo?.takeIf { it.status == OfflineVideoStatus.COMPLETE }?.localFilePath ?: videoUrl
     }
-    val videoNavigation = remember(videoSwipeTargets, onNavigateToEntry, autoPlayVideo) {
+    val videoNavigation = remember(videoSwipeTargets, onNavigateToEntry) {
         VideoNavigation(
-            hasPrevious = videoSwipeTargets.previousId != null,
-            hasNext = videoSwipeTargets.nextId != null,
+            previousVideoUrl = videoSwipeTargets.previousVideoUrl,
+            nextVideoUrl = videoSwipeTargets.nextVideoUrl,
             onNavigatePrevious = { videoSwipeTargets.previousId?.let(onNavigateToEntry) },
             onNavigateNext = { videoSwipeTargets.nextId?.let(onNavigateToEntry) },
-            autoPlay = autoPlayVideo,
         )
+    }
+    // Keeps the (process-wide, persists-across-swipes) video player pool's standby slots in
+    // sync with whichever entry is actually on top right now — not just at the moment the
+    // player was opened, since a swipe lands here well after that.
+    LaunchedEffect(playableVideoUrl, videoNavigation) {
+        playableVideoUrl?.let { url -> app.videoPlayerPool.updateCurrentEntry(url, videoNavigation) }
+    }
+    val onPlayVideo: () -> Unit = {
+        playableVideoUrl?.let { url -> app.videoPlayerPool.open(url, videoNavigation) }
     }
 
     DetailContent(
@@ -179,7 +186,7 @@ fun DetailScreen(
         urlMetadata = urlMetadata,
         videoUrl = playableVideoUrl,
         thumbnailUrl = thumbnailUrl,
-        videoNavigation = videoNavigation,
+        onPlayVideo = onPlayVideo,
         offlineVideo = offlineVideo,
         tags = item.record.tags,
         tagVocabulary = tagVocabulary,
@@ -228,7 +235,7 @@ private fun DetailContent(
     urlMetadata: DomainUrlMetadata?,
     videoUrl: String?,
     thumbnailUrl: String?,
-    videoNavigation: VideoNavigation,
+    onPlayVideo: () -> Unit,
     offlineVideo: OfflineVideoRecord?,
     tags: List<String>,
     tagVocabulary: List<String>,
@@ -338,7 +345,7 @@ private fun DetailContent(
                     .verticalScroll(rememberScrollState()),
             ) {
             if (handler != null && urlMetadata != null) {
-                handler.DetailSection(urlMetadata, item.ingestion, videoUrl, thumbnailUrl, videoNavigation)
+                handler.DetailSection(urlMetadata, item.ingestion, videoUrl, thumbnailUrl, onPlayVideo)
             } else {
                 HeaderSection(item)
             }
@@ -685,7 +692,7 @@ private fun DetailScreenPreview(
             urlMetadata = null,
             videoUrl = null,
             thumbnailUrl = null,
-            videoNavigation = VideoNavigation.None,
+            onPlayVideo = {},
             offlineVideo = null,
             tags = listOf("compose", "reading-list"),
             tagVocabulary = listOf("compose", "kotlin", "reading-list", "video"),

@@ -32,9 +32,6 @@ import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -107,7 +104,7 @@ class InstagramDomainHandler : DomainHandler {
         ingestion: IngestionRecord?,
         videoUrl: String?,
         thumbnailUrl: String?,
-        videoNavigation: VideoNavigation,
+        onPlayVideo: () -> Unit,
     ) {
         val meta = urlMetadata as? InstagramUrlMetadata ?: return
         when {
@@ -120,7 +117,7 @@ class InstagramDomainHandler : DomainHandler {
                 showProgress = ingestion.status == IngestionStatus.DOWNLOADING,
                 videoUrl = videoUrl,
                 thumbnailUrl = thumbnailUrl,
-                videoNavigation = videoNavigation,
+                onPlayVideo = onPlayVideo,
             )
         }
     }
@@ -201,14 +198,8 @@ private fun FullCard(
     showProgress: Boolean,
     videoUrl: String?,
     thumbnailUrl: String?,
-    videoNavigation: VideoNavigation,
+    onPlayVideo: () -> Unit,
 ) {
-    var showPlayer by remember { mutableStateOf(videoNavigation.autoPlay) }
-
-    if (showPlayer && videoUrl != null) {
-        VideoPlayerDialog(videoUrl = videoUrl, onDismiss = { showPlayer = false }, videoNavigation = videoNavigation)
-    }
-
     Column(modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.md)) {
         // Header: avatar + uploader + content type + age
         Row(
@@ -247,7 +238,7 @@ private fun FullCard(
                     .aspectRatio(1.78f)
                     .clip(RoundedCornerShape(Radius.md))
                     .border(Dp.Hairline, LocalColors.current.layout.divider, RoundedCornerShape(Radius.md))
-                    .then(if (videoUrl != null) Modifier.clickable { showPlayer = true } else Modifier),
+                    .then(if (videoUrl != null) Modifier.clickable { onPlayVideo() } else Modifier),
             ) {
                 AsyncImage(
                     model = thumbUrl,

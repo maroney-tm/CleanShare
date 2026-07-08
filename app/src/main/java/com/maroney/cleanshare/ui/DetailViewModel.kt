@@ -12,7 +12,6 @@ import com.maroney.cleanshare.data.ShareRecordWithMetadata
 import com.maroney.cleanshare.data.ShareRepository
 import com.maroney.cleanshare.data.metadata.MetadataWorkScheduler
 import com.maroney.cleanshare.media.OfflineVideoRepository
-import com.maroney.cleanshare.media.VideoPlaybackManager
 import com.maroney.cleanshare.sync.CleanShareSyncClient
 import com.maroney.cleanshare.sync.SyncManager
 import kotlinx.coroutines.CoroutineScope
@@ -50,7 +49,6 @@ class DetailViewModel(
     private val syncManager: SyncManager,
     private val offlineVideoRepository: OfflineVideoRepository,
     private val syncClient: CleanShareSyncClient,
-    private val videoPlaybackManager: VideoPlaybackManager,
 ) : ViewModel() {
 
     /** This entry's position in [orderedIds], or -1 if it's not part of that list (e.g. no
@@ -125,13 +123,6 @@ class DetailViewModel(
     private var pendingSave = false
     private var notesInitialized = false
 
-    // Tracks what's currently registered with videoPlaybackManager's preload manager, so a
-    // changed or vacated neighbor (e.g. a swipe target's ingestion finishing mid-visit shifts
-    // videoSwipeTargets) gets un-registered instead of leaking a stale preload registration for
-    // the lifetime of the (process-wide, longer-lived-than-this-ViewModel) preload manager.
-    private var registeredPreviousPreloadUrl: String? = null
-    private var registeredNextPreloadUrl: String? = null
-
     init {
         viewModelScope.launch {
             repository.getById(id).collect { item ->
@@ -139,29 +130,6 @@ class DetailViewModel(
                 if (!notesInitialized && item != null) {
                     _notes.value = item.record.notes ?: ""
                     notesInitialized = true
-                }
-            }
-        }
-        // Register the neighboring videos for background preloading as early as possible —
-        // ideally well before the user ever swipes — so landing on one hands the shared player
-        // an already-buffered source instead of starting cold. Ranked by position in
-        // orderedIds, the same ordering swipe navigation itself uses.
-        if (currentIndex != -1) videoPlaybackManager.setCurrentIndex(currentIndex)
-        viewModelScope.launch {
-            videoSwipeTargets.collect { targets ->
-                if (registeredPreviousPreloadUrl != targets.previousVideoUrl) {
-                    registeredPreviousPreloadUrl?.let(videoPlaybackManager::clearPreload)
-                    registeredPreviousPreloadUrl = targets.previousVideoUrl
-                }
-                if (registeredNextPreloadUrl != targets.nextVideoUrl) {
-                    registeredNextPreloadUrl?.let(videoPlaybackManager::clearPreload)
-                    registeredNextPreloadUrl = targets.nextVideoUrl
-                }
-                targets.previousVideoUrl?.let { url ->
-                    videoPlaybackManager.preload(url, orderedIds.indexOf(targets.previousId))
-                }
-                targets.nextVideoUrl?.let { url ->
-                    videoPlaybackManager.preload(url, orderedIds.indexOf(targets.nextId))
                 }
             }
         }
@@ -240,8 +208,6 @@ class DetailViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        registeredPreviousPreloadUrl?.let(videoPlaybackManager::clearPreload)
-        registeredNextPreloadUrl?.let(videoPlaybackManager::clearPreload)
         if (pendingSave) {
             debounceJob?.cancel()
             val notesSnapshot = _notes.value
@@ -265,7 +231,6 @@ class DetailViewModel(
                         app.syncManager,
                         app.offlineVideoRepository,
                         app.syncClient,
-                        app.videoPlaybackManager,
                     ) as T
                 }
             }

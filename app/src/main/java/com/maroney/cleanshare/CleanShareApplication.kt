@@ -20,7 +20,7 @@ import com.maroney.cleanshare.domain.InstagramDomainHandler
 import com.maroney.cleanshare.domain.YoutubeDomainHandler
 import com.maroney.cleanshare.media.OfflineVideoRepository
 import com.maroney.cleanshare.media.VideoCacheManager
-import com.maroney.cleanshare.media.VideoPlaybackManager
+import com.maroney.cleanshare.media.VideoPlayerPool
 import com.maroney.cleanshare.settings.CachePreferencesRepository
 import com.maroney.cleanshare.settings.PlaybackPreferencesRepository
 import com.maroney.cleanshare.sync.CleanShareSyncClient
@@ -119,7 +119,7 @@ class CleanShareApplication : Application(), Configuration.Provider, SingletonIm
 
     val videoCacheManager by lazy { VideoCacheManager(this) }
 
-    val videoPlaybackManager by lazy { VideoPlaybackManager(this, videoCacheManager) }
+    val videoPlayerPool by lazy { VideoPlayerPool(this, videoCacheManager) }
 
     val offlineVideoRepository by lazy {
         OfflineVideoRepository(
