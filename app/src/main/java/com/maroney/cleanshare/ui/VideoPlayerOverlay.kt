@@ -49,6 +49,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -57,6 +58,8 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
 import androidx.media3.ui.compose.PlayerSurface
 import androidx.media3.ui.compose.SURFACE_TYPE_TEXTURE_VIEW
+import androidx.media3.ui.compose.modifiers.resizeWithContentScale
+import androidx.media3.ui.compose.state.rememberPresentationState
 import com.maroney.cleanshare.CleanShareApplication
 import com.maroney.cleanshare.media.PoolRole
 import com.maroney.cleanshare.media.VideoPlayerPool
@@ -248,11 +251,19 @@ fun VideoPlayerOverlay(pool: VideoPlayerPool) {
         // based on each slot's current role. That's what keeps a neighbor's already-decoded
         // frame intact across a swipe instead of losing it to a fresh Surface.
         pool.slots.forEach { slot ->
+            // PlayerSurface (unlike the old PlayerView) doesn't letterbox on its own — it just
+            // renders at whatever size its Modifier gives it, so a bare fillMaxSize() stretched
+            // every video to the screen's aspect ratio. resizeWithContentScale + the video's
+            // actual reported size (from PresentationState, updated live as playback starts)
+            // is Media3's own replacement for PlayerView's resizeMode: it already fills the
+            // available space and centers the result, so it takes the place of fillMaxSize()
+            // here rather than adding to it.
+            val presentationState = rememberPresentationState(slot.player)
             PlayerSurface(
                 player = slot.player,
                 surfaceType = SURFACE_TYPE_TEXTURE_VIEW,
                 modifier = Modifier
-                    .fillMaxSize()
+                    .resizeWithContentScale(ContentScale.Fit, presentationState.videoSizeDp)
                     .offset {
                         IntOffset((basePositionPx(slot.role, screenWidthPx) + dragOffsetX.value).roundToInt(), 0)
                     },
