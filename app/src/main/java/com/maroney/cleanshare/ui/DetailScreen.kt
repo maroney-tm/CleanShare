@@ -2,6 +2,7 @@ package com.maroney.cleanshare.ui
 
 import android.content.ClipData
 import android.content.Intent
+import androidx.compose.animation.animateBounds
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -45,6 +45,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -60,6 +61,7 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.LookaheadScope
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -386,15 +388,35 @@ private fun DetailContent(
                     tags.none { it.equals(suggestion, ignoreCase = true) }
                 }
                 if (tags.isNotEmpty() || untappedSuggestions.isNotEmpty()) {
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
-                        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
-                    ) {
-                        tags.forEach { tag ->
-                            AddedTagChip(text = tag, onClick = { onRemoveTag(tag) })
-                        }
-                        untappedSuggestions.forEach { tag ->
-                            SuggestedTagPill(text = tag, onClick = { onAddTag(tag) })
+                    // Keying each pill by its tag text (rather than by added/suggested
+                    // status) and animating within a shared LookaheadScope lets a pill
+                    // glide to its new spot — instead of popping there — when the list
+                    // reflows or a suggestion is tapped and turns into an applied tag.
+                    LookaheadScope {
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+                            verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+                        ) {
+                            tags.forEach { tag ->
+                                key(tag) {
+                                    TagPill(
+                                        text = tag,
+                                        added = true,
+                                        onClick = { onRemoveTag(tag) },
+                                        modifier = Modifier.animateBounds(this@LookaheadScope),
+                                    )
+                                }
+                            }
+                            untappedSuggestions.forEach { tag ->
+                                key(tag) {
+                                    TagPill(
+                                        text = tag,
+                                        added = false,
+                                        onClick = { onAddTag(tag) },
+                                        modifier = Modifier.animateBounds(this@LookaheadScope),
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -485,18 +507,41 @@ private fun DetailContent(
 
 private val TagPillShape = RoundedCornerShape(Radius.md)
 
-/** Shared layout for both tag pill styles — a real (solid) applied tag and a dashed-border
- * suggestion turn into one another on tap, so they must share identical height/padding/
- * alignment or that transition visibly jumps. Only [decoration] (fill vs. dashed outline)
- * and [content] differ between the two. */
+/** A tag pill that is either applied to this entry (solid fill, tapping removes it) or a
+ * quick-tap suggestion not yet applied (dashed outline, tapping adds it). Both styles are
+ * rendered by this single composable — rather than by two separate ones — so that a pill
+ * keeps its identity when [added] flips: the caller pairs this with [key] and
+ * [androidx.compose.animation.animateBounds] to glide the pill to its new spot instead of
+ * having it disappear from one place and pop up in another. */
 @Composable
 private fun TagPill(
-    decoration: Modifier,
+    text: String,
+    added: Boolean,
     onClick: () -> Unit,
-    content: @Composable RowScope.() -> Unit,
+    modifier: Modifier = Modifier,
 ) {
+    val addedContentColor = MaterialTheme.colorScheme.onSecondaryContainer
+    val suggestedColor = MaterialTheme.colorScheme.outline
+    val contentColor = if (added) addedContentColor else suggestedColor
+    val decoration = if (added) {
+        Modifier.background(MaterialTheme.colorScheme.secondaryContainer)
+    } else {
+        Modifier.drawBehind {
+            // A plain Canvas stroke doesn't get the 1-physical-pixel auto-substitution
+            // Modifier.border(Dp.Hairline, ...) applies elsewhere in this app, so this
+            // spells out the same hairline weight explicitly.
+            drawRoundRect(
+                color = suggestedColor,
+                style = Stroke(
+                    width = 1.dp.toPx(),
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 4f), 0f),
+                ),
+                cornerRadius = CornerRadius(Radius.md.toPx(), Radius.md.toPx()),
+            )
+        }
+    }
     Row(
-        modifier = Modifier
+        modifier = modifier
             .height(InputChipDefaults.Height)
             .clip(TagPillShape)
             .then(decoration)
@@ -504,50 +549,16 @@ private fun TagPill(
             .padding(horizontal = Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
-        content = content,
-    )
-}
-
-/** A tag already applied to this entry — tapping it removes it. */
-@Composable
-private fun AddedTagChip(text: String, onClick: () -> Unit) {
-    val contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-    TagPill(
-        decoration = Modifier.background(MaterialTheme.colorScheme.secondaryContainer),
-        onClick = onClick,
     ) {
         Text(text, style = MaterialTheme.typography.labelLarge, color = contentColor)
-        Icon(
-            Icons.Default.Close,
-            contentDescription = "Remove tag $text",
-            tint = contentColor,
-            modifier = Modifier.size(InputChipDefaults.IconSize),
-        )
-    }
-}
-
-/** A quick-tap tag suggestion not yet applied to this entry — a transparent, dashed-border
- * pill (tapping it adds the tag, after which it renders as an [AddedTagChip] instead). */
-@Composable
-private fun SuggestedTagPill(text: String, onClick: () -> Unit) {
-    val borderColor = MaterialTheme.colorScheme.outline
-    TagPill(
-        decoration = Modifier.drawBehind {
-            // A plain Canvas stroke doesn't get the 1-physical-pixel auto-substitution
-            // Modifier.border(Dp.Hairline, ...) applies elsewhere in this app, so this
-            // spells out the same hairline weight explicitly.
-            drawRoundRect(
-                color = borderColor,
-                style = Stroke(
-                    width = 1.dp.toPx(),
-                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 4f), 0f),
-                ),
-                cornerRadius = CornerRadius(Radius.md.toPx(), Radius.md.toPx()),
+        if (added) {
+            Icon(
+                Icons.Default.Close,
+                contentDescription = "Remove tag $text",
+                tint = contentColor,
+                modifier = Modifier.size(InputChipDefaults.IconSize),
             )
-        },
-        onClick = onClick,
-    ) {
-        Text(text, style = MaterialTheme.typography.labelLarge, color = borderColor)
+        }
     }
 }
 
