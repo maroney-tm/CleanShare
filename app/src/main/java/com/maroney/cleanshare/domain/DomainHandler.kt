@@ -134,9 +134,14 @@ private const val BUTTON_SKIP_MS = 15_000L
 private const val FAST_FORWARD_SPEED = 2f
 private const val CONTROLS_AUTO_HIDE_MS = 3_000L
 
-// A swipe has to cross a quarter of the screen's width — clearly more deliberate than a
-// scrub or an accidental brush — before it moves to the previous/next video.
-private const val SWIPE_NAVIGATE_THRESHOLD_FRACTION = 0.25f
+// The breakpoint a swipe has to cross — clearly more deliberate than a scrub or an accidental
+// brush — before the player starts visually following the drag at all.
+private const val SWIPE_NAVIGATE_THRESHOLD_FRACTION = 0.10f
+
+// Crossing the breakpoint above only arms the drag to *follow* the finger — actually moving to
+// the previous/next video additionally requires releasing past the halfway point of the screen,
+// so a drag that's let go partway through springs back instead of committing.
+private const val SWIPE_COMMIT_THRESHOLD_FRACTION = 0.5f
 
 // Well past the platform's default long-press timeout (~500ms) so an ordinary tap-and-hold —
 // e.g. steadying a finger on the screen — doesn't accidentally kick off 2x playback.
@@ -355,7 +360,8 @@ internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit, videoNav
                                     // but a sufficiently horizontal one moves to the previous/
                                     // next video, animating the player with it rather than
                                     // just snapping once the finger lifts.
-                                    val threshold = size.width * SWIPE_NAVIGATE_THRESHOLD_FRACTION
+                                    val followThreshold = size.width * SWIPE_NAVIGATE_THRESHOLD_FRACTION
+                                    val commitThreshold = size.width * SWIPE_COMMIT_THRESHOLD_FRACTION
                                     var armed = false
                                     var dx = 0f
                                     var dy = 0f
@@ -364,7 +370,7 @@ internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit, videoNav
                                             .firstOrNull { it.id == down.id } ?: continue
                                         dx = change.position.x - down.position.x
                                         dy = change.position.y - down.position.y
-                                        if (!armed && abs(dx) > abs(dy) && abs(dx) >= threshold) {
+                                        if (!armed && abs(dx) > abs(dy) && abs(dx) >= followThreshold) {
                                             // Crossing the breakpoint arms the swipe — catch the
                                             // player up to the finger with a spring instead of
                                             // popping it straight there, since it hasn't moved
@@ -380,7 +386,11 @@ internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit, videoNav
                                         }
                                         if (!change.pressed) break
                                     }
-                                    if (armed) {
+                                    // Following the drag (above) is a much lower bar than
+                                    // actually committing to the next/previous video: released
+                                    // short of the halfway point, the player springs back to
+                                    // center instead of navigating, even if it was armed.
+                                    if (armed && abs(dx) >= commitThreshold) {
                                         val exitTarget = if (dx < 0) -size.width.toFloat() else size.width.toFloat()
                                         val goToNext = dx < 0
                                         swipeAnimationScope.launch {
