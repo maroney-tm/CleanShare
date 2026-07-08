@@ -118,7 +118,15 @@ class CleanShareSyncClient(private val okHttpClient: OkHttpClient) {
                 }.toString().toRequestBody(JSON_MT)
                 okHttpClient.newCall(
                     Request.Builder().url("$url/records/$syncId").patch(json).build()
-                ).execute().use { it.isSuccessful }
+                ).execute().use { resp ->
+                    // Logs counts, not content — notes/tags are user-authored data.
+                    if (resp.isSuccessful) {
+                        Timber.d("Patched record $syncId (tags=${tags.size})")
+                    } else {
+                        Timber.w("Patch rejected for $syncId: HTTP ${resp.code}")
+                    }
+                    resp.isSuccessful
+                }
             } catch (e: Exception) { Timber.e(e, "Failed to patch record"); false }
         }
 

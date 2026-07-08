@@ -102,6 +102,7 @@ class SyncManager(
             } else {
                 if (sr.updatedAt > local.updatedAt) {
                     shareDao.updateNotesAndTagsAndTimestamp(local.id, sr.notes, sr.tags, sr.updatedAt)
+                    Timber.d("Pulled record ${sr.syncId} from server (tags=${sr.tags.size})")
                     sr.linkMetadata?.let { metadataDao.upsert(it.toLinkMetadata(local.id)) }
                 }
                 sr.ingestion?.let { serverIng ->
@@ -160,6 +161,7 @@ class SyncManager(
                         sr.linkMetadata?.let { metadataDao.upsert(it.toLinkMetadata(id)) }
                     } else if (sr.updatedAt > local.updatedAt) {
                         shareDao.updateNotesAndTagsAndTimestamp(local.id, sr.notes, sr.tags, sr.updatedAt)
+                        Timber.d("Applied $type for ${sr.syncId} via SSE (tags=${sr.tags.size})")
                         sr.linkMetadata?.let { metadataDao.upsert(it.toLinkMetadata(local.id)) }
                     }
                 }
