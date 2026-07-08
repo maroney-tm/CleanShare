@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.maroney.cleanshare.widget"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 33
