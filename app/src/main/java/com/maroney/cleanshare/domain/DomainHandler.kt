@@ -400,9 +400,19 @@ internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit, videoNav
                                     if (armed && canCommit && abs(dx) >= commitThreshold) {
                                         val exitTarget = if (dx < 0) -size.width.toFloat() else size.width.toFloat()
                                         val goToNext = dx < 0
+                                        // Stop this video's audio right away rather than
+                                        // leaving it playing until the composable eventually
+                                        // gets disposed — otherwise it's still audible under
+                                        // (and past) the next video appearing.
+                                        player.pause()
+                                        // Navigate immediately too, instead of waiting for the
+                                        // exit animation below to finish first: the next video
+                                        // then gets the whole slide duration to load/prepare
+                                        // (its cache was likely already warmed ahead of time)
+                                        // rather than only starting once this one settles.
+                                        if (goToNext) videoNavigation.onNavigateNext() else videoNavigation.onNavigatePrevious()
                                         swipeAnimationScope.launch {
                                             playerOffsetX.animateTo(exitTarget, spring())
-                                            if (goToNext) videoNavigation.onNavigateNext() else videoNavigation.onNavigatePrevious()
                                         }
                                     } else {
                                         swipeAnimationScope.launch { playerOffsetX.animateTo(0f, spring()) }
