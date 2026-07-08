@@ -28,6 +28,11 @@ class PooledPlayer internal constructor(context: Context, mediaSourceFactory: De
     val playerView: PlayerView = PlayerView(context).apply {
         this.player = player
         useController = false
+        // Without this, a SurfaceView-backed PlayerView's independent Surface doesn't stay in
+        // sync with Compose's own layout/draw passes — audio plays fine but no video frame ever
+        // shows. Media3 added this flag specifically for PlayerView-inside-AndroidView usage;
+        // it's a no-op below the platform API level it relies on.
+        setEnableComposeSurfaceSyncWorkaround(true)
     }
 
     /** The URL currently loaded on [player] (prepared, whether playing or paused-on-standby),
