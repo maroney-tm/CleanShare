@@ -7,6 +7,9 @@ package com.maroney.cleanshare.data
  */
 interface SyncPusher {
     suspend fun pushInsert(record: ShareRecord)
-    suspend fun pushNoteUpdate(syncId: String, notes: String?, updatedAt: Long)
+    // Carries the record's full current notes+tags snapshot (not a diff) so the server's
+    // unconditional-overwrite PATCH never clobbers the field that didn't actually change —
+    // see ShareRepository.updateNotes/updateTags, which always read both before pushing.
+    suspend fun pushRecordUpdate(syncId: String, notes: String?, tags: List<String>, updatedAt: Long)
     suspend fun pushDelete(syncId: String)
 }

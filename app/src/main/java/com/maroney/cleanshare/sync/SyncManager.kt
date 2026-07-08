@@ -92,7 +92,7 @@ class SyncManager(
         val serverRecords = syncClient.getAllRecords()
         val serverSyncIds = serverRecords.map { it.syncId }.toSet()
 
-        // Pull: bring server records down (LWW on notes/updatedAt; server always wins for ingestion).
+        // Pull: bring server records down (LWW on notes/tags/updatedAt; server always wins for ingestion).
         for (sr in serverRecords) {
             val local = shareDao.getBySyncId(sr.syncId)
             if (local == null) {
@@ -101,7 +101,7 @@ class SyncManager(
                 sr.ingestion?.let { ingestionDao?.upsert(it.toIngestionRecord(id)) }
             } else {
                 if (sr.updatedAt > local.updatedAt) {
-                    shareDao.updateNotesAndTimestamp(local.id, sr.notes, sr.updatedAt)
+                    shareDao.updateNotesAndTagsAndTimestamp(local.id, sr.notes, sr.tags, sr.updatedAt)
                     sr.linkMetadata?.let { metadataDao.upsert(it.toLinkMetadata(local.id)) }
                 }
                 sr.ingestion?.let { serverIng ->
@@ -159,7 +159,7 @@ class SyncManager(
                         val id = shareDao.insert(sr.toShareRecord())
                         sr.linkMetadata?.let { metadataDao.upsert(it.toLinkMetadata(id)) }
                     } else if (sr.updatedAt > local.updatedAt) {
-                        shareDao.updateNotesAndTimestamp(local.id, sr.notes, sr.updatedAt)
+                        shareDao.updateNotesAndTagsAndTimestamp(local.id, sr.notes, sr.tags, sr.updatedAt)
                         sr.linkMetadata?.let { metadataDao.upsert(it.toLinkMetadata(local.id)) }
                     }
                 }
@@ -220,8 +220,8 @@ class SyncManager(
         syncClient.postRecord(record.toSyncRecord())
     }
 
-    override suspend fun pushNoteUpdate(syncId: String, notes: String?, updatedAt: Long) {
-        syncClient.patchRecord(syncId, notes, updatedAt)
+    override suspend fun pushRecordUpdate(syncId: String, notes: String?, tags: List<String>, updatedAt: Long) {
+        syncClient.patchRecord(syncId, notes, tags, updatedAt)
     }
 
     override suspend fun pushDelete(syncId: String) {
@@ -244,6 +244,7 @@ class SyncManager(
         sharedAt     = sharedAt,
         updatedAt    = updatedAt,
         notes        = notes,
+        tags         = tags,
         syncId       = syncId,
         source       = runCatching { ShareSource.valueOf(source) }.getOrDefault(ShareSource.MOBILE),
     )
@@ -255,6 +256,7 @@ class SyncManager(
         sharedAt     = sharedAt,
         updatedAt    = updatedAt,
         notes        = notes,
+        tags         = tags,
         source       = source.name,
         linkMetadata = null,
     )
@@ -308,6 +310,12 @@ class SyncManager(
                 fetchStatus    = m.getString("fetchStatus"),
             )
         } else null
+        val tags = if (!obj.has("tags") || obj.isNull("tags")) {
+            emptyList()
+        } else {
+            val arr = obj.getJSONArray("tags")
+            (0 until arr.length()).map { arr.getString(it) }
+        }
         return SyncRecord(
             syncId       = obj.getString("syncId"),
             originalText = obj.getString("originalText"),
@@ -315,6 +323,7 @@ class SyncManager(
             sharedAt     = obj.getLong("sharedAt"),
             updatedAt    = obj.getLong("updatedAt"),
             notes        = if (obj.isNull("notes")) null else obj.getString("notes"),
+            tags         = tags,
             source       = obj.getString("source"),
             linkMetadata = meta,
         )

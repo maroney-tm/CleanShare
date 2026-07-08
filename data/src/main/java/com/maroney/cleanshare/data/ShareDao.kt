@@ -25,9 +25,23 @@ interface ShareDao {
     @Query("UPDATE share_history SET notes = :notes, updated_at = :updatedAt WHERE id = :id")
     suspend fun updateNotesAndTimestamp(id: Long, notes: String?, updatedAt: Long)
 
-    // Tags are local-only (no LWW/sync tracking) — see ShareRepository.updateTags.
+    // Original — kept for existing tests.
     @Query("UPDATE share_history SET tags = :tags WHERE id = :id")
     suspend fun updateTags(id: Long, tags: List<String>)
+
+    // Used by ShareRepository.updateTags — bumps updatedAt for LWW tracking, same as
+    // updateNotesAndTimestamp.
+    @Query("UPDATE share_history SET tags = :tags, updated_at = :updatedAt WHERE id = :id")
+    suspend fun updateTagsAndTimestamp(id: Long, tags: List<String>, updatedAt: Long)
+
+    // Used by SyncManager when pulling a record from the server — notes and tags arrive
+    // together in one payload, so both are applied atomically rather than risking a second
+    // write racing a concurrent local edit between them.
+    @Query("UPDATE share_history SET notes = :notes, tags = :tags, updated_at = :updatedAt WHERE id = :id")
+    suspend fun updateNotesAndTagsAndTimestamp(id: Long, notes: String?, tags: List<String>, updatedAt: Long)
+
+    @Query("SELECT * FROM share_history WHERE id = :id")
+    suspend fun getByIdOnce(id: Long): ShareRecord?
 
     @Query("DELETE FROM share_history WHERE id = :id")
     suspend fun deleteById(id: Long)

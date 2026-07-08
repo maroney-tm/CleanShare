@@ -84,4 +84,36 @@ class ShareDaoSyncTest {
         val all = db.shareDao().getAllOnce()
         assertEquals(2, all.size)
     }
+
+    @Test
+    fun updateTagsAndTimestamp_bumpsUpdatedAt() = runTest {
+        val id = insertRecord()
+        db.shareDao().updateTagsAndTimestamp(id, listOf("compose", "kotlin"), 9999L)
+        val record = db.shareDao().getBySyncId("uuid-1")!!
+        assertEquals(listOf("compose", "kotlin"), record.tags)
+        assertEquals(9999L, record.updatedAt)
+    }
+
+    @Test
+    fun updateNotesAndTagsAndTimestamp_appliesBothFields() = runTest {
+        val id = insertRecord()
+        db.shareDao().updateNotesAndTagsAndTimestamp(id, "hello", listOf("compose"), 9999L)
+        val record = db.shareDao().getBySyncId("uuid-1")!!
+        assertEquals("hello", record.notes)
+        assertEquals(listOf("compose"), record.tags)
+        assertEquals(9999L, record.updatedAt)
+    }
+
+    @Test
+    fun getByIdOnce_returnsRecord() = runTest {
+        val id = insertRecord("known-uuid")
+        val record = db.shareDao().getByIdOnce(id)
+        assertNotNull(record)
+        assertEquals("known-uuid", record!!.syncId)
+    }
+
+    @Test
+    fun getByIdOnce_returnsNullWhenMissing() = runTest {
+        assertNull(db.shareDao().getByIdOnce(999L))
+    }
 }

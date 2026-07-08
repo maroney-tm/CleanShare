@@ -57,13 +57,15 @@ class ShareRepository(
     suspend fun updateNotes(id: Long, notes: String?) {
         val now = System.currentTimeMillis()
         shareDao.updateNotesAndTimestamp(id, notes, now)
-        val syncId = shareDao.getSyncIdById(id) ?: return
-        scope.launch { syncPusher?.pushNoteUpdate(syncId, notes, now) }
+        val record = shareDao.getByIdOnce(id) ?: return
+        scope.launch { syncPusher?.pushRecordUpdate(record.syncId, record.notes, record.tags, now) }
     }
 
-    // Tags are local-only for now — intentionally no syncPusher call, unlike updateNotes.
     suspend fun updateTags(id: Long, tags: List<String>) {
-        shareDao.updateTags(id, tags)
+        val now = System.currentTimeMillis()
+        shareDao.updateTagsAndTimestamp(id, tags, now)
+        val record = shareDao.getByIdOnce(id) ?: return
+        scope.launch { syncPusher?.pushRecordUpdate(record.syncId, record.notes, record.tags, now) }
     }
 
     suspend fun deleteById(id: Long) {

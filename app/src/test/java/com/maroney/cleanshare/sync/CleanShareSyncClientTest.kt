@@ -81,6 +81,28 @@ class CleanShareSyncClientTest {
     }
 
     @Test
+    fun `getAllRecords parses tags`() = runTest {
+        val body = """[
+            {"syncId":"u1","originalText":"o","cleanedText":"c","sharedAt":1000,"updatedAt":1000,
+             "notes":null,"tags":["compose","reading-list"],"source":"MOBILE","linkMetadata":null}
+        ]"""
+        server.enqueue(MockResponse().setBody(body).setResponseCode(200))
+        val records = client.getAllRecords()
+        assertEquals(listOf("compose", "reading-list"), records[0].tags)
+    }
+
+    @Test
+    fun `getAllRecords defaults tags to empty list when absent`() = runTest {
+        val body = """[
+            {"syncId":"u1","originalText":"o","cleanedText":"c","sharedAt":1000,"updatedAt":1000,
+             "notes":null,"source":"MOBILE","linkMetadata":null}
+        ]"""
+        server.enqueue(MockResponse().setBody(body).setResponseCode(200))
+        val records = client.getAllRecords()
+        assertEquals(emptyList<String>(), records[0].tags)
+    }
+
+    @Test
     fun `getAllRecords returns empty on server error`() = runTest {
         server.enqueue(MockResponse().setResponseCode(500))
         assertTrue(client.getAllRecords().isEmpty())
@@ -91,7 +113,10 @@ class CleanShareSyncClientTest {
         server.enqueue(MockResponse().setResponseCode(201).setBody(
             """{"syncId":"u1","originalText":"o","cleanedText":"c","sharedAt":1000,"updatedAt":1000,"notes":null,"source":"MOBILE","linkMetadata":null}"""
         ))
-        val record = SyncRecord("u1", "o", "c", 1000L, 1000L, null, "MOBILE", null)
+        val record = SyncRecord(
+            "u1", "o", "c", 1000L, 1000L, null, "MOBILE", null,
+            tags = listOf("compose", "reading-list"),
+        )
         assertTrue(client.postRecord(record))
 
         val req = server.takeRequest()
@@ -100,14 +125,17 @@ class CleanShareSyncClientTest {
         val body = JSONObject(req.body.readUtf8())
         assertEquals("u1", body.getString("syncId"))
         assertEquals("MOBILE", body.getString("source"))
+        val tags = body.getJSONArray("tags")
+        assertEquals(2, tags.length())
+        assertEquals("compose", tags.getString(0))
     }
 
     @Test
-    fun `patchRecord sends notes and updatedAt`() = runTest {
+    fun `patchRecord sends notes, tags and updatedAt`() = runTest {
         server.enqueue(MockResponse().setResponseCode(200).setBody(
-            """{"syncId":"u1","originalText":"o","cleanedText":"c","sharedAt":1000,"updatedAt":2000,"notes":"hi","source":"MOBILE","linkMetadata":null}"""
+            """{"syncId":"u1","originalText":"o","cleanedText":"c","sharedAt":1000,"updatedAt":2000,"notes":"hi","tags":["compose","kotlin"],"source":"MOBILE","linkMetadata":null}"""
         ))
-        assertTrue(client.patchRecord("u1", "hi", 2000L))
+        assertTrue(client.patchRecord("u1", "hi", listOf("compose", "kotlin"), 2000L))
 
         val req = server.takeRequest()
         assertEquals("PATCH", req.method)
@@ -115,6 +143,10 @@ class CleanShareSyncClientTest {
         val body = JSONObject(req.body.readUtf8())
         assertEquals("hi", body.getString("notes"))
         assertEquals(2000L, body.getLong("updatedAt"))
+        val tags = body.getJSONArray("tags")
+        assertEquals(2, tags.length())
+        assertEquals("compose", tags.getString(0))
+        assertEquals("kotlin", tags.getString(1))
     }
 
     @Test

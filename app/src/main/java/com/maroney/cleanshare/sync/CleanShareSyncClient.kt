@@ -21,6 +21,7 @@ data class SyncRecord(
     val notes: String?,
     val source: String,
     val linkMetadata: SyncLinkMetadata?,
+    val tags: List<String> = emptyList(),
     val ingestion: SyncIngestionRecord? = null,
 )
 
@@ -106,12 +107,13 @@ class CleanShareSyncClient(private val okHttpClient: OkHttpClient) {
         } catch (e: Exception) { Timber.e(e, "Failed to post record"); false }
     }
 
-    suspend fun patchRecord(syncId: String, notes: String?, updatedAt: Long): Boolean =
+    suspend fun patchRecord(syncId: String, notes: String?, tags: List<String>, updatedAt: Long): Boolean =
         withContext(Dispatchers.IO) {
             val url = baseUrl ?: return@withContext false
             try {
                 val json = JSONObject().apply {
                     if (notes != null) put("notes", notes) else put("notes", JSONObject.NULL)
+                    put("tags", JSONArray(tags))
                     put("updatedAt", updatedAt)
                 }.toString().toRequestBody(JSON_MT)
                 okHttpClient.newCall(
@@ -171,8 +173,15 @@ class CleanShareSyncClient(private val okHttpClient: OkHttpClient) {
             notes        = if (obj.isNull("notes")) null else obj.getString("notes"),
             source       = obj.getString("source"),
             linkMetadata = meta,
+            tags         = parseTagsArray(obj),
             ingestion    = ingestion,
         )
+    }
+
+    private fun parseTagsArray(obj: JSONObject): List<String> {
+        if (!obj.has("tags") || obj.isNull("tags")) return emptyList()
+        val arr = obj.getJSONArray("tags")
+        return (0 until arr.length()).map { arr.getString(it) }
     }
 
     private fun parseIngestion(obj: JSONObject) = SyncIngestionRecord(
@@ -208,6 +217,7 @@ class CleanShareSyncClient(private val okHttpClient: OkHttpClient) {
         put("sharedAt",     r.sharedAt)
         put("updatedAt",    r.updatedAt)
         if (r.notes != null) put("notes", r.notes) else put("notes", JSONObject.NULL)
+        put("tags",         JSONArray(r.tags))
         put("source",       r.source)
     }.toString()
 
