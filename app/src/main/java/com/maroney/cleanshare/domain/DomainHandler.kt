@@ -1,8 +1,5 @@
 package com.maroney.cleanshare.domain
 
-import android.media.AudioAttributes
-import android.media.AudioFocusRequest
-import android.media.AudioManager
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
@@ -228,29 +225,9 @@ internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit, videoNav
         onDispose { view.keepScreenOn = false }
     }
 
-    // Requesting *transient* (not permanent) focus tells other media apps this is a brief
-    // interruption they should pause for and resume from — rather than a full stop — once we
-    // abandon the request as the dialog closes.
-    DisposableEffect(Unit) {
-        val audioManager = context.getSystemService(AudioManager::class.java)
-        val focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
-            .setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE)
-                    .build(),
-            )
-            .setOnAudioFocusChangeListener { focusChange ->
-                if (focusChange == AudioManager.AUDIOFOCUS_LOSS ||
-                    focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT
-                ) {
-                    player.pause()
-                }
-            }
-            .build()
-        audioManager?.requestAudioFocus(focusRequest)
-        onDispose { audioManager?.abandonAudioFocusRequest(focusRequest) }
-    }
+    // Audio focus is requested/abandoned by VideoPlaybackManager itself (once per swipe
+    // session, not once per dialog mount) — see its play()/stop() for why that matters now
+    // that the player is shared across swipes.
 
     var isPlaying by remember { mutableStateOf(player.isPlaying) }
     DisposableEffect(Unit) {
