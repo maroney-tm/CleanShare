@@ -1,5 +1,8 @@
 package com.maroney.cleanshare.domain
 
+import android.media.AudioAttributes
+import android.media.AudioFocusRequest
+import android.media.AudioManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -39,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -117,6 +121,38 @@ internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit) {
     }
     DisposableEffect(player) {
         onDispose { player.release() }
+    }
+
+    // Playing a video is an active-watching session for as long as this dialog is up —
+    // don't let the screen dim out from under it.
+    val view = LocalView.current
+    DisposableEffect(Unit) {
+        view.keepScreenOn = true
+        onDispose { view.keepScreenOn = false }
+    }
+
+    // Requesting *transient* (not permanent) focus tells other media apps this is a brief
+    // interruption they should pause for and resume from — rather than a full stop — once we
+    // abandon the request as the dialog closes.
+    DisposableEffect(Unit) {
+        val audioManager = context.getSystemService(AudioManager::class.java)
+        val focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
+            .setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE)
+                    .build(),
+            )
+            .setOnAudioFocusChangeListener { focusChange ->
+                if (focusChange == AudioManager.AUDIOFOCUS_LOSS ||
+                    focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT
+                ) {
+                    player.pause()
+                }
+            }
+            .build()
+        audioManager?.requestAudioFocus(focusRequest)
+        onDispose { audioManager?.abandonAudioFocusRequest(focusRequest) }
     }
 
     var isPlaying by remember { mutableStateOf(player.isPlaying) }
