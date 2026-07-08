@@ -18,3 +18,4 @@ deviceManager.xml
 /.idea/deploymentTargetSelector.xml
 /.idea/inspectionProfiles/
 .superpowers/
+/.claude/settings.local.json
