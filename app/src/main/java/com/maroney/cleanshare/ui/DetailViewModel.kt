@@ -12,10 +12,13 @@ import com.maroney.cleanshare.data.ShareRecordWithMetadata
 import com.maroney.cleanshare.data.ShareRepository
 import com.maroney.cleanshare.data.metadata.MetadataWorkScheduler
 import com.maroney.cleanshare.media.OfflineVideoRepository
+import com.maroney.cleanshare.media.VideoCacheManager
+import com.maroney.cleanshare.sync.CleanShareSyncClient
 import com.maroney.cleanshare.sync.SyncManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,14 +27,22 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-/** The id of the entry to swipe to when moving to the previous/next video in the list order
- * the detail screen was opened with — null when there's no such neighbor with a video. */
-data class VideoSwipeTargets(val previousId: Long?, val nextId: Long?)
+/** The id — and, if ready, the playable video URL — of the entry to swipe to when moving to
+ * the previous/next video in the list order the detail screen was opened with. Both null when
+ * there's no such neighbor with a video. */
+data class VideoSwipeTargets(
+    val previousId: Long?,
+    val previousVideoUrl: String?,
+    val nextId: Long?,
+    val nextVideoUrl: String?,
+)
 
 class DetailViewModel(
     private val id: Long,
@@ -40,6 +51,8 @@ class DetailViewModel(
     private val workScheduler: MetadataWorkScheduler,
     private val syncManager: SyncManager,
     private val offlineVideoRepository: OfflineVideoRepository,
+    private val syncClient: CleanShareSyncClient,
+    private val videoCacheManager: VideoCacheManager,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ShareRecordWithMetadata?>(null)
@@ -77,15 +90,34 @@ class DetailViewModel(
      * entries whose video isn't ready yet. */
     val videoSwipeTargets: StateFlow<VideoSwipeTargets> = allRecords
         .map { records -> computeVideoSwipeTargets(records) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), VideoSwipeTargets(null, null))
+        .distinctUntilChanged()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), VideoSwipeTargets(null, null, null, null))
 
     private fun computeVideoSwipeTargets(records: List<ShareRecordWithMetadata>): VideoSwipeTargets {
         val currentIndex = orderedIds.indexOf(id)
-        if (currentIndex == -1) return VideoSwipeTargets(null, null)
-        val hasVideoById = records.associate { it.record.id to (it.ingestion?.status == IngestionStatus.COMPLETE) }
-        val previousId = orderedIds.subList(0, currentIndex).asReversed().firstOrNull { hasVideoById[it] == true }
-        val nextId = orderedIds.subList(currentIndex + 1, orderedIds.size).firstOrNull { hasVideoById[it] == true }
-        return VideoSwipeTargets(previousId, nextId)
+        if (currentIndex == -1) return VideoSwipeTargets(null, null, null, null)
+        val recordsById = records.associateBy { it.record.id }
+        val previous = orderedIds.subList(0, currentIndex).asReversed()
+            .firstNotNullOfOrNull { candidateId -> recordsById[candidateId]?.takeIf { it.hasVideo } }
+        val next = orderedIds.subList(currentIndex + 1, orderedIds.size)
+            .firstNotNullOfOrNull { candidateId -> recordsById[candidateId]?.takeIf { it.hasVideo } }
+        return VideoSwipeTargets(
+            previousId = previous?.record?.id,
+            previousVideoUrl = previous?.let(::resolveVideoUrl),
+            nextId = next?.record?.id,
+            nextVideoUrl = next?.let(::resolveVideoUrl),
+        )
+    }
+
+    private val ShareRecordWithMetadata.hasVideo: Boolean
+        get() = ingestion?.status == IngestionStatus.COMPLETE
+
+    /** Mirrors the videoUrl computation in DetailScreen, minus the offline-copy preference —
+     * prefetching only ever needs the streamed URL, since an entry with an offline copy will
+     * already play instantly without it. */
+    private fun resolveVideoUrl(record: ShareRecordWithMetadata): String? {
+        if (!record.hasVideo) return null
+        return syncClient.effectiveBaseUrl()?.let { "$it/records/${record.record.syncId}/media" }
     }
 
     private var debounceJob: Job? = null
@@ -99,6 +131,19 @@ class DetailViewModel(
                 if (!notesInitialized && item != null) {
                     _notes.value = item.record.notes ?: ""
                     notesInitialized = true
+                }
+            }
+        }
+        // Warm the disk cache for the neighboring videos as early as possible — ideally well
+        // before the user ever swipes — so landing on one plays instantly instead of stalling
+        // on a cold fetch. collectLatest abandons any still-running prefetch for stale targets
+        // (e.g. a neighbor's ingestion finishing mid-visit shifts videoSwipeTargets) in favor
+        // of the new ones.
+        viewModelScope.launch {
+            videoSwipeTargets.collectLatest { targets ->
+                coroutineScope {
+                    targets.previousVideoUrl?.let { url -> launch { videoCacheManager.prefetch(url) } }
+                    targets.nextVideoUrl?.let { url -> launch { videoCacheManager.prefetch(url) } }
                 }
             }
         }
@@ -199,6 +244,8 @@ class DetailViewModel(
                         app.workScheduler,
                         app.syncManager,
                         app.offlineVideoRepository,
+                        app.syncClient,
+                        app.videoCacheManager,
                     ) as T
                 }
             }
