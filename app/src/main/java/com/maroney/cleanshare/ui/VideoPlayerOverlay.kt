@@ -72,6 +72,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 
 private const val DOUBLE_TAP_SKIP_MS = 10_000L
+
+// Double-tap zone split across the screen's width: the left/right 30% skip backward/forward,
+// the center 40% toggles play/pause without surfacing the control overlay.
+private const val DOUBLE_TAP_LEFT_ZONE_FRACTION = 0.30f
+private const val DOUBLE_TAP_RIGHT_ZONE_FRACTION = 0.70f
 private const val BUTTON_REWIND_MS = 5_000L
 private const val BUTTON_SKIP_MS = 15_000L
 private const val FAST_FORWARD_SPEED = 2f
@@ -99,13 +104,23 @@ private sealed interface HoldGestureResult {
 
     /** Moved past touch slop before the hold timeout elapsed — a swipe, not a hold. */
     data object Swiped : HoldGestureResult
+
+    /** A second pointer joined and one of the two lifted again, both within touch slop. */
+    data object TwoFingerTap : HoldGestureResult
 }
 
 /**
  * Distinguishes a stationary tap-and-hold (which should trigger 2x playback) from a swipe that
- * merely starts with a finger going down in the same place: waits up to [timeoutMillis] for
- * [pointerId] to either lift or move beyond touch slop, reporting whichever happens first, or
- * [HoldGestureResult.Stationary] if neither happens before the timeout elapses.
+ * merely starts with a finger going down in the same place, and from a second finger joining
+ * for a two-finger tap: waits up to [timeoutMillis] for [pointerId] to either lift or move
+ * beyond touch slop, reporting whichever happens first, or [HoldGestureResult.Stationary] if
+ * neither happens before the timeout elapses.
+ *
+ * While waiting, a second pointer touching down is tracked alongside the first. If that second
+ * pointer moves beyond touch slop it's dropped (not a tap partner) and the gesture continues to
+ * resolve on the first pointer alone. If instead either pointer lifts while both are still
+ * within slop of where they went down, that's a two-finger tap — reported regardless of which
+ * finger happened to lift first.
  */
 private suspend fun AwaitPointerEventScope.awaitHoldGesture(
     pointerId: PointerId,
@@ -113,10 +128,38 @@ private suspend fun AwaitPointerEventScope.awaitHoldGesture(
     timeoutMillis: Long,
 ): HoldGestureResult {
     val touchSlop = viewConfiguration.touchSlop
+    var secondPointerId: PointerId? = null
+    var secondDownPosition = Offset.Zero
     val outcome = withTimeoutOrNull<HoldGestureResult>(timeoutMillis) {
         while (true) {
-            val change = awaitPointerEvent().changes.firstOrNull { it.id == pointerId } ?: continue
-            if (!change.pressed) return@withTimeoutOrNull HoldGestureResult.Released
+            val event = awaitPointerEvent()
+
+            val trackedSecondId = secondPointerId
+            if (trackedSecondId != null) {
+                val second = event.changes.firstOrNull { it.id == trackedSecondId }
+                if (second != null) {
+                    if ((second.position - secondDownPosition).getDistance() > touchSlop) {
+                        secondPointerId = null
+                    } else if (!second.pressed) {
+                        return@withTimeoutOrNull HoldGestureResult.TwoFingerTap
+                    }
+                }
+            } else {
+                val newSecond = event.changes.firstOrNull { it.id != pointerId && it.pressed && !it.previousPressed }
+                if (newSecond != null) {
+                    secondPointerId = newSecond.id
+                    secondDownPosition = newSecond.position
+                }
+            }
+
+            val change = event.changes.firstOrNull { it.id == pointerId } ?: continue
+            if (!change.pressed) {
+                return@withTimeoutOrNull if (secondPointerId != null) {
+                    HoldGestureResult.TwoFingerTap
+                } else {
+                    HoldGestureResult.Released
+                }
+            }
             if ((change.position - downPosition).getDistance() > touchSlop) {
                 return@withTimeoutOrNull HoldGestureResult.Swiped
             }
@@ -166,8 +209,9 @@ private fun basePositionPx(role: PoolRole, widthPx: Int): Float = when (role) {
  * into view.
  *
  * Otherwise unchanged from before: tap-and-hold anywhere for 2x playback, double-tapping the
- * left/right half to skip 10 seconds backward/forward, and a custom control surface (rewind 5s,
- * play/pause, skip 15s, loop toggle, scrub slider).
+ * left/right 30% to skip 10 seconds backward/forward, double-tapping the center 40% (or
+ * two-finger tapping anywhere) to toggle play/pause without opening the control overlay, and a
+ * custom control surface (rewind 5s, play/pause, skip 15s, loop toggle, scrub slider).
  */
 @Composable
 fun VideoPlayerOverlay(pool: VideoPlayerPool) {
@@ -351,19 +395,37 @@ fun VideoPlayerOverlay(pool: VideoPlayerPool) {
                                 val secondTapOffset = awaitSecondTap(doubleTapTimeoutMillis)
                                 val player = pool.currentPlayer
                                 if (secondTapOffset != null) {
-                                    val duration = player.duration.takeIf { it > 0 } ?: Long.MAX_VALUE
-                                    if (secondTapOffset.x < size.width / 2f) {
-                                        player.seekTo(
-                                            (player.currentPosition - DOUBLE_TAP_SKIP_MS).coerceAtLeast(0L),
-                                        )
-                                    } else {
-                                        player.seekTo(
-                                            (player.currentPosition + DOUBLE_TAP_SKIP_MS).coerceAtMost(duration),
-                                        )
+                                    val leftZoneEnd = size.width * DOUBLE_TAP_LEFT_ZONE_FRACTION
+                                    val rightZoneStart = size.width * DOUBLE_TAP_RIGHT_ZONE_FRACTION
+                                    when {
+                                        secondTapOffset.x < leftZoneEnd -> {
+                                            player.seekTo(
+                                                (player.currentPosition - DOUBLE_TAP_SKIP_MS).coerceAtLeast(0L),
+                                            )
+                                        }
+                                        secondTapOffset.x >= rightZoneStart -> {
+                                            val duration = player.duration.takeIf { it > 0 } ?: Long.MAX_VALUE
+                                            player.seekTo(
+                                                (player.currentPosition + DOUBLE_TAP_SKIP_MS).coerceAtMost(duration),
+                                            )
+                                        }
+                                        // Center 40%: toggle play/pause — deliberately skips
+                                        // the controlsVisible toggle below so a center
+                                        // double-tap doesn't also flash the control overlay
+                                        // open.
+                                        else -> if (player.isPlaying) player.pause() else player.play()
                                     }
                                 } else {
                                     controlsVisible = !controlsVisible
                                 }
+                            }
+                            HoldGestureResult.TwoFingerTap -> {
+                                // Two fingers tapping together toggles play/pause from anywhere
+                                // on screen — mirrors the center-zone double-tap but doesn't
+                                // require aiming for the middle 40%, and likewise leaves
+                                // controlsVisible untouched.
+                                val player = pool.currentPlayer
+                                if (player.isPlaying) player.pause() else player.play()
                             }
                         }
                     }
