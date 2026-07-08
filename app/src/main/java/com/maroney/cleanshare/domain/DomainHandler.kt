@@ -61,6 +61,7 @@ import com.maroney.cleanshare.data.IngestionRecord
 import com.maroney.cleanshare.ui.IconSize
 import com.maroney.cleanshare.ui.Radius
 import com.maroney.cleanshare.ui.Spacing
+import kotlin.math.abs
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
@@ -77,11 +78,44 @@ interface DomainHandler {
     fun extractUrlMetadata(url: String): DomainUrlMetadata
 
     @Composable
-    fun DetailSection(urlMetadata: DomainUrlMetadata, ingestion: IngestionRecord?, videoUrl: String?, thumbnailUrl: String?)
+    fun DetailSection(
+        urlMetadata: DomainUrlMetadata,
+        ingestion: IngestionRecord?,
+        videoUrl: String?,
+        thumbnailUrl: String?,
+        videoNavigation: VideoNavigation,
+    )
 }
 
 /** Marker sealed class for per-platform URL metadata derived from path parsing. */
 sealed class DomainUrlMetadata
+
+/**
+ * Lets [VideoPlayerDialog] move to the previous/next video in whatever list order the detail
+ * screen was opened with (the history list's current sort/filter), skipping over entries
+ * without a playable video.
+ *
+ * @param autoPlay Whether the fullscreen player should open immediately rather than waiting for
+ * a thumbnail tap — set when this entry was reached by swiping from another video, so playback
+ * continues across the swipe instead of dropping back to the plain detail view.
+ */
+data class VideoNavigation(
+    val hasPrevious: Boolean,
+    val hasNext: Boolean,
+    val onNavigatePrevious: () -> Unit,
+    val onNavigateNext: () -> Unit,
+    val autoPlay: Boolean,
+) {
+    companion object {
+        val None = VideoNavigation(
+            hasPrevious = false,
+            hasNext = false,
+            onNavigatePrevious = {},
+            onNavigateNext = {},
+            autoPlay = false,
+        )
+    }
+}
 
 class DomainHandlerRegistry(private val handlers: List<DomainHandler>) {
     fun findHandler(url: String): DomainHandler? = handlers.firstOrNull { it.matches(url) }
@@ -92,6 +126,10 @@ private const val BUTTON_REWIND_MS = 5_000L
 private const val BUTTON_SKIP_MS = 15_000L
 private const val FAST_FORWARD_SPEED = 2f
 private const val CONTROLS_AUTO_HIDE_MS = 3_000L
+
+// A swipe has to cross a quarter of the screen's width — clearly more deliberate than a
+// scrub or an accidental brush — before it moves to the previous/next video.
+private const val SWIPE_NAVIGATE_THRESHOLD_FRACTION = 0.25f
 
 // Well past the platform's default long-press timeout (~500ms) so an ordinary tap-and-hold —
 // e.g. steadying a finger on the screen — doesn't accidentally kick off 2x playback.
@@ -159,7 +197,7 @@ private suspend fun AwaitPointerEventScope.awaitSecondTap(timeoutMillis: Long): 
  * plain tap (to reveal/hide the control row) is never confused with these.
  */
 @Composable
-internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit) {
+internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit, videoNavigation: VideoNavigation) {
     val context = LocalContext.current
     val player = remember(videoUrl) {
         // Saved-offline videos are already fully downloaded local files (absolute paths, no
@@ -296,8 +334,15 @@ internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit) {
                                 HoldGestureResult.Swiped -> {
                                     // Finger moved before the hold timeout — a swipe, not a
                                     // tap or a hold. Don't toggle controls, seek, or fast-
-                                    // forward; just let it finish.
-                                    waitForUpOrCancellation()
+                                    // forward; but a sufficiently horizontal one moves to the
+                                    // previous/next video in the list.
+                                    val endPosition = waitForUpOrCancellation()?.position ?: down.position
+                                    val dx = endPosition.x - down.position.x
+                                    val dy = endPosition.y - down.position.y
+                                    val threshold = size.width * SWIPE_NAVIGATE_THRESHOLD_FRACTION
+                                    if (abs(dx) > abs(dy) && abs(dx) >= threshold) {
+                                        if (dx < 0) videoNavigation.onNavigateNext() else videoNavigation.onNavigatePrevious()
+                                    }
                                 }
                                 HoldGestureResult.Released -> {
                                     val secondTapOffset = awaitSecondTap(doubleTapTimeoutMillis)

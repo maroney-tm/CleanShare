@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.maroney.cleanshare.CleanShareApplication
+import com.maroney.cleanshare.data.IngestionStatus
 import com.maroney.cleanshare.data.OfflineVideoRecord
 import com.maroney.cleanshare.data.ShareRecordWithMetadata
 import com.maroney.cleanshare.data.ShareRepository
@@ -28,8 +29,13 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+/** The id of the entry to swipe to when moving to the previous/next video in the list order
+ * the detail screen was opened with — null when there's no such neighbor with a video. */
+data class VideoSwipeTargets(val previousId: Long?, val nextId: Long?)
+
 class DetailViewModel(
     private val id: Long,
+    private val orderedIds: List<Long>,
     private val repository: ShareRepository,
     private val workScheduler: MetadataWorkScheduler,
     private val syncManager: SyncManager,
@@ -65,6 +71,22 @@ class DetailViewModel(
     val suggestedTags: StateFlow<List<String>> = allRecords
         .map { topTags(it) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    /** The nearest entries with a playable video on either side of this one, walking
+     * [orderedIds] — the list order the detail screen was opened with — and skipping over any
+     * entries whose video isn't ready yet. */
+    val videoSwipeTargets: StateFlow<VideoSwipeTargets> = allRecords
+        .map { records -> computeVideoSwipeTargets(records) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), VideoSwipeTargets(null, null))
+
+    private fun computeVideoSwipeTargets(records: List<ShareRecordWithMetadata>): VideoSwipeTargets {
+        val currentIndex = orderedIds.indexOf(id)
+        if (currentIndex == -1) return VideoSwipeTargets(null, null)
+        val hasVideoById = records.associate { it.record.id to (it.ingestion?.status == IngestionStatus.COMPLETE) }
+        val previousId = orderedIds.subList(0, currentIndex).asReversed().firstOrNull { hasVideoById[it] == true }
+        val nextId = orderedIds.subList(currentIndex + 1, orderedIds.size).firstOrNull { hasVideoById[it] == true }
+        return VideoSwipeTargets(previousId, nextId)
+    }
 
     private var debounceJob: Job? = null
     private var pendingSave = false
@@ -165,14 +187,20 @@ class DetailViewModel(
     }
 
     companion object {
-        fun factory(id: Long): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-                val app = extras[APPLICATION_KEY] as CleanShareApplication
-                return DetailViewModel(
-                    id, app.shareRepository, app.workScheduler, app.syncManager, app.offlineVideoRepository,
-                ) as T
+        fun factory(id: Long, orderedIds: List<Long> = emptyList()): ViewModelProvider.Factory =
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+                    val app = extras[APPLICATION_KEY] as CleanShareApplication
+                    return DetailViewModel(
+                        id,
+                        orderedIds,
+                        app.shareRepository,
+                        app.workScheduler,
+                        app.syncManager,
+                        app.offlineVideoRepository,
+                    ) as T
+                }
             }
-        }
     }
 }

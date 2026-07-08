@@ -45,7 +45,7 @@ import com.maroney.cleanshare.ui.theme.LocalColors
 @Composable
 fun HistoryScreen(
     viewModel: HistoryViewModel,
-    onNavigateToDetail: (id: Long) -> Unit,
+    onNavigateToDetail: (id: Long, orderedIds: List<Long>) -> Unit,
     onNavigateToSettings: () -> Unit,
 ) {
     val history by viewModel.visibleHistory.collectAsStateWithLifecycle()
@@ -104,7 +104,9 @@ fun HistoryScreen(
                         items(history, key = { it.record.id }) { item ->
                             HistoryItem(
                                 item = item,
-                                onNavigate = { onNavigateToDetail(item.record.id) },
+                                onNavigate = {
+                                    onNavigateToDetail(item.record.id, history.map { it.record.id })
+                                },
                                 onRetryIngestion = { viewModel.retryIngestion(item.record.syncId) },
                             )
                             if (item != history.last()) {

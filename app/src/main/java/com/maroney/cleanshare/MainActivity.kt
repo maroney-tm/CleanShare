@@ -41,13 +41,24 @@ class MainActivity : ComponentActivity() {
                                     viewModel(factory = HistoryViewModel.Factory)
                                 HistoryScreen(
                                     viewModel = viewModel,
-                                    onNavigateToDetail = { id -> backStack.add(DetailRoute(id)) },
+                                    onNavigateToDetail = { id, orderedIds ->
+                                        backStack.add(DetailRoute(id, orderedIds))
+                                    },
                                     onNavigateToSettings = { backStack.add(SyncSettingsRoute) },
                                 )
                             }
                             is DetailRoute -> NavEntry(key) {
                                 DetailScreen(
                                     id = key.id,
+                                    orderedIds = key.orderedIds,
+                                    autoPlayVideo = key.autoPlayVideo,
+                                    onNavigateToEntry = { id ->
+                                        // Swiping to another video replaces this entry in place
+                                        // (rather than pushing) so the back stack doesn't grow
+                                        // one deep per video swiped through.
+                                        backStack.removeLastOrNull()
+                                        backStack.add(DetailRoute(id, key.orderedIds, autoPlayVideo = true))
+                                    },
                                     onNavigateBack = { backStack.removeLastOrNull() },
                                 )
                             }

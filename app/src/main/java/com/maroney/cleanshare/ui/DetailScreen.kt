@@ -91,6 +91,7 @@ import com.maroney.cleanshare.data.isFailure
 import com.maroney.cleanshare.domain.DomainHandler
 import com.maroney.cleanshare.domain.DomainUrlMetadata
 import com.maroney.cleanshare.domain.UrlSanitizer
+import com.maroney.cleanshare.domain.VideoNavigation
 import com.maroney.cleanshare.ui.fakedata.HistoryItemPreviewProvider
 import com.maroney.cleanshare.ui.theme.CleanShareTheme
 import com.maroney.cleanshare.ui.theme.LocalColors
@@ -103,14 +104,21 @@ import timber.log.Timber
 fun DetailScreen(
     id: Long,
     onNavigateBack: () -> Unit,
+    orderedIds: List<Long> = emptyList(),
+    autoPlayVideo: Boolean = false,
+    onNavigateToEntry: (Long) -> Unit = {},
 ) {
-    val vm: DetailViewModel = viewModel(key = id.toString(), factory = DetailViewModel.factory(id))
+    val vm: DetailViewModel = viewModel(
+        key = id.toString(),
+        factory = DetailViewModel.factory(id, orderedIds),
+    )
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     val notes by vm.notes.collectAsStateWithLifecycle()
     val isRefreshing by vm.isRefreshing.collectAsStateWithLifecycle()
     val offlineVideo by vm.offlineVideo.collectAsStateWithLifecycle()
     val tagVocabulary by vm.tagVocabulary.collectAsStateWithLifecycle()
     val suggestedTags by vm.suggestedTags.collectAsStateWithLifecycle()
+    val videoSwipeTargets by vm.videoSwipeTargets.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val clipboard = LocalClipboard.current
     val haptic = LocalHapticFeedback.current
@@ -154,6 +162,15 @@ fun DetailScreen(
     val playableVideoUrl = remember(videoUrl, offlineVideo) {
         offlineVideo?.takeIf { it.status == OfflineVideoStatus.COMPLETE }?.localFilePath ?: videoUrl
     }
+    val videoNavigation = remember(videoSwipeTargets, onNavigateToEntry, autoPlayVideo) {
+        VideoNavigation(
+            hasPrevious = videoSwipeTargets.previousId != null,
+            hasNext = videoSwipeTargets.nextId != null,
+            onNavigatePrevious = { videoSwipeTargets.previousId?.let(onNavigateToEntry) },
+            onNavigateNext = { videoSwipeTargets.nextId?.let(onNavigateToEntry) },
+            autoPlay = autoPlayVideo,
+        )
+    }
 
     DetailContent(
         item = item,
@@ -162,6 +179,7 @@ fun DetailScreen(
         urlMetadata = urlMetadata,
         videoUrl = playableVideoUrl,
         thumbnailUrl = thumbnailUrl,
+        videoNavigation = videoNavigation,
         offlineVideo = offlineVideo,
         tags = item.record.tags,
         tagVocabulary = tagVocabulary,
@@ -210,6 +228,7 @@ private fun DetailContent(
     urlMetadata: DomainUrlMetadata?,
     videoUrl: String?,
     thumbnailUrl: String?,
+    videoNavigation: VideoNavigation,
     offlineVideo: OfflineVideoRecord?,
     tags: List<String>,
     tagVocabulary: List<String>,
@@ -319,7 +338,7 @@ private fun DetailContent(
                     .verticalScroll(rememberScrollState()),
             ) {
             if (handler != null && urlMetadata != null) {
-                handler.DetailSection(urlMetadata, item.ingestion, videoUrl, thumbnailUrl)
+                handler.DetailSection(urlMetadata, item.ingestion, videoUrl, thumbnailUrl, videoNavigation)
             } else {
                 HeaderSection(item)
             }
@@ -666,6 +685,7 @@ private fun DetailScreenPreview(
             urlMetadata = null,
             videoUrl = null,
             thumbnailUrl = null,
+            videoNavigation = VideoNavigation.None,
             offlineVideo = null,
             tags = listOf("compose", "reading-list"),
             tagVocabulary = listOf("compose", "kotlin", "reading-list", "video"),
