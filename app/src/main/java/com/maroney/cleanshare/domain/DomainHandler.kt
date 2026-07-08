@@ -3,6 +3,8 @@ package com.maroney.cleanshare.domain
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +52,7 @@ import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -62,9 +67,11 @@ import com.maroney.cleanshare.ui.IconSize
 import com.maroney.cleanshare.ui.Radius
 import com.maroney.cleanshare.ui.Spacing
 import kotlin.math.abs
+import kotlin.math.roundToInt
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 
 /**
@@ -296,6 +303,15 @@ internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit, videoNav
 
     var isFastForwarding by remember { mutableStateOf(false) }
 
+    // Horizontal offset for the previous/next-video swipe below — pinned at 0 (no visual
+    // effect) until the drag crosses SWIPE_NAVIGATE_THRESHOLD_FRACTION, then a spring catches
+    // it up to the finger and it tracks 1:1 from there. See the HoldGestureResult.Swiped branch.
+    // Animatable calls are launched on this scope rather than made directly from the gesture
+    // handler below because pointerInput's AwaitPointerEventScope is a restricted coroutine
+    // scope that can't suspend on arbitrary calls like Animatable.animateTo.
+    val playerOffsetX = remember { Animatable(0f) }
+    val swipeAnimationScope = rememberCoroutineScope()
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false),
@@ -313,7 +329,9 @@ internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit, videoNav
                         useController = false
                     }
                 },
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .offset { IntOffset(playerOffsetX.value.roundToInt(), 0) },
             )
 
             Box(
@@ -332,16 +350,45 @@ internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit, videoNav
                                     isFastForwarding = false
                                 }
                                 HoldGestureResult.Swiped -> {
-                                    // Finger moved before the hold timeout — a swipe, not a
-                                    // tap or a hold. Don't toggle controls, seek, or fast-
-                                    // forward; but a sufficiently horizontal one moves to the
-                                    // previous/next video in the list.
-                                    val endPosition = waitForUpOrCancellation()?.position ?: down.position
-                                    val dx = endPosition.x - down.position.x
-                                    val dy = endPosition.y - down.position.y
+                                    // Finger moved before the hold timeout — a swipe, not a tap
+                                    // or a hold. Don't toggle controls, seek, or fast-forward;
+                                    // but a sufficiently horizontal one moves to the previous/
+                                    // next video, animating the player with it rather than
+                                    // just snapping once the finger lifts.
                                     val threshold = size.width * SWIPE_NAVIGATE_THRESHOLD_FRACTION
-                                    if (abs(dx) > abs(dy) && abs(dx) >= threshold) {
-                                        if (dx < 0) videoNavigation.onNavigateNext() else videoNavigation.onNavigatePrevious()
+                                    var armed = false
+                                    var dx = 0f
+                                    var dy = 0f
+                                    while (true) {
+                                        val change = awaitPointerEvent().changes
+                                            .firstOrNull { it.id == down.id } ?: continue
+                                        dx = change.position.x - down.position.x
+                                        dy = change.position.y - down.position.y
+                                        if (!armed && abs(dx) > abs(dy) && abs(dx) >= threshold) {
+                                            // Crossing the breakpoint arms the swipe — catch the
+                                            // player up to the finger with a spring instead of
+                                            // popping it straight there, since it hasn't moved
+                                            // at all up to this point.
+                                            armed = true
+                                            val armedAtOffset = dx
+                                            swipeAnimationScope.launch {
+                                                playerOffsetX.animateTo(armedAtOffset, spring())
+                                            }
+                                        } else if (armed) {
+                                            val trackedOffset = dx
+                                            swipeAnimationScope.launch { playerOffsetX.snapTo(trackedOffset) }
+                                        }
+                                        if (!change.pressed) break
+                                    }
+                                    if (armed) {
+                                        val exitTarget = if (dx < 0) -size.width.toFloat() else size.width.toFloat()
+                                        val goToNext = dx < 0
+                                        swipeAnimationScope.launch {
+                                            playerOffsetX.animateTo(exitTarget, spring())
+                                            if (goToNext) videoNavigation.onNavigateNext() else videoNavigation.onNavigatePrevious()
+                                        }
+                                    } else {
+                                        swipeAnimationScope.launch { playerOffsetX.animateTo(0f, spring()) }
                                     }
                                 }
                                 HoldGestureResult.Released -> {
