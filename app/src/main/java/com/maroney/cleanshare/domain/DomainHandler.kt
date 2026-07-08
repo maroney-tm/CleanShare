@@ -4,7 +4,9 @@ import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -39,7 +41,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.AwaitPointerEventScope
+import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -59,6 +64,7 @@ import com.maroney.cleanshare.ui.Spacing
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * A platform-specific handler that can match a URL, extract structured metadata
@@ -86,6 +92,58 @@ private const val BUTTON_REWIND_MS = 5_000L
 private const val BUTTON_SKIP_MS = 15_000L
 private const val FAST_FORWARD_SPEED = 2f
 private const val CONTROLS_AUTO_HIDE_MS = 3_000L
+
+// Well past the platform's default long-press timeout (~500ms) so an ordinary tap-and-hold —
+// e.g. steadying a finger on the screen — doesn't accidentally kick off 2x playback.
+private const val FAST_FORWARD_HOLD_TIMEOUT_MS = 750L
+
+private sealed interface HoldGestureResult {
+    /** Held in place for [FAST_FORWARD_HOLD_TIMEOUT_MS] without lifting or moving. */
+    data object Stationary : HoldGestureResult
+
+    /** Lifted before the hold timeout elapsed — a tap (or double-tap) candidate. */
+    data object Released : HoldGestureResult
+
+    /** Moved past touch slop before the hold timeout elapsed — a swipe, not a hold. */
+    data object Swiped : HoldGestureResult
+}
+
+/**
+ * Distinguishes a stationary tap-and-hold (which should trigger 2x playback) from a swipe that
+ * merely starts with a finger going down in the same place: waits up to [timeoutMillis] for
+ * [pointerId] to either lift or move beyond touch slop, reporting whichever happens first, or
+ * [HoldGestureResult.Stationary] if neither happens before the timeout elapses.
+ */
+private suspend fun AwaitPointerEventScope.awaitHoldGesture(
+    pointerId: PointerId,
+    downPosition: Offset,
+    timeoutMillis: Long,
+): HoldGestureResult {
+    val touchSlop = viewConfiguration.touchSlop
+    val outcome = withTimeoutOrNull<HoldGestureResult>(timeoutMillis) {
+        while (true) {
+            val change = awaitPointerEvent().changes.firstOrNull { it.id == pointerId } ?: continue
+            if (!change.pressed) return@withTimeoutOrNull HoldGestureResult.Released
+            if ((change.position - downPosition).getDistance() > touchSlop) {
+                return@withTimeoutOrNull HoldGestureResult.Swiped
+            }
+        }
+        @Suppress("UNREACHABLE_CODE")
+        error("unreachable: while(true) only exits via the returns above")
+    }
+    return outcome ?: HoldGestureResult.Stationary
+}
+
+/**
+ * Waits up to [timeoutMillis] for a second pointer to go down and back up, promoting a tap into
+ * a double-tap. Returns the second tap's position, or null if none arrived in time.
+ */
+private suspend fun AwaitPointerEventScope.awaitSecondTap(timeoutMillis: Long): Offset? =
+    withTimeoutOrNull(timeoutMillis) {
+        val secondDown = awaitFirstDown()
+        waitForUpOrCancellation()
+        secondDown.position
+    }
 
 /**
  * Full-screen video player used by domain handlers' thumbnail-tap-to-play. Shared across
@@ -224,28 +282,42 @@ internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit) {
                 modifier = Modifier
                     .fillMaxSize()
                     .pointerInput(player) {
-                        detectTapGestures(
-                            onPress = {
-                                tryAwaitRelease()
-                                if (isFastForwarding) {
+                        val doubleTapTimeoutMillis = viewConfiguration.doubleTapTimeoutMillis
+                        awaitEachGesture {
+                            val down = awaitFirstDown()
+                            when (awaitHoldGesture(down.id, down.position, FAST_FORWARD_HOLD_TIMEOUT_MS)) {
+                                HoldGestureResult.Stationary -> {
+                                    isFastForwarding = true
+                                    player.setPlaybackSpeed(FAST_FORWARD_SPEED)
+                                    waitForUpOrCancellation()
                                     player.setPlaybackSpeed(1f)
                                     isFastForwarding = false
                                 }
-                            },
-                            onLongPress = {
-                                isFastForwarding = true
-                                player.setPlaybackSpeed(FAST_FORWARD_SPEED)
-                            },
-                            onDoubleTap = { offset ->
-                                val duration = player.duration.takeIf { it > 0 } ?: Long.MAX_VALUE
-                                if (offset.x < size.width / 2f) {
-                                    player.seekTo((player.currentPosition - DOUBLE_TAP_SKIP_MS).coerceAtLeast(0L))
-                                } else {
-                                    player.seekTo((player.currentPosition + DOUBLE_TAP_SKIP_MS).coerceAtMost(duration))
+                                HoldGestureResult.Swiped -> {
+                                    // Finger moved before the hold timeout — a swipe, not a
+                                    // tap or a hold. Don't toggle controls, seek, or fast-
+                                    // forward; just let it finish.
+                                    waitForUpOrCancellation()
                                 }
-                            },
-                            onTap = { controlsVisible = !controlsVisible },
-                        )
+                                HoldGestureResult.Released -> {
+                                    val secondTapOffset = awaitSecondTap(doubleTapTimeoutMillis)
+                                    if (secondTapOffset != null) {
+                                        val duration = player.duration.takeIf { it > 0 } ?: Long.MAX_VALUE
+                                        if (secondTapOffset.x < size.width / 2f) {
+                                            player.seekTo(
+                                                (player.currentPosition - DOUBLE_TAP_SKIP_MS).coerceAtLeast(0L),
+                                            )
+                                        } else {
+                                            player.seekTo(
+                                                (player.currentPosition + DOUBLE_TAP_SKIP_MS).coerceAtMost(duration),
+                                            )
+                                        }
+                                    } else {
+                                        controlsVisible = !controlsVisible
+                                    }
+                                }
+                            }
+                        }
                     },
             )
 
