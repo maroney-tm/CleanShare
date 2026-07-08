@@ -72,23 +72,21 @@ class VideoPlaybackManager(context: Context, videoCacheManager: VideoCacheManage
         preloadManager.setCurrentPlayingIndex(index)
     }
 
-    /** Starts playing [url] on the shared [player] — using an already-preloaded [MediaSource]
-     * from [preload] if one's ready, falling back to a cold [MediaItem] otherwise. */
+    /** Starts playing [url] on the shared [player]. Deliberately always builds a fresh
+     * [MediaSource] via [MediaItem] rather than handing the player whatever [preload] may have
+     * already produced — [BasePreloadManager.remove] releases the [MediaSource] it's tracking
+     * as part of detaching it, so handing that same (now-released) instance to the player right
+     * after would leave it holding a torn-down source. The player still starts up fast for a
+     * preloaded neighbor because it reads through the same cache-backed data source [preload]
+     * already warmed; it just builds its own (live) source rather than reusing the manager's. */
     fun play(url: String, isRemote: Boolean) {
+        val mediaItem = MediaItem.fromUri(url)
         if (isRemote) {
-            val mediaItem = MediaItem.fromUri(url)
-            val preloadedSource = preloadManager.getMediaSource(mediaItem)
-            if (preloadedSource != null) {
-                // Detach it from the preload manager now that it's about to actually play —
-                // otherwise the preload manager could later decide to reclaim/release this
-                // exact source out from under the player once it's no longer "just preloading."
-                preloadManager.remove(mediaItem)
-                player.setMediaSource(preloadedSource)
-            } else {
-                player.setMediaItem(mediaItem)
-            }
+            // No longer anything to preload once it's actually playing.
+            preloadManager.remove(mediaItem)
+            player.setMediaItem(mediaItem)
         } else {
-            player.setMediaSource(localMediaSourceFactory.createMediaSource(MediaItem.fromUri(url)))
+            player.setMediaSource(localMediaSourceFactory.createMediaSource(mediaItem))
         }
         player.prepare()
         player.playWhenReady = true
