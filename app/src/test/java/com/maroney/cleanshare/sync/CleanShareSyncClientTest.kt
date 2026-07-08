@@ -44,6 +44,29 @@ class CleanShareSyncClientTest {
     }
 
     @Test
+    fun `clear resets effectiveBaseUrl but preserves lastKnownBaseUrl`() {
+        assertNotNull(client.effectiveBaseUrl())
+        val configured = client.lastKnownBaseUrl()
+        assertNotNull(configured)
+
+        client.clear()
+
+        assertNull("clear() should disable live sync operations", client.effectiveBaseUrl())
+        assertFalse(client.isConfigured())
+        assertEquals(
+            "lastKnownBaseUrl should survive clear() so cached thumbnails can still resolve offline",
+            configured,
+            client.lastKnownBaseUrl(),
+        )
+    }
+
+    @Test
+    fun `lastKnownBaseUrl is null before the client is ever configured`() {
+        val unconfigured = CleanShareSyncClient(OkHttpClient())
+        assertNull(unconfigured.lastKnownBaseUrl())
+    }
+
+    @Test
     fun `getAllRecords parses list`() = runTest {
         val body = """[
             {"syncId":"u1","originalText":"o","cleanedText":"c","sharedAt":1000,"updatedAt":1000,

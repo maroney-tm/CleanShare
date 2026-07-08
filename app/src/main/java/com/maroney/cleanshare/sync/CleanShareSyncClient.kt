@@ -55,14 +55,24 @@ data class SyncIngestionRecord(
 class CleanShareSyncClient(private val okHttpClient: OkHttpClient) {
 
     @Volatile private var baseUrl: String? = null
+    // Set alongside baseUrl but never cleared by clear() — a failed health check means we
+    // shouldn't attempt live sync operations (POST/PATCH/DELETE, record list), but it says
+    // nothing about whether previously-cached media is still servable. Coil's disk cache
+    // serves a cached thumbnail unconditionally regardless of server reachability (it has
+    // no TTL), so as long as the URL is still constructible, offline thumbnails keep
+    // rendering from cache instead of disappearing the moment a health check fails.
+    @Volatile private var lastKnownBaseUrl: String? = null
 
     fun configure(host: String, port: Int?) {
         val portSuffix = if (port != null && port != 80) ":$port" else ""
         baseUrl = "http://$host$portSuffix"
+        lastKnownBaseUrl = baseUrl
     }
     fun clear() { baseUrl = null }
     fun isConfigured(): Boolean = baseUrl != null
     fun effectiveBaseUrl(): String? = baseUrl
+    /** For passive, cacheable reads only (e.g. thumbnails) — see [lastKnownBaseUrl]'s doc. */
+    fun lastKnownBaseUrl(): String? = lastKnownBaseUrl
 
     suspend fun health(): Boolean = withContext(Dispatchers.IO) {
         val url = baseUrl ?: return@withContext false

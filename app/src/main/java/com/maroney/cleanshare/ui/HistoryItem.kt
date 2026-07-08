@@ -149,9 +149,13 @@ private fun MediaIngestionRow(item: ShareRecordWithMetadata, onRetryIngestion: (
     // forever even after the server SSE-pushes the now-ready thumbnail. Note this can't be
     // ing.thumbnailUrl itself — some platforms' thumbnail URLs (e.g. YouTube's) don't change
     // even after a local copy becomes available, so that alone would never trigger a retry.
+    // lastKnownBaseUrl (not effectiveBaseUrl) so thumbnails keep rendering from Coil's disk
+    // cache while the server is unreachable — a failed health check clears effectiveBaseUrl
+    // (correctly disabling live sync), but Coil's cache has no TTL and serves a previously-
+    // successful thumbnail regardless of connectivity, as long as this URL still resolves.
     val app = LocalContext.current.applicationContext as CleanShareApplication
     val thumbUrl = remember(item.record.syncId, ing.thumbnailReady) {
-        app.syncClient.effectiveBaseUrl()?.let {
+        app.syncClient.lastKnownBaseUrl()?.let {
             "$it/records/${item.record.syncId}/thumbnail?v=${ing.thumbnailReady}"
         }
     } ?: item.metadata?.thumbnailUrl

@@ -136,11 +136,13 @@ fun DetailScreen(
     // to finish — so this isn't gated on COMPLETE the way videoUrl is.
     // ingestion.thumbnailReady is folded in purely as a cache-busting version tag — see the
     // matching comment in HistoryItem.MediaIngestionRow for why that's needed (and why it
-    // can't just be thumbnailUrl).
+    // can't just be thumbnailUrl). Uses lastKnownBaseUrl (not effectiveBaseUrl) so this still
+    // resolves while offline and Coil's disk cache (which has no TTL) keeps serving it — unlike
+    // videoUrl above, which deliberately requires a live, health-checked connection.
     val thumbnailUrl = remember(item.record.syncId, item.ingestion?.thumbnailReady) {
         val ingestion = item.ingestion
         if (ingestion != null) {
-            app.syncClient.effectiveBaseUrl()?.let {
+            app.syncClient.lastKnownBaseUrl()?.let {
                 "$it/records/${item.record.syncId}/thumbnail?v=${ingestion.thumbnailReady}"
             }
         } else null
