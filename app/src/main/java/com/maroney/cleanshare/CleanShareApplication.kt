@@ -60,6 +60,11 @@ class CleanShareApplication : Application(), Configuration.Provider, SingletonIm
 
             override fun onStop(owner: LifecycleOwner) {
                 syncManager.stopListening()
+                // Backgrounding the app (home button, app switcher, another app coming to the
+                // front) shouldn't leave a video silently playing behind it. Guarded by
+                // isInitialized so backgrounding before any video has ever been opened doesn't
+                // spin up the pool's three ExoPlayers just to immediately pause them.
+                if (videoPlayerPoolLazy.isInitialized()) videoPlayerPool.pauseForBackground()
             }
         })
 
@@ -119,7 +124,11 @@ class CleanShareApplication : Application(), Configuration.Provider, SingletonIm
 
     val videoCacheManager by lazy { VideoCacheManager(this) }
 
-    val videoPlayerPool by lazy { VideoPlayerPool(this, videoCacheManager) }
+    // Exposed as a Lazy (rather than plain `by lazy`) so the ProcessLifecycleOwner observer
+    // above can check isInitialized without forcing creation of the pool's three ExoPlayers
+    // just because the app was backgrounded before any video was ever opened.
+    private val videoPlayerPoolLazy = lazy { VideoPlayerPool(this, videoCacheManager) }
+    val videoPlayerPool by videoPlayerPoolLazy
 
     val offlineVideoRepository by lazy {
         OfflineVideoRepository(

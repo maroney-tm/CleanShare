@@ -193,6 +193,16 @@ class VideoPlayerPool(context: Context, videoCacheManager: VideoCacheManager) {
         audioFocusRequest = null
     }
 
+    /** Pauses the current slot without closing the overlay — call when the whole app leaves the
+     * foreground (see [com.maroney.cleanshare.CleanShareApplication]'s `ProcessLifecycleOwner`
+     * observer), since a video shouldn't keep playing while backgrounded or sitting in the app
+     * switcher. Unlike [close], the overlay stays open and audio focus is left alone, so
+     * returning to the app leaves everything exactly as the user left it, just paused. Standby
+     * slots are never playing in the first place, so only the current slot needs this. */
+    fun pauseForBackground() {
+        slot(PoolRole.CURRENT).player.pause()
+    }
+
     private fun syncStandbySlots(navigation: VideoNavigation) {
         syncSlot(slot(PoolRole.PREVIOUS), navigation.previousVideoUrl)
         syncSlot(slot(PoolRole.NEXT), navigation.nextVideoUrl)
