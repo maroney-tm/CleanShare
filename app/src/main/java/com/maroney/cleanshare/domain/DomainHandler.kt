@@ -56,10 +56,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.ui.PlayerView
 import com.maroney.cleanshare.CleanShareApplication
 import com.maroney.cleanshare.data.IngestionRecord
@@ -211,24 +208,16 @@ private suspend fun AwaitPointerEventScope.awaitSecondTap(timeoutMillis: Long): 
 @Composable
 internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit, videoNavigation: VideoNavigation) {
     val context = LocalContext.current
-    val player = remember(videoUrl) {
+    val app = context.applicationContext as CleanShareApplication
+    // A single process-wide player shared across every video the user swipes to/from, rather
+    // than a fresh one built (and torn down) per dialog — see VideoPlaybackManager for why.
+    val player = app.videoPlaybackManager.player
+    LaunchedEffect(videoUrl) {
         // Saved-offline videos are already fully downloaded local files (absolute paths, no
-        // "http(s)" prefix) — play those directly rather than routing them through the
-        // streaming cache, which would needlessly duplicate them into the LRU-bounded cache.
+        // "http(s)" prefix) — VideoPlaybackManager routes those around the streaming cache,
+        // which would otherwise needlessly duplicate them into the LRU-bounded cache.
         val isRemote = videoUrl.startsWith("http://") || videoUrl.startsWith("https://")
-        val builder = ExoPlayer.Builder(context)
-        if (isRemote) {
-            val app = context.applicationContext as CleanShareApplication
-            builder.setMediaSourceFactory(DefaultMediaSourceFactory(app.videoCacheManager.cacheDataSourceFactory()))
-        }
-        builder.build().apply {
-            setMediaItem(MediaItem.fromUri(videoUrl))
-            prepare()
-            playWhenReady = true
-        }
-    }
-    DisposableEffect(player) {
-        onDispose { player.release() }
+        app.videoPlaybackManager.play(videoUrl, isRemote)
     }
 
     // Playing a video is an active-watching session for as long as this dialog is up —
@@ -264,7 +253,7 @@ internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit, videoNav
     }
 
     var isPlaying by remember { mutableStateOf(player.isPlaying) }
-    DisposableEffect(player) {
+    DisposableEffect(Unit) {
         val listener = object : Player.Listener {
             override fun onIsPlayingChanged(playing: Boolean) {
                 isPlaying = playing
@@ -275,15 +264,14 @@ internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit, videoNav
     }
 
     var loopEnabled by remember { mutableStateOf(false) }
-    LaunchedEffect(player) {
-        val app = context.applicationContext as CleanShareApplication
+    LaunchedEffect(Unit) {
         val defaultLoop = app.playbackPreferencesRepository.loopVideosByDefault.first()
         loopEnabled = defaultLoop
         player.repeatMode = if (defaultLoop) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
     }
 
     var progress by remember { mutableFloatStateOf(0f) }
-    LaunchedEffect(player) {
+    LaunchedEffect(Unit) {
         while (isActive) {
             val duration = player.duration
             progress = if (duration > 0) {
@@ -318,7 +306,13 @@ internal fun VideoPlayerDialog(videoUrl: String, onDismiss: () -> Unit, videoNav
     val swipeAnimationScope = rememberCoroutineScope()
 
     Dialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = {
+            // Unlike the swipe-to-next/previous path, dismissing here (back press or tapping
+            // outside) hands off to nothing — pause the shared player so it doesn't keep
+            // playing in the background now that closing this dialog no longer releases it.
+            app.videoPlaybackManager.stop()
+            onDismiss()
+        },
         properties = DialogProperties(usePlatformDefaultWidth = false),
     ) {
         Box(
