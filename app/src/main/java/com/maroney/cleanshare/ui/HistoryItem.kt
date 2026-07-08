@@ -427,7 +427,10 @@ private fun FallbackRow(item: ShareRecordWithMetadata) {
 @Composable
 private fun TagChipsRow(tags: List<String>) {
     if (tags.isEmpty()) return
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+        verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+    ) {
         tags.forEach { tag ->
             SuggestionChip(
                 onClick = {},

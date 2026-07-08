@@ -386,7 +386,10 @@ private fun DetailContent(
                     tags.none { it.equals(suggestion, ignoreCase = true) }
                 }
                 if (tags.isNotEmpty() || untappedSuggestions.isNotEmpty()) {
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+                        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+                    ) {
                         tags.forEach { tag ->
                             AddedTagChip(text = tag, onClick = { onRemoveTag(tag) })
                         }
