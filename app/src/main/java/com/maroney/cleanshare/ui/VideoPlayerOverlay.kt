@@ -9,6 +9,7 @@ import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -449,98 +450,112 @@ fun VideoPlayerOverlay(pool: VideoPlayerPool) {
             }
         }
 
-        if (pool.isOpen && controlsVisible) {
-            // A real Slider (not a hand-rolled drag detector) so tap-to-seek and drag-to-scrub
-            // are both correct out of the box.
-            Slider(
-                value = if (isScrubbing) scrubProgress else progress,
-                onValueChange = {
-                    isScrubbing = true
-                    scrubProgress = it
-                },
-                onValueChangeFinished = {
-                    val duration = currentPlayer.duration.takeIf { it > 0 } ?: 0L
-                    currentPlayer.seekTo((scrubProgress * duration).toLong())
-                    isScrubbing = false
-                },
-                colors = SliderDefaults.colors(
-                    thumbColor = Color.White,
-                    activeTrackColor = Color.White,
-                    inactiveTrackColor = Color.White.copy(alpha = 0.25f),
-                ),
+        if (pool.isOpen) {
+            // Buttons sit directly above the seek bar, both pinned to the bottom edge, so
+            // showing/hiding controls doesn't shift where the seek/progress indicator lives.
+            Column(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .padding(horizontal = Spacing.md),
-            )
-        } else if (pool.isOpen) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .height(Spacing.xs)
-                    .background(Color.White.copy(alpha = 0.25f)),
+                    .fillMaxWidth(),
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(progress)
-                        .fillMaxHeight()
-                        .background(Color.White),
-                )
-            }
-        }
+                if (controlsVisible) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.Gray.copy(alpha = 0.6f))
+                            .padding(vertical = Spacing.md),
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.lg, Alignment.CenterHorizontally),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        IconButton(
+                            onClick = {
+                                currentPlayer.seekTo(
+                                    (currentPlayer.currentPosition - BUTTON_REWIND_MS).coerceAtLeast(0L),
+                                )
+                            },
+                        ) {
+                            Icon(
+                                Icons.Filled.Replay5,
+                                contentDescription = "Rewind 5 seconds",
+                                tint = Color.White,
+                                modifier = Modifier.size(IconSize.favicon),
+                            )
+                        }
+                        IconButton(onClick = { if (isPlaying) currentPlayer.pause() else currentPlayer.play() }) {
+                            Icon(
+                                if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+                                contentDescription = if (isPlaying) "Pause" else "Play",
+                                tint = Color.White,
+                                modifier = Modifier.size(IconSize.thumbnail),
+                            )
+                        }
+                        IconButton(
+                            onClick = {
+                                val duration = currentPlayer.duration.takeIf { it > 0 } ?: Long.MAX_VALUE
+                                currentPlayer.seekTo(
+                                    (currentPlayer.currentPosition + BUTTON_SKIP_MS).coerceAtMost(duration),
+                                )
+                            },
+                        ) {
+                            Icon(
+                                Icons.Filled.FastForward,
+                                contentDescription = "Skip 15 seconds",
+                                tint = Color.White,
+                                modifier = Modifier.size(IconSize.favicon),
+                            )
+                        }
+                        IconButton(
+                            onClick = {
+                                loopEnabled = !loopEnabled
+                                currentPlayer.repeatMode =
+                                    if (loopEnabled) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
+                            },
+                        ) {
+                            Icon(
+                                if (loopEnabled) Icons.Filled.RepeatOneOn else Icons.Filled.RepeatOne,
+                                contentDescription = "Toggle loop",
+                                tint = Color.White,
+                                modifier = Modifier.size(IconSize.favicon),
+                            )
+                        }
+                    }
 
-        if (pool.isOpen && controlsVisible) {
-            Row(
-                modifier = Modifier.align(Alignment.Center),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.lg),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                IconButton(
-                    onClick = {
-                        currentPlayer.seekTo((currentPlayer.currentPosition - BUTTON_REWIND_MS).coerceAtLeast(0L))
-                    },
-                ) {
-                    Icon(
-                        Icons.Filled.Replay5,
-                        contentDescription = "Rewind 5 seconds",
-                        tint = Color.White,
-                        modifier = Modifier.size(IconSize.favicon),
+                    // A real Slider (not a hand-rolled drag detector) so tap-to-seek and
+                    // drag-to-scrub are both correct out of the box.
+                    Slider(
+                        value = if (isScrubbing) scrubProgress else progress,
+                        onValueChange = {
+                            isScrubbing = true
+                            scrubProgress = it
+                        },
+                        onValueChangeFinished = {
+                            val duration = currentPlayer.duration.takeIf { it > 0 } ?: 0L
+                            currentPlayer.seekTo((scrubProgress * duration).toLong())
+                            isScrubbing = false
+                        },
+                        colors = SliderDefaults.colors(
+                            thumbColor = Color.White,
+                            activeTrackColor = Color.White,
+                            inactiveTrackColor = Color.White.copy(alpha = 0.25f),
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = Spacing.md),
                     )
-                }
-                IconButton(onClick = { if (isPlaying) currentPlayer.pause() else currentPlayer.play() }) {
-                    Icon(
-                        if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                        contentDescription = if (isPlaying) "Pause" else "Play",
-                        tint = Color.White,
-                        modifier = Modifier.size(IconSize.thumbnail),
-                    )
-                }
-                IconButton(
-                    onClick = {
-                        val duration = currentPlayer.duration.takeIf { it > 0 } ?: Long.MAX_VALUE
-                        currentPlayer.seekTo((currentPlayer.currentPosition + BUTTON_SKIP_MS).coerceAtMost(duration))
-                    },
-                ) {
-                    Icon(
-                        Icons.Filled.FastForward,
-                        contentDescription = "Skip 15 seconds",
-                        tint = Color.White,
-                        modifier = Modifier.size(IconSize.favicon),
-                    )
-                }
-                IconButton(
-                    onClick = {
-                        loopEnabled = !loopEnabled
-                        currentPlayer.repeatMode = if (loopEnabled) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
-                    },
-                ) {
-                    Icon(
-                        if (loopEnabled) Icons.Filled.RepeatOneOn else Icons.Filled.RepeatOne,
-                        contentDescription = "Toggle loop",
-                        tint = Color.White,
-                        modifier = Modifier.size(IconSize.favicon),
-                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(Spacing.xs)
+                            .background(Color.White.copy(alpha = 0.25f)),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(progress)
+                                .fillMaxHeight()
+                                .background(Color.White),
+                        )
+                    }
                 }
             }
         }
